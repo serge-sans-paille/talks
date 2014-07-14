@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Pythran - C++ for Snakes</title>
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+        <!--<link rel="stylesheet" href="css/theme/default.css" id="theme">-->
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+                <h2>Python for <br/> Scientific Computing</h1>
+					<h3>a.k.a. Python compilers for the mass</h3>
+					<p>
+						<small>Proudly made in <em>Namek</em> by <a href="http://serge.liyun.free.fr/serge/">serge-sans-paille</a></small>
+					</p>
+				</section>
+				<section>
+                <h2><code class="bash">/me</code></h2>
+                <h3>Serge « sans paille » Guelton</h3>
+                <p>
+                <pre><code class="bash">$ whoami
+sguelton</code></pre>
+                <ul>
+                    <li>R&D engineer at <a href="http://www.quarkslab.com/">QuarksLab</a> on compilation for security</li>
+                    <li>Associcate researcher at Télécom Bretagne</li>
+                    <li>Core dev of the Open Source Pythran project</li>
+                </ul>
+                </p>
+				</section>
+
+				<section>
+					<h2>Python for Science</h2>
+					<p>
+                    <ul>
+                        <li>Portable, scriptable language</li>
+                        <li>Clean (?) syntax</li>
+                        <li><strong>Rich</strong> ecosystem</li>
+                        <li><strong>Enthusiast</strong> community, esp. in Science</li>
+                    </ul>
+					</p>
+				</section>
+
+				<section>
+                <a  href="http://ipython.org/"><img  src="http://ipython.org/_static/IPy_header.png"></a>
+                <p>
+                <ul>
+                    <li>Interactive shell with completion, history, magics...</li>
+                    <li>Notebook kernel for reproducible science</li>
+                    <li>Provides tools for <strong>parallel computing</strong></li>
+                </ul>
+                <img height="400" src="http://ipython.readthedocs.org/en/latest/_images/ipy_013_notebook_spectrogram.png">
+                </p>
+
+                </section>
+
+				<section>
+                <a href="http://www.numpy.org"><img height="120" src="http://www.numpy.org/_static/numpy_logo.png"></a>
+                    <p>
+                    <ul>
+                    <li>Base Array Package, native data structure</li>
+                    <li>Exposes C routines</li>
+                    <li>linear algebra, Fourier transform, and random number</li>
+                </ul>
+                <img height="400" src="http://www.dakarlug.org/pat/scientifique/html/_images/numpy_broadcasting.png">
+                    </p>
+                </section>
+
+				<section>
+                <a href="http://www.scipy.org/">SciPy<br/><img src="http://docs.scipy.org/doc/scipy-0.9.0/reference/_static/scipyshiny_small.png"></a>
+                    <p>
+                    <ul>
+                    <li>Stats</li>
+                    <li>Integration, Interpolate, Regression,</li>
+                    <li>Signal Processing</li>
+                    <li>Image Processing</li>
+                    <li>Clustering</li>
+                    <li>Sparse linear algebra...</li>
+                </ul>
+                    </p>
+                </section>
+
+				<section>
+                <a href="http://matplotlib.org/"><img src="http://matplotlib.org/_static/logo2.png"></a>
+                    <p>
+                    <ul>
+                    <li>Plotting for the Mass!</li>
+                </ul>
+                    </p>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/pie_and_polar_charts/thumbnails/polar_bar_demo.png"/>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/statistics/thumbnails/histogram_demo_features.png"/>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/images_contours_and_fields/thumbnails/pcolormesh_levels.png"/>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/lines_bars_and_markers/thumbnails/fill_demo.png"/>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/pylab_examples/thumbnails/histogram_demo_extended_03.png"/>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/pylab_examples/thumbnails/quadmesh_demo.png"/>
+                    <br/>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/pylab_examples/thumbnails/tricontour_demo_01.png">
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/mplot3d/thumbnails/surface3d_radial_demo.png"/>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/mplot3d/thumbnails/wire3d_demo.png"/>
+                    <img src="http://matplotlib.org/plot_directive/mpl_examples/mplot3d/thumbnails/scatter3d_demo.png"/>
+
+                </section>
+
+                <section>
+                <h2>And Many Others</h2>
+                <p>
+                <ul>
+                    <li>Symbolic mathematics with <a href="http://sympy.org/">SymPy</a></li>
+                    <li>Data structure and analysis with <a href="http://www.scipy.org/_static/images/pandas_badge2.jpg">pandas</a></li>
+                    <li>Machine learning with <a href="http://scikit-learn.org/stable/">sckit-learn</a></li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h2>What about Performance?</h2>
+                </section>
+
+                <section>
+                <h2>Myth #1: Python is slow</h2>
+                <p>A language is <strong>not</strong> slow, but it can make it hard for compilers to make it run fast</p>
+                </section>
+
+                <section>
+                <h2>Myth #2: Python is too dynamic for HPC</h2>
+                <p>Scientific code written in Python look more like FORTRAN than Python</p>
+                <pre><code class="python">import numpy as np
+def rosen(x):
+    t0 = 100 * (x[1:] - x[:-1] ** 2) ** 2
+    t1 = (1 - x[:-1]) ** 2
+    return np.sum(t0 + t1)
+</code></pre>
+				</section>
+
+                <section>
+                <h2>Myth #3: NumPy is fast</h2>
+                <h4>Its design suffers from several <em>critical drawbacks</em></h4>
+                <p>
+                <ul>
+                    <li>Spawns many intermediate array</li>
+                    <li>Very slow indexing (but relatively fast vector operations)</li>
+                    <li>No parallelization</li>
+                    <li>No vectorization</li>
+                </ul>
+                </p>
+                <p>
+                <h4>Uses the BLAS/MKL for linear algebra though</h4>
+                </p>
+                </section>
+
+                <section>
+                <h2>Here comes compilers</h2>
+                <p>for Python/Numpy codes</p>
+                </section>
+
+                <section>
+                <img height="150" src="http://upload.wikimedia.org/wikipedia/en/c/ce/Cython-logo.svg"/>
+                <p>Turn <strong>annotated</strong> code into C extension
+                <ul>
+                    <li>C with a Python look and feel</li>
+                    <li>Performance <strong>close to C</strong></li>
+                    <li>Explicit Parallelism</li>
+                    <li>Can call C code</li>
+                    <li><strong>Loose Backward compatibility</strong></li>
+                </ul>
+                </p>
+                <pre><code class="python">cdef inline int mandel(double real, double imag, int max_iterations=20):
+    cdef double z_real = 0., z_imag = 0.
+    cdef int i
+    for i in range(0, max_iterations):
+        z_real, z_imag = ( z_real*z_real - z_imag*z_imag + real,
+                           2*z_real*z_imag + imag )
+        if (z_real*z_real + z_imag*z_imag) >= 4:
+            return i
+    return -1</code></pre>
+                </section>
+
+                <section>
+                <h2>PyPy</h2>
+                <p>
+                <ul>
+                    <li>Just-In-Time compiler</li>
+                    <li>Targets full language support</li>
+                    <li>Limited native module support (incl. Numpy)</li>
+                    <li>Successful Numpypy project</li>
+                </ul>
+                </p>
+                <pre><code class="python">def mandel(real, imag, max_iterations=20):
+    z_real, z_imag = 0., 0.
+    for i in range(0, max_iterations):
+        z_real, z_imag = ( z_real*z_real - z_imag*z_imag + real,
+                           2*z_real*z_imag + imag )
+        if (z_real*z_real + z_imag*z_imag) >= 4:
+            return i
+    return -1</code></pre>
+                </section>
+
+                <section>
+                <h2>Numba</h2>
+                <p>
+                <ul>
+                    <li>Just-In-Time compiler</li>
+                    <li>Strong industrial support</li>
+                    <li>GPGPU backend</li>
+                    <li>Works best on <strong>explicit</strong> loops</li>
+                    <li>Based on LLVM</li>
+                </ul>
+                </p>
+                <pre><code class="python">from numba import autojit
+@autojit
+def mandel(real, imag, max_iterations=20):
+    z_real, z_imag = 0., 0.
+    for i in range(0, max_iterations):
+        z_real, z_imag = ( z_real*z_real - z_imag*z_imag + real,
+                           2*z_real*z_imag + imag )
+        if (z_real*z_real + z_imag*z_imag) >= 4:
+            return i
+    return -1</code></pre>
+                </section>
+
+                <section>
+                <h2><a href="http://www.parakeetpython.com/"><img src="http://www.parakeetpython.com/logo.png" height="120"/></a></h2>
+                <p>
+                <ul>
+                    <li>Just-In-Time compiler</li>
+                    <li>Supports a limited subset of Python, focused on Numpy</li>
+                    <li>Represents Numpy functions in terms a few skeletons</li>
+                    <li>Very efficient and easy to install</li>
+                    <li>Implicit parallelism (OpenMP | GPGPU)</li>
+                </ul>
+                </p>
+                <pre><code class="python">from parakeet import jit
+@jit
+def mandel(real, imag, max_iterations=20):
+    z_real, z_imag = 0., 0.
+    for i in range(0, max_iterations):
+        z_real, z_imag = ( z_real*z_real - z_imag*z_imag + real,
+                           2*z_real*z_imag + imag )
+        if (z_real*z_real + z_imag*z_imag) >= 4:
+            return i
+    return -1</code></pre>
+                </section>
+
+                <section>
+                <h2><a href="http://pythonhosted.org/pythran/">Pythran</a></h2>
+                <p>
+                <ul>
+                    <li>Ahead-Of-Time compiler</li>
+                    <li>Turn whole Python modules into <strong>native</strong> modules</li>
+                    <li>Supports a large subset of Python, including Exceptions, generators, named parameters...</li>
+                    <li>Requires exported function type annotation as comments</li>
+                </ul>
+                </p>
+                <pre><code class="python">#pythran export mandel(float, float, int)
+def mandel(real, imag, max_iterations=20):
+    z_real, z_imag = 0., 0.
+    for i in range(0, max_iterations):
+        z_real, z_imag = ( z_real*z_real - z_imag*z_imag + real,
+                           2*z_real*z_imag + imag )
+        if (z_real*z_real + z_imag*z_imag) >= 4:
+            return i
+    return -1</code></pre>
+                </section>
+
+                <section>
+                <h2>What about performance?</h2>
+                </section>
+                <section>
+                <h3><a href="http://www2.cs.sfu.ca/CourseCentral/383/ggbaker">http://www.cs.sfu.ca/.../ggbaker</a></h3>
+                <table>
+                    <caption><em>Relative speedups on the mandelbrot example</em></caption>
+                    <tr><th>Language</th><th>Implementation</th><th>Speedup</th></tr>
+                    <tr><td>Python	</td><td>CPython 2.7.6          </td><td>1.0    </td></tr>
+                    <tr><td>Python	</td><td>CPython 2.7.6 with -O  </td><td>1.0    </td></tr>
+                    <tr><td>Cython	</td><td>Cython 0.20.1post0     </td><td>1.6    </td></tr>
+                    <tr><td>Cython	</td><td>Cython 0.20.1post0     </td><td>95.8   </td></tr>
+                    <tr><td>Python3	</td><td>CPython 3.4.0          </td><td>0.9    </td></tr>
+                    <tr><td>Python	</td><td>Jython 2.5.3           </td><td>3.4    </td></tr>
+                    <tr><td>Python	</td><td>PyPy 2.3.1             </td><td>82.8   </td></tr>
+                    <tr><td>Python	</td><td>Parakeet 0.23.2        </td><td>68.8   </td></tr>
+                    <tr><td>Python	</td><td>Pythran 0.5.0          </td><td>92.7   </td></tr>
+                    <tr><td>C	    </td><td>GCC 4.8.2 with -O2     </td><td>103.3  </td></tr>
+                </table>
+                </section>
+
+                <section>
+                <h2>We don't need no loops</h2>
+                <p>
+                Python/Numpy <code>==</code> high level programming
+                <pre><code class="python">reliab = zeros((N,N))
+for i in range(N):
+    for j in range(N):
+        if random() < 0.6:
+            reliab[i,j] = 1
+        else:
+            reliab[i,j] = 0</code></pre>
+                vs.
+                <pre><code class="python">reliab = numpy.int32(numpy.random.rand(N,N) < 0.6)</code></pre>
+                </p>
+                </section>
+
+                <section>
+                <h2>Crowd-sourced benchs</h2>
+                <p>
+                <img src="http://blog.stackoverflow.com/wp-content/uploads/stackoverflow-logo-300.png"/><br/>
+                <pre><code class="python">def cronbach(itemscores):
+    itemvars = itemscores.var(axis=1, ddof=1)
+    tscores = itemscores.sum(axis=0)
+    nitems = len(itemscores)
+    return nitems / (nitems-1) * (1 - itemvars.sum() / tscores.var(ddof=1))</code></pre>
+                <ul>
+                    <li>Python, (num)PyPy, Numba, Parakeet, Pythran</li>
+                    <li>Cython not considered (not a Python compiler!)</li>
+                </ul>
+                </p>
+
+<p>See <a href="https://github.com/serge-sans-paille/numpy-benchmarks">https://github.com/serge-sans-paille/numpy-benchmarks</a></p>
+                </section>
+
+                <section>
+                <h2>Optimization Opporunities</h2>
+                <p>
+                <pre><code class="python">def l2norm(x):
+    return np.sqrt(np.sum(np.abs(x)**2, axis=1))</code></pre>
+                <ol>
+                    <li>Avoid temporary allocations from <code>np.abs(x)**2</code></li>
+                    <li>Do not rely on Numpy's <code>np.sum(..., axis=1)</code></li>
+                    <li>Parallelize the <code>np.sum(..., axis=1)</code></li>
+                    <li>Vectorize the <code>np.sum(..., axis=1)</code></li>
+                </ol>
+                </p>
+                <p>
+                </section>
+
+                <section>
+                <h2>The Pythran way</h2>
+                <p>
+                <pre><code class="python">#pythran export l2norm(float32[][])
+def l2norm(x):
+    return np.sqrt(np.sum(np.abs(x)**2, axis=1))</code></pre>
+                <pre><code class="bash">$> pythran l2norm.py -march=native -fopenmp</code></pre>
+                </p>
+                </section>
+
+                <section>
+                <h2>Remove Temporaries</h2>
+                <h3>Loop Approach</h3>
+                <p>
+                Inlining + Loop fusion + scalarization + use-def elimination
+                </p>
+                <h3>Expression Approach</h3>
+                <p>
+                Forward Substitution + Expression Templates
+                </p>
+                </section>
+
+                <section>
+                <h2>Loop Unrolling</h2>
+                <p>A generic approach to loop unrolling
+                <pre><code class="python">for i in range(3):
+    foo(i)</code></pre>
+                </p>
+                <p>(Forward Substituion +) Constant Folding
+                <pre><code class="python">for i in [0, 1, 2]:
+    foo(i)</code></pre>
+                </p>
+                <p>Loop Full Unrolling
+                <pre><code class="python">i = 0
+foo(i)
+i = 1
+foo(i)
+i = 2
+foo(i)</code></pre>
+                </p>
+                <p>Use-def elimination...</p>
+                </section>
+
+                <section>
+                <h2>Vectorization</h2>
+                <p>Use SSE or AVX vector registers of modern CPUs</p>
+                <img src="http://neilkemp.us/src/sse_tutorial/c1_d1.bmp"/>
+                <p>
+                Pythran's runtime is partially vectorized thanks to <strong>Boost.SIMD</strong><br/>
+                </p>
+                </section>
+
+                <section>
+                <h2>Vectorization Effect</h2>
+                <h3>Chef's Selection</h3>
+                <table>
+                    <caption>pythran with <code>clang -O2</code></caption>
+                    <tr><th>bench</th><th>seq (µs)</th><th>SSE</th><th>AVX</th></tr>
+                    <tr><td>allpairs_distances</td><td>1711</td><td>916</td>   <td>673</td></tr>
+                    <tr><td>arc_distance</td><td>1020 </td>     <td>613</td>   <td>414</td></tr>
+                    <!--
+                    <tr><td>conv</td><td>1858 </td>             <td>1859</td>  <td>1857</td></tr>
+                    <tr><td>create_grid</td><td>3887 </td>      <td>3874</td>  <td>3885</td></tr>
+                    <tr><td>diffusion</td><td>3509 </td>        <td>3558</td>  <td>3495</td></tr>
+                    <tr><td>evolve</td><td>3449 </td>           <td>3409</td>  <td>3567</td></tr>
+                    <tr><td>fdtd</td><td>1849 </td>             <td>1860</td>  <td>1830</td></tr>
+                    <tr><td>fft</td><td>1223 </td>              <td>1217</td>  <td>1209</td></tr>
+                    <tr><td>growcut</td><td>5914 </td>          <td>5903</td>  <td>5878</td></tr>
+                    <tr><td>harris</td><td>2819 </td>           <td>2873</td>  <td>2830</td></tr>
+                    <tr><td>hyantes</td><td>1857 </td>          <td>1857</td>  <td>1828</td></tr>
+                    <tr><td>julia</td><td>2572 </td>            <td>2553</td>  <td>2517</td></tr>
+                    !-->
+                    <tr><td>l2norm</td><td>913 </td>            <td>577</td>   <td>494</td></tr>
+                    <!--
+                    <tr><td>local_maxima</td><td>1327 </td>     <td>1325</td>  <td>1351</td></tr>
+                    <tr><td>lstsqr</td><td>2288 </td>           <td>1765</td>  <td>1711</td></tr>
+                    <tr><td>mandel</td><td>4741 </td>           <td>4351</td>  <td>4215</td></tr>
+                    <tr><td>multiple_sum</td><td>1112 </td>     <td>1112</td>  <td>987</td></tr>
+                    <tr><td>pairwise</td><td>3565 </td>         <td>3559</td>  <td>3523</td></tr>
+                    <tr><td>periodic_dist</td><td>1138 </td>    <td>956</td>   <td>984</td></tr>
+                    <tr><td>repeating</td><td>534 </td>         <td>530</td>   <td>532</td></tr>
+                    <tr><td>reverse_cumsum</td><td>2391 </td>   <td>2371</td>  <td>2402</td></tr>
+                    !-->
+                    <tr><td>rosen</td><td>1234 </td>            <td>1096</td>  <td>997</td></tr>
+                    <tr><td>slowparts</td><td>1154 </td>        <td>1176</td>  <td>848</td></tr>
+                    <!--
+                    <tr><td>smoothing</td><td>4846 </td>        <td>4823</td>  <td>4827</td></tr>
+                    <tr><td>specialconvolve</td><td>1487 </td>  <td>1443</td>  <td>1468</td></tr>
+                    !-->
+                    <tr><td>vibr_energy</td><td>1518 </td>      <td>769</td>   <td>570</td></tr>
+                    <!--
+                    <tr><td>wave</td><td>917 </td>              <td>953</td>   <td>947</td></tr>
+                    <tr><td>wdist</td><td>2096 </td>            <td>1902</td>  <td>1881</td></tr>
+                    !-->
+
+                </table>
+                </section>
+
+                <section>
+                <h2>Explicit Parallelization</h2>
+                <h3>OpenMP for Python</h3>
+<pre><code class="python">def hyantes(xmin, ymin, xmax, ymax, step, range_, range_x, range_y, t):
+    X,Y = t.shape
+    pt = np.zeros((X,Y))
+    #omp parallel for
+    for i in range(X):
+        for j in range(Y):
+            for k in t:
+                tmp = 6368.* np.arccos( np.cos(xmin+step*i)*np.cos( k[0] ) * np.cos((ymin+step*j)-k[1])+  np.sin(xmin+step*i)*np.sin(k[0]))
+                if tmp < range_:
+                    pt[i,j]+=k[2] / (1+tmp)
+    return pt
+</code></pre>
+                </section>
+
+                <section>
+                <h2>Implicit Parallelization</h2>
+                <h3>Point-to-point operations</h3>
+<pre><code class="python">a = np.random.rand(n, m)
+b = np.random.rand(3, n - 1)
+c = a[1:,:-1] + 3 * b[i]</code></pre>
+                <h3>Reductions</h3>
+<pre><code class="python">a = np.random.rand(n, m)
+b = np.random.rand(n, m)
+c = np.sum(a ** 2 + b ** 2)</code></pre>
+                </section>
+
+
+                <section>
+                <h2>Performance Comparison</h2>
+                <table>
+                    <caption>Average execution time (µs) - no paral., no vec.</caption>
+                    <tr><th>                        </th><th>  Python</th><th> parakeet</th><th> pythran</th></tr>
+                    <tr><td>      allpairs_distances</td><td>   38129</td><td>     1784</td><td>  <strong>1713</strong></td></tr>
+                    <tr><td>allpairs_distances_loops</td><td>   49750</td><td>     1794</td><td>  <strong>1681</strong></td></tr>
+                    <!--
+                    <tr><td>            arc_distance</td><td>    1385</td><td>     1602</td><td>  <strong>1040</strong></td></tr>
+                    !-->
+                    <tr><td>                    conv</td><td> 1916161</td><td>     2040</td><td>  <strong>1879</strong></td></tr>
+                    <!--
+                    <tr><td>             create_grid</td><td>    4050</td><td>        0</td><td>  <strong>3930</strong></td></tr>
+                    !-->
+                    <!--
+                    <tr><td>               diffusion</td><td>   22368</td><td>    21206</td><td>  <strong>4084</strong></td></tr>
+                    !-->
+                    <!--
+                    <tr><td>                  evolve</td><td>    5617</td><td>        0</td><td>  <strong>3569</strong></td></tr>
+                    <tr><td>                    fdtd</td><td> 1644822</td><td>        0</td><td>  <strong>1907</strong></td></tr>
+                    <tr><td>                     fft</td><td>   24455</td><td>        0</td><td>  <strong>1245</strong></td></tr>
+                    !-->
+                    <tr><td>                 growcut</td><td> 1967622</td><td>   <strong>2203</strong></td><td>    5976</td></tr>
+                    <tr><td>                  harris</td><td>    5595</td><td>     5246</td><td>  <strong>2949</strong></td></tr>
+                    <tr><td>                 hasting</td><td>       8</td><td>       57</td><td>     <strong>1</strong></td></tr>
+                    <tr><td>                 hyantes</td><td>  255760</td><td>     1882</td><td>  <strong>1881</strong></td></tr>
+                    <tr><td>                   julia</td><td> 2761543</td><td>     2938</td><td>  <strong>2578</strong></td></tr>
+                    <tr><td>                  l2norm</td><td>    5483</td><td>    12648</td><td>   <strong>919</strong></td></tr>
+                    <!--
+                    <tr><td>            local_maxima</td><td>   58252</td><td>        0</td><td>  <strong>1385</strong></td></tr>
+                    <tr><td>                  lstsqr</td><td>    7697</td><td>        0</td><td>  <strong>2303</strong></td></tr>
+                    <tr><td>                  mandel</td><td>  457839</td><td>        0</td><td>  <strong>4644</strong></td></tr>
+                    !-->
+                    <tr><td>            multiple_sum</td><td>    3026</td><td>     8394</td><td>  <strong>1245</strong></td></tr>
+                    <tr><td>                pairwise</td><td> 3742614</td><td>     3708</td><td>  <strong>3563</strong></td></tr>
+                    <!--
+                    <tr><td>           periodic_dist</td><td>    1776</td><td>        0</td><td>  <strong>1194</strong></td></tr>
+                    <tr><td>               repeating</td><td>    1221</td><td>        0</td><td>   <strong>568</strong></td></tr>
+                    <tr><td>          reverse_cumsum</td><td>    2636</td><td>        0</td><td>  <strong>2387</strong></td></tr>
+                    !-->
+                    <tr><td>                   rosen</td><td>   14168</td><td>     1625</td><td>  <strong>1238</strong></td></tr>
+                    <!--
+                    <tr><td>               slowparts</td><td>    5739</td><td>     1243</td><td>  <strong>1166</strong></td></tr>
+                    <tr><td>               smoothing</td><td>  953006</td><td>     6277</td><td>  <strong>4853</strong></td></tr>
+                    <tr><td>         specialconvolve</td><td>    8231</td><td>    10304</td><td>  <strong>2385</strong></td></tr>
+                    <tr><td>             vibr_energy</td><td>    2571</td><td>     2486</td><td>  <strong>1618</strong></td></tr>
+                    <tr><td>                    wave</td><td>   54201</td><td>        0</td><td>   <strong>916</strong></td></tr>
+                    <tr><td>                   wdist</td><td>   80903</td><td>   <strong>1450</strong></td><td>    2078</td></tr>
+                    !-->
+                </table>
+                </section>
+
+
+                <section>
+                <h2>Academic Results</h2>
+                <ul>
+                    <li><strong>Pythran: Enabling Static Optimization of Scientific Python Programs</strong>,
+                    S. Guelton, P. Brunet et al. in <em>CSD</em>, 2014</li>
+                    <li><strong>Exploring the Vectorization of Python Constructs Using Pythran and Boost SIMD</strong>,
+                    S. Guelton, J. Falcou and P. Brunet, in <em>WPMVP</em>, 2014</li>
+                    <li><strong>Compiling Python modules to native parallel modules using Pythran and OpenMP Annotations</strong>,
+                    S. Guelton, P. Brunet and M. Amini, in <em>PyHPC</em>, 2013</li>
+                    <li><strong>Pythran: Enabling Static Optimization of Scientific Python Programs</strong>,
+                    S. Guelton, P. Brunet et al. in <em>SciPy</em>, 2013</li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h2>eDSL Toolbox</h2>
+                <p>
+                <ul>
+                    <li>Pythran is an embedded DSL</li>
+                    <li>Provides a toolbox for other eDSLs
+                    <ul>
+                        <li>Language lowering (tuple unpacking, nested functions, named parameters...)</li>
+                        <li>Code Analyses (closure, aliasing, dependencies...)</li>
+                    </ul>
+                    </li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h3>Powered by Strong Engineering</h3>
+                <h4>Preprequisite for reproductible science</h4>
+                <p>
+                <ul>
+                    <li>2773 test cases, incl. unit testing, doctest, <strong>Continuous integration</strong></li>
+                    <li>Peer-reviewed code</li>
+                    <li>Python2.7 and C++11</li>
+                    <li>User and Developer doc: <a href="http://pythonhosted.org/pythran/">http://pythonhosted.org/pythran/</a></li>
+                    <li>Hosted on <a href="https://github.com/serge-sans-paille/pythran">https://github.com/serge-sans-paille/pythran</a></li>
+                    <li>Releases on PyPi: <code class="bash">$ pip install pythran</code></li>
+                    <li><a href="http://serge.liyun.free.fr/serge/debian.html">Custom Debian repo</a>: <code class="bash">$ apt-get install pythran</code></li>
+                </ul>
+
+                </p>
+                </section>
+
+				<section>
+					<h1>THE END</h1>
+                    <p>
+                    <dl>
+                        <dt><strong>AUTHORS</strong></dt>
+                        <dd>Serge Guelton, Pierrick Brunet, Mehdi Amini, Adrien Merlini, Alan Raynaud, Eliott Coyac...</dd>
+                        <dt><strong>FINANCIAL SUPPORT</strong></dt>
+                        <dd><a href="http://www.silkan.com/">Silkan</a>, <strong>-->You<--</strong></dd>
+                        <dt><strong>CONTRIBUTE</strong></dt>
+                        <dd>#pythran on FreeNode, pythran@freelists.org, GitHub repo</dd>
+                    </dl>
+                    </p>
+
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
