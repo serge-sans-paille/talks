@@ -38,6 +38,7 @@
 
 		<div class="reveal">
 
+
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
@@ -56,7 +57,7 @@ sguelton</code></pre>
                 <ul>
                     <li>R&D engineer at <a href="http://www.quarkslab.com/">QuarksLab</a> on compilation for security</li>
                     <li>Associcate researcher at Télécom Bretagne</li>
-                    <li>Core dev of the Open Source Pythran project</li>
+                    <li>Core dev of the Open Source Pythran compiler for Numerical Python</li>
                 </ul>
                 </p>
 				</section>
@@ -67,24 +68,16 @@ sguelton</code></pre>
                     <ul>
                         <li>Portable, scriptable language</li>
                         <li>Clean (?) syntax</li>
-                        <li><strong>Rich</strong> ecosystem</li>
-                        <li><strong>Enthusiast</strong> community, esp. in Science</li>
+                        <li><strong>Rich ecosystem</strong></li>
+                        <li><strong>Enthusiast community, esp. in Science</strong></li>
                     </ul>
+                    <br/>
+                    <a href="http://www.numpy.org"><img height="80" src="http://www.numpy.org/_static/numpy_logo.png"></a>
+                    <a href="http://www.scipy.org/"><img height="80" src="http://docs.scipy.org/doc/scipy-0.9.0/reference/_static/scipyshiny_small.png"></a>
+                <a href="http://matplotlib.org/"><img height="80" src="http://matplotlib.org/_static/logo2.png"></a>
+                    <a href="http://ipython.org/"><img height="80" src="http://ipython.org/_static/IPy_header.png"></a>
 					</p>
 				</section>
-
-				<section>
-                <a  href="http://ipython.org/"><img  src="http://ipython.org/_static/IPy_header.png"></a>
-                <p>
-                <ul>
-                    <li>Interactive shell with completion, history, magics...</li>
-                    <li>Notebook kernel for reproducible science</li>
-                    <li>Provides tools for <strong>parallel computing</strong></li>
-                </ul>
-                <img height="400" src="http://ipython.readthedocs.org/en/latest/_images/ipy_013_notebook_spectrogram.png">
-                </p>
-
-                </section>
 
 				<section>
                 <a href="http://www.numpy.org"><img height="120" src="http://www.numpy.org/_static/numpy_logo.png"></a>
@@ -94,7 +87,7 @@ sguelton</code></pre>
                     <li>Exposes C routines</li>
                     <li>linear algebra, Fourier transform, and random number</li>
                 </ul>
-                <img height="400" src="http://www.dakarlug.org/pat/scientifique/html/_images/numpy_broadcasting.png">
+                <img height="380" src="http://www.dakarlug.org/pat/scientifique/html/_images/numpy_broadcasting.png">
                     </p>
                 </section>
 
@@ -115,9 +108,7 @@ sguelton</code></pre>
 				<section>
                 <a href="http://matplotlib.org/"><img src="http://matplotlib.org/_static/logo2.png"></a>
                     <p>
-                    <ul>
-                    <li>Plotting for the Mass!</li>
-                </ul>
+                    Plotting for the Mass!
                     </p>
                     <img src="http://matplotlib.org/plot_directive/mpl_examples/pie_and_polar_charts/thumbnails/polar_bar_demo.png"/>
                     <img src="http://matplotlib.org/plot_directive/mpl_examples/statistics/thumbnails/histogram_demo_features.png"/>
@@ -133,6 +124,20 @@ sguelton</code></pre>
 
                 </section>
 
+				<section>
+                <a  href="http://ipython.org/"><img  src="http://ipython.org/_static/IPy_header.png"></a>
+                <p>
+                <ul>
+                    <li>Interactive shell with completion, history, magics...</li>
+                    <li>Notebook kernel for reproducible science</li>
+                    <li>Provides tools for parallel computing</li>
+                </ul>
+                <img height="400" src="http://ipython.readthedocs.org/en/latest/_images/ipy_013_notebook_spectrogram.png">
+                </p>
+
+                </section>
+
+
                 <section>
                 <h2>And Many Others</h2>
                 <p>
@@ -140,6 +145,7 @@ sguelton</code></pre>
                     <li>Symbolic mathematics with <a href="http://sympy.org/">SymPy</a></li>
                     <li>Data structure and analysis with <a href="http://www.scipy.org/_static/images/pandas_badge2.jpg">pandas</a></li>
                     <li>Machine learning with <a href="http://scikit-learn.org/stable/">sckit-learn</a></li>
+                    <li>...</li>
                 </ul>
                 </p>
                 </section>
@@ -155,7 +161,14 @@ sguelton</code></pre>
 
                 <section>
                 <h2>Myth #2: Python is too dynamic for HPC</h2>
-                <p>Scientific code written in Python look more like FORTRAN than Python</p>
+                <p>Scientific code written in Python looks like FORTRAN</p>
+                <pre><code class="fortran">function rosen(x, n)
+  real(8) :: x(n),t0(n-1), t1(n-1)
+  real(8) rosen
+  t0 = 100 * (x(2:n) - (x(1:n-1)** 2))** 2
+  t1 = (1 - x(1:n-1)** 2)
+  rosen = sum(t0 + t1)
+end function</code></pre>
                 <pre><code class="python">import numpy as np
 def rosen(x):
     t0 = 100 * (x[1:] - x[:-1] ** 2) ** 2
@@ -295,7 +308,7 @@ def mandel(real, imag, max_iterations=20):
                 </section>
 
                 <section>
-                <h2>What about performance?</h2>
+                <h2>How do they Compare?</h2>
                 </section>
                 <section>
                 <h3><a href="http://www2.cs.sfu.ca/CourseCentral/383/ggbaker">http://www.cs.sfu.ca/.../ggbaker</a></h3>
