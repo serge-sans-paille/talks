@@ -177,6 +177,26 @@ body {
 .reveal small * {
   vertical-align: top; }
 
+/******************
+* TABLES
+*********/
+.reveal table {
+    border-collapse:collapse;
+}
+.reveal table caption {
+    border-bottom: solid 2px rgba(0, 0, 0, 0.2);
+}
+
+.reveal table th {
+    border-bottom: solid 2px rgba(0, 0, 0, 0.2);
+}
+.reveal table td:first-child {
+    border-right: solid 2px rgba(0, 0, 0, 0.2);
+}
+.reveal table th:first-child {
+    border-right: solid 2px rgba(0, 0, 0, 0.2);
+}
+
 /*********************************************
  * LINKS
  *********************************************/
@@ -202,7 +222,7 @@ body {
 .reveal section img {
   margin: 15px 0px;
   background: rgba(255, 255, 255, 0.12);
-  border: 4px solid #000;
+  /*border: 4px solid #000;*/
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); }
 
 .reveal a img {
