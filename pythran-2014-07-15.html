@@ -85,7 +85,7 @@ sguelton</code></pre>
                     <ul>
                     <li>Base Array Package, native data structure</li>
                     <li>Exposes C routines</li>
-                    <li>linear algebra, Fourier transform, and random number</li>
+                    <li>linear algebra, Fourier transform and random number</li>
                 </ul>
                 <img height="380" src="http://www.dakarlug.org/pat/scientifique/html/_images/numpy_broadcasting.png">
                     </p>
@@ -318,7 +318,7 @@ def mandel(real, imag, max_iterations=20):
                     <tr><td>Python	</td><td>CPython 2.7.6          </td><td>1.0    </td></tr>
                     <tr><td>Python	</td><td>CPython 2.7.6 with -O  </td><td>1.0    </td></tr>
                     <tr><td>Cython	</td><td>Cython 0.20.1post0     </td><td>1.6    </td></tr>
-                    <tr><td>Cython	</td><td>Cython 0.20.1post0     </td><td>95.8   </td></tr>
+                    <tr><td>Annotated Cython	</td><td>Cython 0.20.1post0     </td><td>95.8   </td></tr>
                     <tr><td>Python3	</td><td>CPython 3.4.0          </td><td>0.9    </td></tr>
                     <tr><td>Python	</td><td>Jython 2.5.3           </td><td>3.4    </td></tr>
                     <tr><td>Python	</td><td>PyPy 2.3.1             </td><td>82.8   </td></tr>
@@ -366,12 +366,12 @@ for i in range(N):
                 <h2>Optimization Opporunities</h2>
                 <p>
                 <pre><code class="python">def l2norm(x):
-    return np.sqrt(np.sum(np.abs(x)**2, axis=1))</code></pre>
+    return np.sqrt(np.sum(np.abs(x) ** 2, axis=1))</code></pre>
                 <ol>
                     <li>Avoid temporary allocations from <code>np.abs(x)**2</code></li>
                     <li>Do not rely on Numpy's <code>np.sum(..., axis=1)</code></li>
                     <li>Parallelize the <code>np.sum(..., axis=1)</code></li>
-                    <li>Vectorize the <code>np.sum(..., axis=1)</code></li>
+                    <li>Vectorize the <code>np.abs(x) ** 2</code></li>
                 </ol>
                 </p>
                 <p>
@@ -393,7 +393,7 @@ def l2norm(x):
                 <p>
                 Inlining + Loop fusion + scalarization + use-def elimination
                 </p>
-                <h3>Expression Approach</h3>
+                <h3>->Expression Approach<-</h3>
                 <p>
                 Forward Substitution + Expression Templates
                 </p>
@@ -432,6 +432,7 @@ foo(i)</code></pre>
                 <section>
                 <h2>Vectorization Effect</h2>
                 <h3>Chef's Selection</h3>
+                <p>
                 <table>
                     <caption>pythran with <code>clang -O2</code></caption>
                     <tr><th>bench</th><th>seq (µs)</th><th>SSE</th><th>AVX</th></tr>
@@ -473,6 +474,7 @@ foo(i)</code></pre>
                     !-->
 
                 </table>
+                </p>
                 </section>
 
                 <section>
@@ -507,6 +509,7 @@ c = np.sum(a ** 2 + b ** 2)</code></pre>
 
                 <section>
                 <h2>Performance Comparison</h2>
+                <p>
                 <table>
                     <caption>Average execution time (µs) - no paral., no vec.</caption>
                     <tr><th>                        </th><th>  Python</th><th> parakeet</th><th> pythran</th></tr>
@@ -555,6 +558,7 @@ c = np.sum(a ** 2 + b ** 2)</code></pre>
                     <tr><td>                   wdist</td><td>   80903</td><td>   <strong>1450</strong></td><td>    2078</td></tr>
                     !-->
                 </table>
+                </p>
                 </section>
 
 
@@ -562,7 +566,7 @@ c = np.sum(a ** 2 + b ** 2)</code></pre>
                 <h2>Academic Results</h2>
                 <ul>
                     <li><strong>Pythran: Enabling Static Optimization of Scientific Python Programs</strong>,
-                    S. Guelton, P. Brunet et al. in <em>CSD</em>, 2014</li>
+                    S. Guelton, P. Brunet et al. in <em>CSD</em>, under review</li>
                     <li><strong>Exploring the Vectorization of Python Constructs Using Pythran and Boost SIMD</strong>,
                     S. Guelton, J. Falcou and P. Brunet, in <em>WPMVP</em>, 2014</li>
                     <li><strong>Compiling Python modules to native parallel modules using Pythran and OpenMP Annotations</strong>,
