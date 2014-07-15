@@ -56,7 +56,7 @@
 sguelton</code></pre>
                 <ul>
                     <li>R&D engineer at <a href="http://www.quarkslab.com/">QuarksLab</a> on compilation for security</li>
-                    <li>Associcate researcher at Télécom Bretagne</li>
+                    <li>Associate researcher at Télécom Bretagne</li>
                     <li>Core dev of the Open Source Pythran compiler for Numerical Python</li>
                 </ul>
                 </p>
@@ -69,7 +69,7 @@ sguelton</code></pre>
                         <li>Portable, scriptable language</li>
                         <li>Clean (?) syntax</li>
                         <li><strong>Rich ecosystem</strong></li>
-                        <li><strong>Enthusiast community, esp. in Science</strong></li>
+                        <li><strong>Enthusiast community, esp. in science</strong></li>
                     </ul>
                     <br/>
                     <a href="http://www.numpy.org"><img height="80" src="http://www.numpy.org/_static/numpy_logo.png"></a>
@@ -363,7 +363,7 @@ for i in range(N):
                 </section>
 
                 <section>
-                <h2>Optimization Opporunities</h2>
+                <h2>Optimization Opportunities</h2>
                 <p>
                 <pre><code class="python">def l2norm(x):
     return np.sqrt(np.sum(np.abs(x) ** 2, axis=1))</code></pre>
@@ -405,7 +405,7 @@ def l2norm(x):
                 <pre><code class="python">for i in range(3):
     foo(i)</code></pre>
                 </p>
-                <p>(Forward Substituion +) Constant Folding
+                <p>(Forward Substitution +) Constant Folding
                 <pre><code class="python">for i in [0, 1, 2]:
     foo(i)</code></pre>
                 </p>
@@ -512,50 +512,50 @@ c = np.sum(a ** 2 + b ** 2)</code></pre>
                 <p>
                 <table>
                     <caption>Average execution time (µs) - no paral., no vec.</caption>
-                    <tr><th>                        </th><th>  Python</th><th> parakeet</th><th> pythran</th></tr>
-                    <tr><td>      allpairs_distances</td><td>   38129</td><td>     1784</td><td>  <strong>1713</strong></td></tr>
-                    <tr><td>allpairs_distances_loops</td><td>   49750</td><td>     1794</td><td>  <strong>1681</strong></td></tr>
-                    <!--
-                    <tr><td>            arc_distance</td><td>    1385</td><td>     1602</td><td>  <strong>1040</strong></td></tr>
-                    !-->
-                    <tr><td>                    conv</td><td> 1916161</td><td>     2040</td><td>  <strong>1879</strong></td></tr>
-                    <!--
-                    <tr><td>             create_grid</td><td>    4050</td><td>        0</td><td>  <strong>3930</strong></td></tr>
-                    !-->
-                    <!--
-                    <tr><td>               diffusion</td><td>   22368</td><td>    21206</td><td>  <strong>4084</strong></td></tr>
-                    !-->
-                    <!--
-                    <tr><td>                  evolve</td><td>    5617</td><td>        0</td><td>  <strong>3569</strong></td></tr>
-                    <tr><td>                    fdtd</td><td> 1644822</td><td>        0</td><td>  <strong>1907</strong></td></tr>
-                    <tr><td>                     fft</td><td>   24455</td><td>        0</td><td>  <strong>1245</strong></td></tr>
-                    !-->
-                    <tr><td>                 growcut</td><td> 1967622</td><td>   <strong>2203</strong></td><td>    5976</td></tr>
-                    <tr><td>                  harris</td><td>    5595</td><td>     5246</td><td>  <strong>2949</strong></td></tr>
-                    <tr><td>                 hasting</td><td>       8</td><td>       57</td><td>     <strong>1</strong></td></tr>
-                    <tr><td>                 hyantes</td><td>  255760</td><td>     1882</td><td>  <strong>1881</strong></td></tr>
-                    <tr><td>                   julia</td><td> 2761543</td><td>     2938</td><td>  <strong>2578</strong></td></tr>
-                    <tr><td>                  l2norm</td><td>    5483</td><td>    12648</td><td>   <strong>919</strong></td></tr>
-                    <!--
-                    <tr><td>            local_maxima</td><td>   58252</td><td>        0</td><td>  <strong>1385</strong></td></tr>
-                    <tr><td>                  lstsqr</td><td>    7697</td><td>        0</td><td>  <strong>2303</strong></td></tr>
-                    <tr><td>                  mandel</td><td>  457839</td><td>        0</td><td>  <strong>4644</strong></td></tr>
-                    !-->
-                    <tr><td>            multiple_sum</td><td>    3026</td><td>     8394</td><td>  <strong>1245</strong></td></tr>
-                    <tr><td>                pairwise</td><td> 3742614</td><td>     3708</td><td>  <strong>3563</strong></td></tr>
-                    <!--
-                    <tr><td>           periodic_dist</td><td>    1776</td><td>        0</td><td>  <strong>1194</strong></td></tr>
-                    <tr><td>               repeating</td><td>    1221</td><td>        0</td><td>   <strong>568</strong></td></tr>
-                    <tr><td>          reverse_cumsum</td><td>    2636</td><td>        0</td><td>  <strong>2387</strong></td></tr>
-                    !-->
-                    <tr><td>                   rosen</td><td>   14168</td><td>     1625</td><td>  <strong>1238</strong></td></tr>
-                    <!--
-                    <tr><td>               slowparts</td><td>    5739</td><td>     1243</td><td>  <strong>1166</strong></td></tr>
-                    <tr><td>               smoothing</td><td>  953006</td><td>     6277</td><td>  <strong>4853</strong></td></tr>
-                    <tr><td>         specialconvolve</td><td>    8231</td><td>    10304</td><td>  <strong>2385</strong></td></tr>
-                    <tr><td>             vibr_energy</td><td>    2571</td><td>     2486</td><td>  <strong>1618</strong></td></tr>
-                    <tr><td>                    wave</td><td>   54201</td><td>        0</td><td>   <strong>916</strong></td></tr>
-                    <tr><td>                   wdist</td><td>   80903</td><td>   <strong>1450</strong></td><td>    2078</td></tr>
+                    <tr><th>                        </th><th>  Python</th><th> parakeet</th><th> pythran</th>               <th><code>-march=native</code></tr>
+                    <tr><td>      allpairs_distances</td><td>   38129</td><td>     1784</td><td>  1713</td><td><strong>667 </strong></td>                 </tr>
+                    <tr><td>allpairs_distances_loops</td><td>   49750</td><td>     1794</td><td>  1681</td><td><strong>1654</strong></td>                 </tr>
+                    <!--                                                                                                    
+                    <tr><td>            arc_distance</td><td>    1385</td><td>     1602</td><td>  1040</td><td><strong>413 </strong></td>                 </tr>
+                    !-->                                                                                                    
+                    <tr><td>                    conv</td><td> 1916161</td><td>     2040</td><td>  1879</td><td><strong>1880</strong></td>                 </tr>
+                    <!--                                                                                                    
+                    <tr><td>             create_grid</td><td>    4050</td><td>        0</td><td>  3930</td><td><strong>3855</strong></td>                 </tr>
+                    !-->                                                                                                    
+                    <!--                                                                                                    
+                    <tr><td>               diffusion</td><td>   22368</td><td>    21206</td><td>  4084</td><td><strong>3617</strong></td>                 </tr>
+                    !-->                                                                                                    
+                    <!--                                                                                                    
+                    <tr><td>                  evolve</td><td>    5617</td><td>        0</td><td>  3569</td><td><strong>3446</strong></td>                 </tr>
+                    <tr><td>                    fdtd</td><td> 1644822</td><td>        0</td><td>  1907</td><td><strong>1825</strong></td>                 </tr>
+                    <tr><td>                     fft</td><td>   24455</td><td>        0</td><td>  1245</td><td><strong>1205</strong></td>                 </tr>
+                    !-->                                                                                                    
+                    <tr><td>                 growcut</td><td> 1967622</td><td>   <strong>2203</strong></td><td>    5976</td><td>5841</td>                 </tr>
+                    <tr><td>                  harris</td><td>    5595</td><td>     5246</td><td>  2949</td><td><strong>2863</strong></td>                 </tr>
+                    <tr><td>                 hasting</td><td>       8</td><td>       57</td><td>     1</td><td><strong>1   </strong></td>                 </tr>
+                    <tr><td>                 hyantes</td><td>  255760</td><td>     1882</td><td>  1881</td><td><strong>1820</strong></td>                 </tr>
+                    <tr><td>                   julia</td><td> 2761543</td><td>     2938</td><td>  2578</td><td><strong>2504</strong></td>                 </tr>
+                    <tr><td>                  l2norm</td><td>    5483</td><td>    12648</td><td>   919</td><td><strong>494 </strong></td>                 </tr>
+                    <!--                                                                                                    
+                    <tr><td>            local_maxima</td><td>   58252</td><td>        0</td><td>  1385</td><td><strong>1344</strong></td>                 </tr>
+                    <tr><td>                  lstsqr</td><td>    7697</td><td>        0</td><td>  2303</td><td><strong>1563</strong></td>                 </tr>
+                    <tr><td>                  mandel</td><td>  457839</td><td>        0</td><td>  4644</td><td><strong>4265</strong></td>                 </tr>
+                    !-->                                                                                                    
+                    <tr><td>            multiple_sum</td><td>    3026</td><td>     8394</td><td>  1245</td><td><strong>1029</strong></td>                 </tr>
+                    <tr><td>                pairwise</td><td> 3742614</td><td>     3708</td><td>  3563</td><td><strong>3507</strong></td>                 </tr>
+                    <!--                                                                                                    
+                    <tr><td>           periodic_dist</td><td>    1776</td><td>        0</td><td>  1194</td><td><strong>977 </strong></td>                 </tr>
+                    <tr><td>               repeating</td><td>    1221</td><td>        0</td><td>   568</td><td><strong>531 </strong></td>                 </tr>
+                    <tr><td>          reverse_cumsum</td><td>    2636</td><td>        0</td><td>  <strong>2387</strong></td><td>2396</td>                 </tr>
+                    !-->                                                                                                    
+                    <tr><td>                   rosen</td><td>   14168</td><td>     1625</td><td>  1238</td><td><strong>992 </strong></td>                 </tr>
+                    <!--                                                                                                    
+                    <tr><td>               slowparts</td><td>    5739</td><td>     1243</td><td>  1166</td><td><strong>853 </strong></td>                 </tr>
+                    <tr><td>               smoothing</td><td>  953006</td><td>     6277</td><td>  4853</td><td><strong>4804</strong></td>                 </tr>
+                    <tr><td>         specialconvolve</td><td>    8231</td><td>    10304</td><td>  2385</td><td><strong>1417</strong></td>                 </tr>
+                    <tr><td>             vibr_energy</td><td>    2571</td><td>     2486</td><td>  1618</td><td><strong>579 </strong></td>                 </tr>
+                    <tr><td>                    wave</td><td>   54201</td><td>        0</td><td>   916</td><td><strong>960 </strong></td>                 </tr>
+                    <tr><td>                   wdist</td><td>   80903</td><td>   <strong>1450</strong></td><td>    2078</td><td>1870</td>                 </tr>
                     !-->
                 </table>
                 </p>
