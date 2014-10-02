@@ -41,13 +41,15 @@
 
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
+        <section>
 				<section>
-                <h2>C++ for snakes</h2>
+                <h1>C++ for snakes</h1>
                 <h3>a story of <a href="http://pythonhosted.org/pythran/">Pythran</a>, Python and C++</h3>
 					<p>
 						<small>Proudly made in <em>Namek</em> by <a href="http://serge.liyun.free.fr/serge/">serge-sans-paille</a></small>
 					</p>
 				</section>
+
 				<section>
                 <h2><code class="bash">/me</code></h2>
                 <h3>Serge « sans paille » Guelton</h3>
@@ -61,6 +63,9 @@ sguelton</code></pre>
                 </ul>
                 </p>
 				</section>
+		</section>
+
+        <section>
 
 				<section>
 					<h2>Python vs. C++</h2>
@@ -83,11 +88,12 @@ sguelton</code></pre>
                         <li>Python scientific code looks like (modern) Fortran</li>
                         <li>No dynamic typing or reflective constructs</li>
                     </ul>
-                    Translate a Python scientific kernel into C++ efficient code?
+                    </p>
+                    <h4>Translate a Python scientific kernel into C++ efficient code?</h4>
                 </section>
 
                 <section>
-                <h2>Kernel Comparison: an easy one</h2>
+                <h2>Kernel Comparison</h2>
                 <h3>In Python</h3>
                 <pre><code class="python">def incr(x):
     return x + 1
@@ -103,6 +109,7 @@ auto incr(X&& x) -&gt; decltype(x + 1)
 
                 <section>
                 <h2>... with functions</h2>
+                <h2>Kernel Comparison(0)</h2>
                 <h3>In Python</h3>
                 <pre><code class="python">import numpy as np
 def l2norm(x):
@@ -152,19 +159,157 @@ auto create_grid(X&& x)
 
                 <section>
                 <h2>Motivations for a numeric Python to C++ translator</h2>
+                <p>
                 <ul>
                     <li>Similar constructs (but C++ is more verbose)</li>
                     <li>Polymorphism seems possible (thanks to templates)</li>
                     <li>Variable arguments seems possible (thanks to variadic templates)</li>
                     <li>Type inference seems possible (thanks to <code>auto</code> and <code>decltype</code>)</li>
                 </ul>
+                </p>
                 <h3>... and C++11 is fun!</h3>
                 </section>
 
+           </section>
+           <section>
+
+                <section>
+                <h1>Pythran</h1>
+                <p>A numeric Python to C++ translator
+                <ul>
+                    <li><a href="http://pythonhosted.org/pythran">http://pythonhosted.org/pythran</a></li>
+                    <li>Available through github and PyPI, and my personal debian repository</li>
+                    <li>Works on Linux and MacOSX</li>
+                    <li>Packaged for Archlinux too (thxs garrik!)</li>
+                </ul>
+                </p>
+                <p>2 core developers, ~50 download per day on PyPI, scarce but valuable user reports!</p>
+                </section>
+
+                <section>
+                <h2>Pythran's Compilation Flow</h2>
+                <p>
+                <ol>
+                    <li>Turn <code>.py</code> into an AST (<code>import ast</code>...)</li>
+                    <li>Simplify the AST for simpler analyses</li>
+                    <li>Optimize the AST for performance</li>
+                    <li>Generate <em>parametric</em> C++ code</li>
+                    <li>Instantiate the C++ code for the given types</li>
+                    <li>Wrap everything with Boost.Python</li>
+                    <li>Use <code>nt2</code> + <code>pythonic</code> headers</li>
+                    <li>Generate a native Python module (<code>.so</code>)</li>
+                </ol>
+                </p>
+                </section>
+
+                <section>
+                <h2>Boost.Python</h2>
+                <p>Provides a framework for easy encapsulation of C(++) functions and classes, and conversion between Python and C++ objects
+                <ul>
+                    <li>Conversion of basic types (extendible)</li>
+                    <li>Conversion of Python exceptions to C++ exceptions (extendible)</li>
+                    <li>Conversion of function with different signatures (explicit)</li>
+                </ul>
+                </p>
+                <p><code>/!\</code>Conversions are based on a linear search for a good candidate</p>
+                </section>
+                <section>
+                <h2>Boost.Python example</h2>
+                <pre><code class="C++">BOOST_PYTHON_MODULE(foo)
+{
+  import_array()
+  boost::python::register_exception_translator&lt;pythonic::types::TypeError&gt;(
+    &pythonic::translate_TypeError);
+  pythonic::python_to_pythran&lt;pythonic::types::ndarray&lt;double,1&gt;&gt;();
+  pythonic::python_to_pythran&lt;pythonic::types::ndarray&lt;double,2&gt;&gt;();
+  pythonic::pythran_to_python&lt;typename foo::foo:type&lt;pythonic::types::ndarray&lt;double,2&gt;&gt;::result_type&gt;();
+  boost::python::def("foo", &foo::foo);
+  foo::__init__()();
+}
+                </code></pre>
+                </section>
+
+                <section>
+                <h2>Function Model</h2>
+                <p>We want to be able to represent <pre><code class="python">a = map; a(foo, [1]); a(bar,[1], [2])</code></pre></p>
+                    <h3>Use a generic functor!</h3>
+                    <pre><code class="c++">struct map {
+    template&lt;class F, class... Args&gt;
+    auto operator()(F&& f, Args&&... args) const
+    -&gt; python::list&lt;decltype(std::forward&lt;F&gt;(f)(std::forward&lt;Args&gt;(args)...))&gt;;
+};
+</code></pre>
+                    <p>Needs a specialization for <code>F = None</code>...</p>
+                 </section>
+
+                <section>
+                <h2>Automatic Vectorization</h2>
+                <h3>Boost.SIMD</h3>
+                <p>Provides transparent manipulation of abstract vector registers, for <em>all</em> mathematical functions</p>
+                <h3><code>ndarray</code> class</h3>
+                <p>Combines expression templates with Boost.SIMD for aggregated vector operations</p>
+                </section>
+
+                <section>
+                <h2>Enhanced Expression Templates</h2>
+                <p>Pythran compiler turns<pre><code class="python">a = b + c; d = a * 3</code></pre> into <pre><code class="python">d = (b + c) * 3</code></pre> but does not forward-substitute
+                <pre><code class="python">a = b + c; c[0] = 1; d = a * 3</code></pre> nor <pre><code class="python">a = b + c; d = a * 3; e = a ** 2</code></pre>
+                </p>
+                </section>
+
+            </section>
+            <section>
 
                 <section>
                 <h1>Tricks!</h1>
                 <h2>Neat C++ stuff we used in Pythran</h2>
+                </section>
+
+                <section>
+                <h2>Generic Array slicing and indexing</h2>
+                <pre><code>template&lt;class Arg, class... S&gt;
+struct numpy_gexpr;
+</code>
+</pre>
+                <ul>
+                    <li>Represents any slicing or multiple indexing of any expression</li>
+                    <li><code>S</code> can be a scalar, a <code>contiguous_slice</code> or a <code>slice</code></li>
+                    <li>All operations imply recursive meta-progframming!</li>
+                </ul>
+                </section>
+
+                <section>
+                <h2>Generic Array Dimension</h2>
+                <h3>Dimension of a <code>numpy_gexpr</code>?</h3>
+                <pre><code class="c++">static constexpr size_t value = std::remove_reference&lt;Arg&gt;::type::value
+                                - count_long&lt;S...&gt;::value;
+</code></pre>
+
+<p>where</p>
+<pre><code>
+template&lt;class T, class... Types&gt;
+struct count_long&lt;T, Types...&gt; {
+    static constexpr size_t value = count_long&lt;T&gt;::value + count_long&lt;Types...&gt;::value;
+};
+template&lt;&gt;
+struct count_long&lt;&gt; {
+    static constexpr size_t value = 0;
+};
+</code></pre>
+
+                </section>
+
+                <section>
+                <h2>Fast Array Copy</h2>
+                <p><code>std::copy</code> is specialized to use <code>::memove</code> when working on flat pointers</p>
+                <h3>Specialize array expressions to return a pointer when legit</h3>
+                <p>Use a type trait to encode the stride information, based on the <code>slice</code> type</p>
+                <pre><code>static const bool is_strided =
+  std::remove_reference&lt;Arg&gt;::type::is_strided or
+  (((sizeof...(S) - count_long&lt;S...&gt;::value) == value)
+    and not std::is_same&lt;contiguous_slice,
+            typename std::tuple_element&lt;sizeof...(S) - 1, std::tuple&lt;S...&gt;&gt;::type&gt;::value);
+</code></pre>
                 </section>
 
                 <section>
@@ -207,16 +352,23 @@ auto fast(long i) && // implies a copy
 </code></pre>
                 </section>
 
-
+            </section>
 
                 <section>
                 <h2>Concluding Remarks</h2>
                 <h3>Be open-minded!</h3>
                 <p>
-                Learning Python makes you a better C++ dev
+                Learning Python makes you a better C++ dev! It favors:
+                <ul><li><code>doctest</code>ing, <code>unittest</code>ing</li>
+                    <li>High-level Programing</li>
+                </ul>
                 </p>
                 <p>
-                ...and learning C++ makes you a better Python dev :-)
+                ...and learning C++ makes you a better Python dev! It favors:
+                <ul>
+                    <li>Performance|memory model understanding</li>
+                    <li>Structured, hierarchical programing</li>
+                </ul>
                 </p>
                 </section>
 
