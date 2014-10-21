@@ -123,7 +123,7 @@ if a:
                 <h2>Obfuscate Control Flow</h2>
                 <p>No variable lookup for control flow statements! That's an obfuscation opportunity:
                 <ol>
-                    <li>Turn statement into functions that update a memory dict</li>
+                    <li>Turn statements into functions that update a memory dict</li>
                     <li>Chain these functions using composition</li>
                     <li>Turn a function definition into a lambda definition!</li>
                 </ol>
@@ -179,7 +179,7 @@ _['j'] in (_['i'] if ('i' in _) else i)]), _.__setitem__('l', _['!']), _)[-1
                 <pre><code>&gt;&gt;&gt; import dis
 &gt;&gt;&gt; print dis.opmap['BINARY_ADD']
 62</code></pre></p>
-                <p>and so one for bytecode generation etc</p>
+                <p>and so on for bytecode generation etc</p>
                 </section>
 
                 <section>
@@ -339,7 +339,7 @@ BINARY_ADD</pre></code></p>
                 <ul>
                     <li>Use a Python packer (e.g. <code>pyinstaller</code>) to bundle your Python application and the modified Python interpreter in a single binary</li>
                     <li>Use a Python compiler (e.g. <code>numba, shedskin, pythran</code>) to turn some functions/modules into native code</li>
-                    <li>Use a C obfuscator to obfuscate the obfuscating part of the interpreter (see you at the lightning talk !)</li>
+                    <li>Use a C obfuscator to obfuscate the obfuscating part of the interpreter (see you at the lightning talk!)</li>
                 </ul>
                 </section>
 
@@ -367,10 +367,8 @@ BINARY_ADD</pre></code></p>
                     <dl>
                         <dt><strong>THE AUTHORS</strong></dt>
                         <dd>Nicolas Szlifierski and Serge Guelton</dd>
-                        <dt><strong>THE FIRM</strong></dt>
-                        <dd><a href="http://www.quarkslab.com">Quarkslab</a></dd>
                         <dt><strong>THE REPO</strong></dt>
-                        <dd><a href="https://github.com/quarkslab/cpython/tree/obfuscated/2.7">https://github.com/quarkslab/cpython</a> branch <code>obfuscated/2.7</code></dd>
+                        <dd><a href="https://github.com/quarkslab/cpython/tree/obfuscated/2.7">https://github.com/quarkslab/cpython</a> <br/>branch <code>obfuscated/2.7</code></dd>
 
                         <div class="fragment">
                         <dt><strong>THE QUESTIONS</strong></dt>
