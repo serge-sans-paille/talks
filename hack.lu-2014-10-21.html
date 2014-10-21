@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Python Code Obfuscation: Improving Existing Techniques</title>
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+        <!--<link rel="stylesheet" href="css/theme/default.css" id="theme">-->
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-background="qb.png">
+                <h2>Python Code Obfuscation</h2>
+					<h3>taking the snake to the dark side</h3>
+					<p>
+                    Always two there are, no more, no less:<br/>
+                    an apprentice <strong>Nicolas Szlifierski</strong> [<em>Quarkslab, Telecom Bretagne</em>]</br>
+                    and a master <strong>Serge Guelton</strong> [<em>Quarkslab, Telecom Bretagne</em>]
+					</p>
+				</section>
+
+				<section>
+                <h2><code class="bash">/me</code></h2>
+                <h3>Serge « sans paille » Guelton</h3>
+                <p>
+                <pre><code class="bash">$ whoami
+sguelton</code></pre>
+                <ul>
+                    <li>R&D engineer at <a href="http://www.quarkslab.com/">QuarksLab</a> on compilation for security</li>
+                    <li>Associate researcher at Télécom Bretagne</li>
+                </ul>
+                </p>
+				</section>
+
+				<section>
+					<h2>Python bytecode is easy to reverse</h2>
+                    <p>
+                    <pre><code class="sh">$ echo "print('hello world')" > hello.py
+$ python -m py_compile hello
+$ pycdc hello.pyc
+# Source Generated with Decompyle++
+# File: hello.pyc (Python 2.7)
+
+print 'hello world'</pre></code>
+					</p>
+				</section>
+
+				<section>
+					<h2>With an optimization flag?</h2>
+                    <p>
+                    <pre><code class="sh">$ printf "a = 1\nif a: print(a + 2)" > dce.py
+$ python -O -m py_compile dce
+$ pycdc dce.pyo
+# Source Generated with Decompyle++
+# File: dce.pyo (Python 2.7)
+
+a = 1
+if a:
+    print a + 2</pre></code>
+                    CPython performs close to zero optimization...
+					</p>
+				</section>
+
+                <section>
+                <h2>Hardening Solutions</h2>
+                <p>
+                <ul>
+                    <li>Source code modification</li>
+                    <li>Bytecode modification</li>
+                    <li>Interpreter modification</li>
+                    <li><small>any other idea? come and talk with me ;-)</small></li>
+                </ul>
+                </p>
+                <p><em>Eenie, meenie, minie, moe... oh, why not all of them?</em></p>
+                </section>
+
+                <section>
+                <h2>Source Code Modification</h2>
+                <p>Python semantics makes it hard to perform source-to-source transformation because of <strong>lazy binding</strong> and <strong>polymorphism</strong>:
+                <pre><code class="python">for i in range(10):
+    s += hex(i)</code></pre>
+                </p>
+                <p>Nothing is as it seems...
+                <pre><code class="python">range = lambda *args: args</code></pre>
+                </p>
+                <p>Monkey <strike>Island</strike>patching anyone?
+                <pre><code class="python">__builtin__.hex, __builtin__.oct =  __builtin__.oct, __builtin__.hex</code></pre>
+                </section>
+
+                <section>
+                <h2>Obfuscate Control Flow</h2>
+                <p>No variable lookup for control flow statements! That's an obfuscation opportunity:
+                <ol>
+                    <li>Turn statement into functions that update a memory dict</li>
+                    <li>Chain these functions using composition</li>
+                    <li>Turn a function definition into a lambda definition!</li>
+                </ol>
+                </section>
+
+                <section>
+                <h2>From the HITB challenge</h2>
+                <pre><code>(lambda g, c, d: (lambda _: (_.__setitem__('$', ''.join([(_['chr'] if ('chr'
+in _) else chr)((_['_'] if ('_' in _) else _)) for _['_'] in (_['s'] if ('s'
+in _) else s)[::(-1)]])), _)[-1])( (lambda _: (lambda f, _: f(f, _))((lambda
+__,_: ((lambda _: __(__, _))((lambda _: (_.__setitem__('i', ((_['i'] if ('i'
+in _) else i) + 1)),_)[(-1)])((lambda _: (_.__setitem__('s',((_['s'] if ('s'
+in _) else s) + [((_['l'] if ('l' in _) else l)[(_['i'] if ('i' in _) else i
+)] ^ (_['c'] if ('c' in _) else c))])), _)[-1])(_))) if (((_['g'] if ('g' in
+_) else g) % 4) and ((_['i'] if ('i' in _) else i)< (_['len'] if ('len' in _
+) else len)((_['l'] if ('l' in _) else l)))) else _)), _) ) ( (lambda _: (_.
+__setitem__('!', []), _.__setitem__('s', _['!']), _)[(-1)] ) ((lambda _: (_.
+__setitem__('!', ((_['d'] if ('d' in _) else d) ^ (_['d'] if ('d' in _) else
+d))), _.__setitem__('i', _['!']), _)[(-1)])((lambda _: (_.__setitem__('!', [
+(_['j'] if ('j' in _) else j) for  _[ 'i'] in (_['zip'] if ('zip' in _) else
+zip)((_['l0'] if ('l0' in _) else l0), (_['l1'] if ('l1' in _) else l1)) for
+_['j'] in (_['i'] if ('i' in _) else i)]), _.__setitem__('l', _['!']), _)[-1
+])((lambda _: (_.__setitem__('!', [1373, 1281, 1288, 1373, 1290, 1294, 1375,
+1371,1289, 1281, 1280, 1293, 1289, 1280, 1373, 1294, 1289, 1280, 1372, 1288,
+1375,1375, 1289, 1373, 1290, 1281, 1294, 1302, 1372, 1355, 1366, 1372, 1302,
+1360, 1368, 1354, 1364, 1370, 1371, 1365, 1362, 1368, 1352, 1374, 1365, 1302
+]), _.__setitem__('l1',_['!']), _)[-1])((lambda _: (_.__setitem__('!',[1375,
+1368, 1294, 1293, 1373, 1295, 1290, 1373, 1290, 1293, 1280, 1368, 1368,1294,
+1293, 1368, 1372, 1292, 1290, 1291, 1371, 1375, 1280, 1372, 1281, 1293,1373,
+1371, 1354, 1370, 1356, 1354, 1355, 1370, 1357, 1357, 1302, 1366, 1303,1368,
+1354, 1355, 1356, 1303, 1366, 1371]), _.__setitem__('l0', _['!']), _)[(-1)])
+                ({ 'g': g, 'c': c, 'd': d, '$': None})))))))['$'])</code></pre>
+                <p>Interested? Give a try on <a href="http://blog.quarkslab.com/you-like-python-security-challenge-and-traveling-win-a-free-ticket-to-hitb-kul.html">http://blog.quarkslab.com</a></p>
+                </section>
+
+                <section>
+                <h2>Bytecode Modification</h2>
+                <p>Many opportunities there!
+                <ul>
+                    <li>Use a different bytecode mapping (DropBox does this!)</li>
+                    <li>Introduce new opcodes</li>
+                    <li>Use non-standard opcode sequences</li>
+                </ul>
+                </section>
+
+                <section>
+                <h2>Opcode Shuffling</h2>
+                <p>Modify the interpreter so that:
+                <pre><code>&gt;&gt;&gt; import dis
+&gt;&gt;&gt; print dis.opmap['BINARY_ADD']
+23</code></pre></p>
+                <p>Turns into
+                <pre><code>&gt;&gt;&gt; import dis
+&gt;&gt;&gt; print dis.opmap['BINARY_ADD']
+62</code></pre></p>
+                <p>and so one for bytecode generation etc</p>
+                </section>
+
+                <section>
+                <h2>Constraints</h2>
+                <p>
+                <ul>
+                    <li>Respect opcode arity</li>
+                    <li>Some opcode values must respect some constraint
+                    <ul>
+                        <li>Contiguous opcodes</li>
+                        <li>Constant step between opcodes</li>
+                    </ul>
+
+                    see <code>python/Include/opcode.h</code>
+
+                    </li>
+                </ul>
+                </p>
+                <p>shuffle opcodes per groups for custom interpreter generation!</p>
+                </section>
+
+                <section>
+                <h2>New Opcode Generation</h2>
+                <p>An opcode is stored in a <code>char</code> but only ~112 are used!
+                <ul>
+                    <li>Create aliasing between opcodes (easy)</li>
+                    <li>Create new opcodes that behave like an opcode sequence (more interesting)</li>
+                </ul>
+
+                <ol>
+                    <li>Collect frequently used opcode sequences</li>
+                    <li>Turn them into a single opcode (CISC anyone?)</li>
+                    <li>With an extension to handle opcode with more than two arguments</li>
+                </ol>
+                </p>
+                </section>
+
+				<section>
+                <h2>Frequently Used Opcodes</h2>
+                <p>
+                <ol>
+                    <li>Recursively walk trough a <code>.pyc</code> and build the histogram, using <code>marshal.loads</code> and <code>inspect.iscode</code></li>
+                    <li>Pick frequently used opcode</li>
+                    <li>Perform substitution (beware of jumps and exceptions!) [<code>.pyc</code>&#8594;<code>.pyc</code>]</li>
+                </ol>
+                </p>
+                <p>For instance:
+                <pre><code>LOAD_FAST                0
+LOAD_CONST               n</pre></code>
+                </p>
+                <p> Turns into:
+                <pre><code>LOAD_FAST_LOAD_CONST     O
+ANY_OPCODE_WITH_ARG      n</code></pre>
+                </p>
+                <p><code>dis</code> reaaaaly dislikes this one :-)</p>
+                </section>
+
+                <section>
+                <h2>Unusual Opcode Sequence</h2>
+                <p>Decompyler make assumptions on bytecode sequence (some think decompiling <code>~=</code> pattern matching)
+                <pre><code>LOAD_FAST 0
+LOAD_FAST 1
+BUILD_MAP 0
+ROT_THREE
+BINARY_ADD
+ROT_TWO
+POP_TOP
+</code></pre>
+                </p>
+                <p>Is equivalent to<pre><code>LOAD_FAST 0
+LOAD_FAST 1
+BINARY_ADD</pre></code></p>
+                <p>This makes <code>uncompyle</code> crash! But not <code>pycdc</code>...</p>
+
+                </section>
+
+                <section>
+                <h2>Constants Encryption</h2>
+                <br/>
+                <p>
+                <pre><code>&gt;&gt;&gt;def foo(): return "hack.lu"
+&gt;&gt;&gt;import dis
+&gt;&gt;&gt;dis.dis(foo)
+1           0 LOAD_CONST               1 ('hack.lu')
+            3 RETURN_VALUE</code></pre>
+                </p>
+                <br/>
+                <p>Strings are loaded using <code>LOAD_CONST</code>, so...</p>
+                <p>
+                <ol>
+                    <li>Encrypt every string constant</li>
+                    <li>Hook into <code>LOAD_CONST</code> to perform on-the-fly decryption</li>
+                </ol>
+                </p>
+                <br/>
+                <br/>
+                <p><small>proof of concept... <code>rot13</code>... shame</small></p>
+                </section>
+
+                <section>
+                <h2>Diving into CPython</h2>
+                <p>
+                Wanna write self modifying code?
+                </p>
+                <p class="fragment">
+                Each function embeds its bytecode as a string :-)
+                </p>
+                <p class="fragment">
+                But strings are immutable in Python :-(
+                </p>
+                <p class="fragment">
+                Unless you modify them in a native module ;-)
+                </p>
+                </section>
+
+                <section>
+                <h2>Self Modifying Code</h2>
+                <p>
+                <pre><code class="C">static PyObject* this_function_modifies_its_caller() {
+  PyThreadState *tstate = PyThreadState_GET();
+  if (NULL != tstate && NULL != tstate->frame) {
+    PyFrameObject *frame = tstate->frame;
+
+    int instr = frame->f_lasti;
+    unsigned char* bytes = (void*)PyString_AS_STRING(frame->f_code->co_code);
+    bytes[instr + 10] = INPLACE_MODULO;
+  }
+  Py_INCREF(Py_None);
+  return Py_None;
+}</code></pre>
+                <ol>
+                    <li>Get parent frame</li>
+                    <li>Get function's code</li>
+                    <li>Replace « next opcode » by a modulo</li>
+                </ol>
+                </p>
+                <p>
+                Call this before a binary operation to turn it into a modulo
+                </p>
+                </section>
+
+                <section>
+                <h2>Extra Stuff</h2>
+                <p>
+                <ul>
+                    <li>Change MAGIC number to a random value</li>
+                    <li>Disable introspection on <code>code</code> object</li>
+                    <li>Disable <code>dump[s]</code> from the marshal module</li>
+                    <li>Disable bytecode recompilation upon change</li>
+                    <li>basically make the interpreter less dynamic while still of for a given application</li>
+                </ul>
+                </section>
+
+                <section>
+                <h2>Bonus Points</h2>
+                <p>
+                <ul>
+                    <li>Use a Python packer (e.g. <code>pyinstaller</code>) to bundle your Python application and the modified Python interpreter in a single binary</li>
+                    <li>Use a Python compiler (e.g. <code>numba, shedskin, pythran</code>) to turn some functions/modules into native code</li>
+                    <li>Use a C obfuscator to obfuscate the obfuscating part of the interpreter (see you at the lightning talk !)</li>
+                </ul>
+                </section>
+
+                <section>
+                <h2>How To...</h2>
+                <p>
+                <pre><code>$ ../configure --help | grep enable
+[...]
+  --disable-marshal       hide marshal functions
+  --disable-codeobject    hide codeobject functions
+  --disable-recompilation disable recompilation of .pyc file when .py file is
+  --enable-cipher-str     enable string litteral ciphering
+  --enable-shuffle-opcode enable opcodes shuffling
+  --enable-gen-opcode     enable generation of new opcodes
+</code></pre>
+                <strong>Don't expect good engineering there though :-$</strong>
+
+                </p>
+                </section>
+
+
+				<section data-background="qb.png">
+					<h1>THE END</h1>
+                    <p>
+                    <dl>
+                        <dt><strong>THE AUTHORS</strong></dt>
+                        <dd>Nicolas Szlifierski and Serge Guelton</dd>
+                        <dt><strong>THE FIRM</strong></dt>
+                        <dd><a href="http://www.quarkslab.com">Quarkslab</a></dd>
+                        <dt><strong>THE REPO</strong></dt>
+                        <dd><a href="https://github.com/quarkslab/cpython/tree/obfuscated/2.7">https://github.com/quarkslab/cpython</a> branch <code>obfuscated/2.7</code></dd>
+
+                        <div class="fragment">
+                        <dt><strong>THE QUESTIONS</strong></dt>
+                        <dd>Time to ask!</dd>
+                        </div>
+                        <!--<dt><strong>CONTRIBUTE</strong></dt>
+                        <dd>#pythran on FreeNode, pythran@freelists.org, GitHub repo</dd>!-->
+                    </dl>
+                    </p>
+
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
