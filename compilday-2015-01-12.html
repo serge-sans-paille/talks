@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Obscurcissement de bytecode LLVM</title>
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+        <!--<link rel="stylesheet" href="css/theme/default.css" id="theme">-->
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-background="qb.png">
+                <h2>Obscurcissement de bytecode LLVM</h2>
+					<h3>Esod mumixam !</h3>
+					<p>
+                    <br/>
+                    <strong>Serge Guelton</strong>,
+                    <strong>Adrien Guinet</strong> et
+                    <strong>Ninon Eyrolles</strong>
+					</p>
+				</section>
+
+				<section>
+                <h2><code class="bash">/me</code></h2>
+                <h3>Serge « sans paille » Guelton</h3>
+                <p>
+                <pre><code class="bash">$ whoami
+sguelton</code></pre>
+                <ul>
+                    <li>Ingénieur R&D à <a href="http://www.quarkslab.com/">QuarksLab</a> pour les parties compilations</li>
+                    <li>Chercheur associé à Télécom Bretagne</li>
+                </ul>
+                </p>
+                <p>Embauché par <a href="http://www.quarkslab.com/">QuarksLab</a> pour développer un « obfuscateur de code sur étagère »</p>
+				</section>
+
+				<section>
+					<h2>Obscurcissement de code</h2>
+                    <h3>Objectif</h3>
+                    <p>
+                    Rendre une application livrée à l'utilisateur difficile à analyser
+                    </p>
+                    <p>~= Faire en sorte qu'une analyse en « boîte blanche » de l'application n'apporte rien par rapport à une analyse en boîte noire
+					</p>
+				</section>
+
+                <section>
+                    <h2>Applications</h2>
+                    <p>
+                    <ul>
+                        <li>Protection de propriétés industrielles</li>
+                        <li>Protection de clefs cryptographiques</li>
+                        <li>Mécanisme de licences à protéger</li>
+                        <li>Systèmes anti-copie [DRM :-)]</li>
+                    </ul>
+                    </p>
+                </section>
+
+				<section>
+					<h2>Niveau(x) d'application</h2>
+                    <img src="img/SimpleCompiler.png" width="60%"/>
+                    <p class="fragment">Obfuscation du code source (e.g. Javascript)</p>
+                    <p class="fragment">Obfuscation de la représentation intermédiaire (e.g. Bytecode Python)</p>
+                    <p class="fragment">Obfuscation du binaire (e.g. Packer de jeu)</p>
+				</section>
+
+                <section>
+                <h2>Pourquoi se placer au niveau LLVM ?</h2>
+                <ul>
+                <li>Évite de dupliquer l'effort pour des langages différents</li>
+                <li>Et pour des cibles différentes</li>
+                <li>Infrastructure modulaire et mûre (industrie...)</li>
+                <li>Compatible avec de nombreux projets en cours (<a href="https://source.android.com/devices/tech/dalvik/art.html">Android Art</a>, <a href="https://github.com/trailofbits/mcsema">McSema</a>...)</li>
+                </ul>
+                <pre><code>$ clang a.c -Xclang -Xload LLVMMyObf.so -my-obf -mllvm -my-obf-ratio=15</code></pre>
+
+                </section>
+
+                <section>
+                <h2>Catégories d'Obfuscations visées</h2>
+                <p>
+                <ul>
+                    <li>Obfuscation du flot de contrôle</li>
+                    <li>Obfuscation des données</li>
+                    <li>Techniques anti-reverse (e.g. anti-debug, packer)</li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h2>Quelles obfuscations choisir ?</h2>
+                <p>
+                <ul>
+                    <li>Duplicate basic block</li>
+                    <li>Variable splitting / merging</li>
+                    <li>Function cloning / inlining / outlining</li>
+                    <li>Opaque predicate</li>
+                    <li>Control Flow Graph Flattening</li>
+                    <li>On-the-fly data encryption / decryption</li>
+                    <li>Integrity Control</li>
+                    <li>Virtual Machine generation</li>
+                    <li>...</li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h2>Critères utiles</h2>
+                <p>
+                <ul>
+                <li>Protection contre une analyse statique ?</li>
+                <li>Protection contre une analyse dynamique ?</li>
+                <li>Réversibilité de la transformation ?</li>
+                <li>Introduit une complexité technique ou théorique ?</li>
+                <li>Surcout à la compilation ?</li>
+                <li>Surcout à l'exécution (temps, mémoire) ?</li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h2>Exemple : CFG Flattening</h2>
+                <p><strong>Idée</strong> : rendre la table de transition d'état explicite</p>
+                <ol>
+                    <li>Initialisation d'un contexte</li>
+                    <li>Calcul de l'état suivant</li>
+                    <li>Saut au basic bloc concerné</li>
+                    <li>Exécution du code correspondant</li>
+                    <li>Mise à jour du contexte</li>
+                    <li><code>goto</code> 2.</li>
+                </ol>
+                </section>
+
+                <section>
+                <h2>Avant CFG Flattening</h2>
+                <img src="img/before-cfg.png">
+                </section>
+                <section>
+                <h2>Après CFG Flattening</h2>
+                <img src="img/after-cfg.png">
+                </section>
+
+                <section>
+                <h2>Propriété du CFG Flattening</h2>
+                <p>
+                <ul>
+                    <li>Protection contre l'analyse statique</li>
+                    <li>Peut ralentir significativement l'exécution</li>
+                    <li>Peut augmenter significativement la taille du binaire généré</li>
+                    <li>Introduit une difficulté technique, mais pas théorique</li>
+                    <li>Nécessite une fonction de dispatch obfusquée pour résister aux optimisations de LLVM</li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h2>Exemple : Random Outlining</h2>
+                <p><strong>Idée</strong> : transformer le graphe d'appel en graphe aléatoire</p>
+                <ol>
+                    <li>Inliner le maximum de fonctions</li>
+                    <li>Sélectionner un sous ensemble aléatoire du CFG</li>
+                    <li>L'outliner dans une nouvelle fonction</li>
+                    <li><code>goto</code> 2.</li>
+                </ol>
+                </section>
+
+                <section>
+                <h2>Après Random Outlining</h2>
+                <img src="img/after-ro.png">
+                <img src="img/after-ro-cfg.png">
+                </section>
+
+                <section>
+                <h2>Propriété du Random Outlining</h2>
+                <p>
+                <ul>
+                    <li>Introduit une perte d'information irréversible</li>
+                    <li>Peut ralentir significativement l'exécution</li>
+                    <li>Augmente légèrement la taille du binaire généré</li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h2>Exemple : SSExy</h2>
+                <p><strong>Idée</strong> : vectoriser toutes les opérations arithmétiques scalaires (en ajoutant des opérandes inutiles si besoin)</p>
+                <ol>
+                    <li>Calculer le graphe de dépendance d'un basic bloc</li>
+                    <li>Regrouper les instructions ordonnancables par instructions similaires</li>
+                    <li>Compléter les groupes avec des opérandes inutiles issues du contexte</li>
+                    <li>Ordonnancer ces instructions, puis <code>goto</code> 2.</li>
+                </ol>
+                <p>Une fonction d'extraction (obfusquée) est utilisée pour extraire les opérandes d'instructions non vectorisables</p>
+                <p>Credits : <a href="https://github.com/jbremer/ssexy">jbremer</a></p>
+                </section>
+
+                <section>
+                <h2>Propriété de SSExy</h2>
+                <p>
+                <ul>
+                    <li>Introduit une difficulté technique (support d'AVX/SSE par les outils de reverse)</li>
+                    <li>Protection contre l'analyse statique et dynamique</li>
+                    <li>Peut ralentir l'exécution (ou l'accélérer !)</li>
+                    <li>Influe peu sur la taille du binaire généré</li>
+                </ul>
+                </p>
+                </section>
+
+                <section>
+                <h2>Après SSExy</h2>
+                <img src="img/after-ssexy.png">
+                </section>
+
+                <section>
+                <h2>Contrôle de la granularité</h2>
+                <p><strong>Problème</strong> : trop de protections rendent le programme inutilisable (compromis temps d'exécution / taille du binaire / niveau d'obfuscation)</p>
+
+                <ul>
+                    <li>Contrôler le ratio d'application d'une passe (e.g. 20% des basics blocs)</li>
+                    <li>Filtrer les fonctions obfusquées (e.g. uniquement une fonction de chargement de clef)</li>
+                    <li>Uniquement des portions de code délimitées par des directives</li>
+                 </ul>
+                 <p>Sujet intéressant de compilation itérative avec optimisation multi-critères !</p>
+                 </section>
+
+                <section>
+                <h2>Limitations liées à LLVM</h2>
+                <p>Optimisation d'une métrique inhabituelle !</p>
+                <ul>
+                    <li>RI parfois peu adaptée à l'obfuscation</li>
+                <ul>
+                    <li>Incompatible avec certains intrinsèques (e.g. <code>llvm.lifetime.*</code>)</li>
+                    <li>Difficile de maintenir la cohérence des infos de debug</li>
+                    <li>Instructions <code>phi</code> incompatibles avec certaines passes (cfg flattening...)</li>
+                </ul>
+                <li>Problèmes de complexité : obfusquer toutes les constantes de tous les basic blocks d'une fonction génère des blocs de taille dégénérée</li>
+                </ul>
+                </section>
+
+				<section data-background="qb.png">
+                <h2>Pensées finales</h2>
+                <p>
+                Sécurité par l'obscurité...
+                <ul>
+                    <li>Ralenti / décourage mais n'empêche pas</li>
+                    <li>Supprimer les éléments structurants</li>
+                    <li>Situations correspondant à des problèmes difficiles (aliasing...)</li>
+                    <li>Peu d'obfuscations spécifiques contre l'analyse dynamique</li>
+                </ul>
+                </p>
+                <p>Accessoirement très ludique à implémenter ;-)</p>
+
+                </section>
+
+                <section>
+                <h2>From the HITB challenge</h2>
+                <pre><code>(lambda g, c, d: (lambda _: (_.__setitem__('$', ''.join([(_['chr'] if ('chr'
+in _) else chr)((_['_'] if ('_' in _) else _)) for _['_'] in (_['s'] if ('s'
+in _) else s)[::(-1)]])), _)[-1])( (lambda _: (lambda f, _: f(f, _))((lambda
+__,_: ((lambda _: __(__, _))((lambda _: (_.__setitem__('i', ((_['i'] if ('i'
+in _) else i) + 1)),_)[(-1)])((lambda _: (_.__setitem__('s',((_['s'] if ('s'
+in _) else s) + [((_['l'] if ('l' in _) else l)[(_['i'] if ('i' in _) else i
+)] ^ (_['c'] if ('c' in _) else c))])), _)[-1])(_))) if (((_['g'] if ('g' in
+_) else g) % 4) and ((_['i'] if ('i' in _) else i)< (_['len'] if ('len' in _
+) else len)((_['l'] if ('l' in _) else l)))) else _)), _) ) ( (lambda _: (_.
+__setitem__('!', []), _.__setitem__('s', _['!']), _)[(-1)] ) ((lambda _: (_.
+__setitem__('!', ((_['d'] if ('d' in _) else d) ^ (_['d'] if ('d' in _) else
+d))), _.__setitem__('i', _['!']), _)[(-1)])((lambda _: (_.__setitem__('!', [
+(_['j'] if ('j' in _) else j) for  _[ 'i'] in (_['zip'] if ('zip' in _) else
+zip)((_['l0'] if ('l0' in _) else l0), (_['l1'] if ('l1' in _) else l1)) for
+_['j'] in (_['i'] if ('i' in _) else i)]), _.__setitem__('l', _['!']), _)[-1
+])((lambda _: (_.__setitem__('!', [1373, 1281, 1288, 1373, 1290, 1294, 1375,
+1371,1289, 1281, 1280, 1293, 1289, 1280, 1373, 1294, 1289, 1280, 1372, 1288,
+1375,1375, 1289, 1373, 1290, 1281, 1294, 1302, 1372, 1355, 1366, 1372, 1302,
+1360, 1368, 1354, 1364, 1370, 1371, 1365, 1362, 1368, 1352, 1374, 1365, 1302
+]), _.__setitem__('l1',_['!']), _)[-1])((lambda _: (_.__setitem__('!',[1375,
+1368, 1294, 1293, 1373, 1295, 1290, 1373, 1290, 1293, 1280, 1368, 1368,1294,
+1293, 1368, 1372, 1292, 1290, 1291, 1371, 1375, 1280, 1372, 1281, 1293,1373,
+1371, 1354, 1370, 1356, 1354, 1355, 1370, 1357, 1357, 1302, 1366, 1303,1368,
+1354, 1355, 1356, 1303, 1366, 1371]), _.__setitem__('l0', _['!']), _)[(-1)])
+                ({ 'g': g, 'c': c, 'd': d, '$': None})))))))['$'])</code></pre>
+                <p>Interested? Give a try on <a href="http://blog.quarkslab.com/you-like-python-security-challenge-and-traveling-win-a-free-ticket-to-hitb-kul.html">http://blog.quarkslab.com</a></p>
+                </section>
+
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
