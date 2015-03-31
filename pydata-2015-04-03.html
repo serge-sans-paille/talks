@@ -359,6 +359,26 @@ $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
                 </section>
 
                 <section>
+                    <h2>Typing</h2>
+                    <p><em>the W.T.F. slide</em><p>
+                    <p>Pythran translates Python implicitly statically typed <strong>polymorphic</strong> code into C++ <strong>meta-programs</strong> that are instanciated for the user-given types, and specialize them for the target architecture</p>
+
+                </section>
+
+                <section>
+                    <h2>Parallelism</h2>
+                    <h3>Implicit</h3>
+                    <h3>Explicit</h3>
+                    <p>OpenMP 3 support, ported to Python
+                    <pre><code class="python">
+#omp parallel for reduction(+:r)
+for i, v in enumerate(l):
+    r += i * v
+                    </code></pre>
+                    </p>
+                </section>
+
+                <section>
                     <h2>Benchmarks</h2>
                     <p>
                     <a href="https://github.com/serge-sans-paille/numpy-benchmarks">https://github.com/serge-sans-paille/numpy-benchmarks</a><br/>
@@ -373,9 +393,73 @@ $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
                 </section>
 
                 <section>
-                    <h2>Focus~: growcut</h2>
-                    <p><em>no mandlebrot or julia, seriously, who cares?</em></p>
+                    <h2>Benchmarks</h2>
+                    <p>no parallelism, no vectorisation</p>
+                    <img src="./pythran07-benchmarks.png"/>
 
+                </section>
+
+                <section>
+                    <h2>(Num)Focus: growcut</h2>
+                    <p><em>no mandlebrot or julia, seriously, who cares?</em></p>
+                    <pre><code class="python">#pythran export growcut(float[][][], float[][][], float[][][], int)
+import math
+import numpy as np
+def window_floor(idx, radius):
+    if radius > idx:
+        return 0
+    else:
+        return idx - radius
+
+
+def window_ceil(idx, ceil, radius):
+    if idx + radius > ceil:
+        return ceil
+    else:
+        return idx + radius
+
+def growcut(image, state, state_next, window_radius):
+    changes = 0
+    sqrt_3 = math.sqrt(3.0)
+
+    height = image.shape[0]
+    width = image.shape[1]
+
+    for j in xrange(width):
+        for i in xrange(height):
+
+            winning_colony = state[i, j, 0]
+            defense_strength = state[i, j, 1]
+
+            for jj in xrange(window_floor(j, window_radius),
+                             window_ceil(j+1, width, window_radius)):
+                for ii in xrange(window_floor(i, window_radius),
+                                 window_ceil(i+1, height, window_radius)):
+                    if (ii != i and jj != j):
+                        d = image[i, j, 0] - image[ii, jj, 0]
+                        s = d * d
+                        for k in range(1, 3):
+                            d = image[i, j, k] - image[ii, jj, k]
+                            s += d * d
+                        gval = 1.0 - math.sqrt(s)/sqrt_3
+
+                        attack_strength = gval * state[ii, jj, 1]
+
+                        if attack_strength > defense_strength:
+                            defense_strength = attack_strength
+                            winning_colony = state[ii, jj, 0]
+                            changes += 1
+
+            state_next[i, j, 0] = winning_colony
+            state_next[i, j, 1] = defense_strength
+
+    return changes</code></pre>
+
+
+                </section>
+                <section>
+                    <h2>(Num)Focus: growcut</h2>
+                    <img height="500px" src="growcut.png" />
                 </section>
 
 
@@ -413,13 +497,15 @@ $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
                 </section>
 
                 <section>
-                    <h2>We need more gold — <em>peon<em></h2>
+                    <h2>We need more peons</h2>
+                    <p>
                     <ul>
                         <li>Pythonic needs a serious cleanup</li>
                         <li>Typing module needs better error reporting</li>
                         <li>OSX Support is partial and Windows support is on-going</li>
                         <li><code>numpy.random</code> and <code>numpy.linalg</code></li>
                     </ul>
+                    </p>
                 </section>
 
 				<section>
@@ -428,8 +514,8 @@ $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
                     <dl>
                         <dt><strong>AUTHORS</strong></dt>
                         <dd>Serge Guelton, Pierrick Brunet, Mehdi Amini, Adrien Merlini, Alan Raynaud, Eliott Coyac...</dd>
-                        <dt><strong>FINANCIAL SUPPORT</strong></dt>
-                        <dd><a href="http://www.silkan.com/">Silkan</a>, <strong>-->You<--</strong></dd>
+                        <dt><strong>INDUSTRIAL SUPPORT</strong></dt>
+                        <dd><a href="http://www.silkan.com/">Silkan</a>, <a href="http://www.numscale.com">NumScale</a>, <strong>-->You<--</strong></dd>
                         <dt><strong>CONTRIBUTE</strong></dt>
                         <dd>#pythran on FreeNode, pythran@freelists.org, GitHub repo</dd>
                     </dl>
