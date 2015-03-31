@@ -34,6 +34,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 
+       <section>
+
 				<section>
                     <h2>Pythran: Static Compilation of Parallel Scientific Kernels</h2>
 					<h3>a.k.a. Python/Numpy compilers for the mass</h3>
@@ -91,9 +93,15 @@ pbrunet</code></pre>
                     </p>
                 </section>
 
+        </section>
+
+        <section>
+
+
 				<section>
 					<h2>Ask StackOverflow</h2>
-                    from <a href="http://stackoverflow.com/questions/26823312/numba-or-cython-acceleration-in-reaction-diffusion-algorithm">http://stackoverflow.com/[...]numba-or-cython-acceleration-in-reaction-diffusion-algorithm</a>
+                    <em>when you're looking for <strong>test cases</strong></em><br/>
+                    <a href="http://stackoverflow.com/questions/26823312/numba-or-cython-acceleration-in-reaction-diffusion-algorithm">http://stackoverflow.com/[...]numba-or-cython-acceleration-in-reaction-diffusion-algorithm</a>
                 <pre><code class="python">import numpy as np
 def GrayScott(counts, Du, Dv, F, k):
     n = 300
@@ -248,6 +256,11 @@ u += 0.15*np.random.random((n,n))</code></pre>
                     </p>
                 </section>
 
+
+        </section>
+
+        <section>
+
                 <section>
                     <h2>Pythran Usage</h2>
                     <p>
@@ -311,6 +324,11 @@ $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
 </p>
                 </section>
 
+
+        </section>
+
+        <section>
+
                 <section>
                     <h2>Pythran Compilation Flow</h2>
                     <img height="500px" src="pythran.svg" />
@@ -327,6 +345,7 @@ $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
                                 <li>Several standard module (incl. partial Numpy)</li>
                                 <li>Polymorphic functions</li>
                                 <li>list, tuple, dict, str, int, long float</li>
+                                <li>Named parameters, default arguments</li>
                                 <li>Generators…</li>
                             </ul>
                         </li>
@@ -345,7 +364,18 @@ $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
                 <section>
                     <h2>Middle End</h2>
                     <p>
+                    Iteratively applies high level, Python-aware optimizations:
+                    <ul>
+                        <li>Interprocedural Constant Folding</li>
+                        <li>For-Based-Loop Unrolling</li>
+                        <li>Forward Substitution</li>
+                        <li>Instruction Selection</li>
+                        <li>Deforestation</li>
+                        <li>Scalar Renaming</li>
+                        <li>dead Code Elimination</li>
+                    </ul>
                     </p>
+                    <em>Fun Facts: can evaluate pure functions at compile time ☺</em>
                 </section>
 
                 <section>
@@ -354,29 +384,38 @@ $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
                     <p>Useful for debugging!</p>
 
                     <h3>C++11 Back End</h3>
-                    <p>C++11 implementation of <code>__builtin__ numpy itertools</code>…</p>
-                    <p>Relies on OpenMP, <code>nt2</code> and <code>boost::simd</code> for the parallelization / vectorization</p>
+                    <p>
+                    <ul>
+                        <li>C++11 implementation of <code>__builtin__ numpy itertools</code>…</li>
+                        <li>Lazy evaluation through Expression Templates</li>
+                        <li>Relies on OpenMP, <code>nt2</code> and <code>boost::simd</code> for the parallelization / vectorization</li>
+                    </ul>
+                    </p>
                 </section>
 
                 <section>
-                    <h2>Typing</h2>
+                    <h2>C++11: Typing</h2>
                     <p><em>the W.T.F. slide</em><p>
                     <p>Pythran translates Python implicitly statically typed <strong>polymorphic</strong> code into C++ <strong>meta-programs</strong> that are instanciated for the user-given types, and specialize them for the target architecture</p>
 
                 </section>
 
                 <section>
-                    <h2>Parallelism</h2>
+                    <h2>C++11: Parallelism</h2>
                     <h3>Implicit</h3>
+                    <p>Array operations and several numpy functions are written using OpenMP and Boost.simd</p>
                     <h3>Explicit</h3>
                     <p>OpenMP 3 support, ported to Python
-                    <pre><code class="python">
-#omp parallel for reduction(+:r)
+                    <pre><code class="python">#omp parallel for reduction(+:r)
 for i, v in enumerate(l):
-    r += i * v
-                    </code></pre>
+    r += i * v</code></pre>
                     </p>
                 </section>
+
+        </section>
+
+
+        <section>
 
                 <section>
                     <h2>Benchmarks</h2>
@@ -394,14 +433,14 @@ for i, v in enumerate(l):
 
                 <section>
                     <h2>Benchmarks</h2>
-                    <p>no parallelism, no vectorisation</p>
+                    <p>no parallelism, no vectorisation (, no fat)</p>
                     <img src="./pythran07-benchmarks.png"/>
 
                 </section>
 
                 <section>
                     <h2>(Num)Focus: growcut</h2>
-                    <p><em>no mandlebrot or julia, seriously, who cares?</em></p>
+                    <p>From the Numba codebase!</p>
                     <pre><code class="python">#pythran export growcut(float[][][], float[][][], float[][][], int)
 import math
 import numpy as np
@@ -467,7 +506,7 @@ def growcut(image, state, state_next, window_radius):
                 <h2>Academic Results</h2>
                 <ul>
                     <li><strong>Pythran: Enabling Static Optimization of Scientific Python Programs</strong>,
-                    S. Guelton, P. Brunet et al. in <em>CSD</em>, under review</li>
+                    S. Guelton, P. Brunet et al. in <em>CSD</em>, 2015</li>
                     <li><strong>Exploring the Vectorization of Python Constructs Using Pythran and Boost SIMD</strong>,
                     S. Guelton, J. Falcou and P. Brunet, in <em>WPMVP</em>, 2014</li>
                     <li><strong>Compiling Python modules to native parallel modules using Pythran and OpenMP Annotations</strong>,
@@ -484,9 +523,10 @@ def growcut(image, state, state_next, window_radius):
                 <h4>Preprequisite for reproductible science</h4>
                 <p>
                 <ul>
-                    <li>2773 test cases, incl. unit testing, doctest, <strong>Continuous integration</strong></li>
+                    <li>2773 test cases, incl. unit testing, doctest, <strong>Continuous integration</strong> (thx <a href="https://travis-ci.org/serge-sans-paille/pythran">Travis</a>!)</li>
                     <li>Peer-reviewed code</li>
                     <li>Python2.7 and C++11</li>
+                    <li>Linux, OSX (almost okay), Windows (on going)</li>
                     <li>User and Developer doc: <a href="http://pythonhosted.org/pythran/">http://pythonhosted.org/pythran/</a></li>
                     <li>Hosted on <a href="https://github.com/serge-sans-paille/pythran">https://github.com/serge-sans-paille/pythran</a></li>
                     <li>Releases on PyPi: <code class="bash">$ pip install pythran</code></li>
@@ -508,14 +548,19 @@ def growcut(image, state, state_next, window_radius):
                     </p>
                 </section>
 
+        </section>
+
+
+
+
 				<section>
 					<h1>THE END</h1>
                     <p>
                     <dl>
                         <dt><strong>AUTHORS</strong></dt>
-                        <dd>Serge Guelton, Pierrick Brunet, Mehdi Amini, Adrien Merlini, Alan Raynaud, Eliott Coyac...</dd>
+                        <dd>Serge Guelton, Pierrick Brunet, Mehdi Amini, Adrien Merlini, Alan Raynaud, Eliott Coyac…</dd>
                         <dt><strong>INDUSTRIAL SUPPORT</strong></dt>
-                        <dd><a href="http://www.silkan.com/">Silkan</a>, <a href="http://www.numscale.com">NumScale</a>, <strong>-->You<--</strong></dd>
+                        <dd><a href="http://www.silkan.com/">Silkan</a>, <a href="http://www.numscale.com">NumScale</a>, <strong>→You←</strong></dd>
                         <dt><strong>CONTRIBUTE</strong></dt>
                         <dd>#pythran on FreeNode, pythran@freelists.org, GitHub repo</dd>
                     </dl>
