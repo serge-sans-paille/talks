@@ -38,7 +38,7 @@
 
 				<section>
                     <h2>Pythran: Static Compilation of Parallel Scientific Kernels</h2>
-					<h3>a.k.a. Python/Numpy compilers for the mass</h3>
+					<h3>a.k.a. Python/Numpy compiler for the mass</h3>
 					<p>
                     <small>Proudly made in <em>Namek</em> by <a href="http://serge.liyun.free.fr/serge/">serge-sans-paille</a> &amp; <a  href="http://fr.viadeo.com/fr/profile/pierrick.brunet">pbrunet</a></small>
 					</p>
@@ -305,7 +305,7 @@ It's a megablast!</code></pre>
                     <p>
                                         <pre><code class="shell">$ pythran input.py # generates input.so
 $ pythran input.py -E # generates input.cpp
-$ pythran input.py -O3 -fopenmp</code></pre>
+$ pythran input.py -O3 -fopenmp # parallel!
 $ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
                     </p>
                 </section>
@@ -543,7 +543,7 @@ def growcut(image, state, state_next, window_radius):
                     <ul>
                         <li>Pythonic needs a serious cleanup</li>
                         <li>Typing module needs better error reporting</li>
-                        <li>OSX Support is partial and Windows support is on-going</li>
+                        <li>OSX support is partial and Windows support is on-going</li>
                         <li><code>numpy.random</code> and <code>numpy.linalg</code></li>
                     </ul>
                     </p>
