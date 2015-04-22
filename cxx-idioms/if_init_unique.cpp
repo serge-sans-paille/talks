@@ -3,7 +3,7 @@
 
 std::unique_ptr<int> foo(bool pred) {
   if(pred)
-    return std::unique_ptr<int>{new int(1)};
+    return std::make_unique<int>(1);
   else
     return {nullptr};
 }

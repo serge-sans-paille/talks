@@ -2,17 +2,6 @@
 #include <tuple>
 #include <vector>
 
-template<size_t ...>
-struct seq { };
-
-template<size_t N, size_t ...S>
-struct gens : gens<N-1, N-1, S...> { };
-
-template<size_t ...S>
-struct gens<0, S...> {
-typedef seq<S...> type;
-};
-
 template <class ObjData>
 struct ObjAccessVertical: public ObjData
 {
@@ -44,8 +33,7 @@ struct ObjAccessHorizontal
 	{ }
 
 	ObjAccessHorizontal(ObjAccessHorizontal const& o):
-		storage(o.storage),
-		idx(o.idx)
+		ObjAccessHorizontal(o.storage, o.idx)
 	{ }
 
 	template <size_t I>
@@ -70,7 +58,7 @@ struct ObjStorageHorizontal
 	typedef std::tuple<std::vector<Args>...> storage_type;
 	typedef Obj<ObjAccessHorizontal<storage_type>> obj_type;
 
-	static typename gens<sizeof...(Args)>::type args_ns;
+	static std::make_index_sequence<sizeof...(Args)> args_ns;
 
 	struct iterator
 	{
@@ -103,6 +91,11 @@ struct ObjStorageHorizontal
 			return *this;
 		}
 
+		iterator operator+(size_t const n) const
+		{
+			return iterator{obj_type{_o.storage, _o.idx+n}};
+		}
+
 		obj_type _o;
 	};
 
@@ -112,7 +105,7 @@ struct ObjStorageHorizontal
 	}
 
 	template <size_t... I>
-	void emplace_back(Args&& ... args, seq<I...>)
+	void emplace_back(Args&& ... args, std::index_sequence<I...>)
 	{
 		std::initializer_list<int> li = {(std::get<I>(_storage).emplace_back(std::forward<Args>(args)), 1)...};
 		(void)li;
@@ -124,9 +117,21 @@ struct ObjStorageHorizontal
 	}
 
 	template <size_t... I>
-	void reserve(size_t n, seq<I...>)
+	void reserve(size_t n, std::index_sequence<I...>)
 	{
 		std::initializer_list<int> li = {(std::get<I>(_storage).reserve(n), 1)...};
+		(void)li;
+	}
+
+	void resize(size_t n)
+	{
+		resize(n, args_ns);
+	}
+
+	template <size_t... I>
+	void resize(size_t n, std::index_sequence<I...>)
+	{
+		std::initializer_list<int> li = {(std::get<I>(_storage).resize(n), 1)...};
 		(void)li;
 	}
 
@@ -141,6 +146,8 @@ struct ObjStorageHorizontal
 	}
 
 	obj_type front() { return *begin(); }
+
+	obj_type operator[](size_t idx) { return *(begin()+idx); }
 
 private:
 	storage_type _storage;
@@ -198,15 +205,31 @@ void test(T& s)
 	}
 }
 
-int main()
+template <class T>
+ __attribute__((noinline)) void test_vec(size_t n)
 {
-	ObjStorageVertical<Obj, int, std::string> s;
-	test(s);
+	T h0,h1,hr;
+	h0.resize(n);
+	h1.resize(n);
+	hr.resize(n);
+
+	for (size_t i = 0; i < n; i++) {
+		hr[i].age() = h0[i].age() + h1[i].age();
+	}
+}
+
+int main(int argc, char** argv)
+{
+	ObjStorageVertical<Obj, int, std::string> V;
+	test(V);
 
 	std::cout << "--" << std::endl;
 
-	ObjStorageHorizontal<Obj, int, std::string> s2;
-	test(s2);
+	ObjStorageHorizontal<Obj, int, std::string> H;
+	test(H);
 
+	const size_t n = atoll(argv[1]);
+	test_vec<decltype(V)>(n);
+	test_vec<decltype(H)>(n);
 	return 0;
 }
