@@ -30,7 +30,11 @@ TARGETS= \
 		 most_vexing_parse \
 		 enable_if \
 		 initialization_list \
-		 local_class_definition
+		 local_class_definition \
+		 vertical_or_horizontal_storage \
+		 filter_types \
+		 map_types \
+		 named_params_2
 
 INDEX=index.rst
 
