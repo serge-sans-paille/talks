@@ -9,8 +9,10 @@ class Data
 
     Data & operator=(Data const &s)
     {
+      // {{{
       Data tmp(s);
       std::swap(tmp._data, _data);
+      // }}}
       return *this;
     }
     size_t size() const { return _data.size(); }
@@ -23,3 +25,4 @@ int main() {
   std::cout << "d.size: " << d.size() << "e.size: " << e.size() << std::endl;
   return 0;
 }
+// vim: foldmethod=marker

@@ -1,4 +1,5 @@
 #include <cstdio>
+// {{{
 template <class T>
 struct Base
 {
@@ -8,8 +9,12 @@ struct Base
     static_cast<T*>(this)->implementation();
   }
 };
+// }}}
 
-struct Derived : Base<Derived>
+struct Derived :
+  // {{{
+  Base<Derived>
+  // }}}
 {
   void implementation()
   {
@@ -22,7 +27,11 @@ int main() {
   Derived d;
   d.implementation();
   puts("===");
-  Base<Derived>& b = d;
+  // {{{
+  Base<Derived>
+  // }}}
+    & b = d;
   b.implementation();
   return 0;
 }
+// vim: foldmethod=marker

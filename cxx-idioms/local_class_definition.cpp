@@ -17,3 +17,4 @@ int main() {
   Local l;
   return 0;
 }
+// vim: foldmethod=marker

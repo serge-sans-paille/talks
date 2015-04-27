@@ -233,3 +233,4 @@ int main(int argc, char** argv)
 	test_vec<decltype(H)>(n);
 	return 0;
 }
+// vim: foldmethod=marker

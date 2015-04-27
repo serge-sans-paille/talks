@@ -55,3 +55,4 @@ int main() {
   std::cout << r << std::endl;
   return 0;
 }
+// vim: foldmethod=marker

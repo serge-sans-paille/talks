@@ -31,3 +31,4 @@ Bar f;
 int main() {
   return 0;
 }
+// vim: foldmethod=marker

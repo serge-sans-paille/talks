@@ -9,3 +9,4 @@ int main() {
   fwd(1, "J'aime les moulinettes à fromage", false);
   return 0;
 }
+// vim: foldmethod=marker

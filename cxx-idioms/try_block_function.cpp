@@ -23,3 +23,4 @@ int main() {
   Deck d;
   return 0;
 }
+// vim: foldmethod=marker

@@ -1,7 +1,7 @@
 #include <tuple>
 
+// {{{
 namespace details {
-
 template<class Pred, class...> struct filter;
 template<class Pred, class Head, class... Tail>
 struct filter<Pred, Head, Tail...> {
@@ -22,6 +22,7 @@ struct is_integral {
   template<class T>
   using apply = std::is_integral<T>;
 };
+// }}}
 
 template<class Pred, class Tuple> struct filter_tuple;
 template<class Pred, class... Args>
@@ -36,3 +37,4 @@ int main()
   using filtered_tuple = filter_tuple<is_integral, std::tuple<std::string, int, std::string, short>>::type;
   static_assert(std::is_same<filtered_tuple, std::tuple<int, short>>::value, "not good!");
 }
+// vim: foldmethod=marker

@@ -26,3 +26,4 @@ int main() {
   return g.value;
 }
 
+// vim: foldmethod=marker

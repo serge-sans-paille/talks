@@ -16,3 +16,4 @@ int main() {
   std::cout << l0 << std::endl;
   return 0;
 }
+// vim: foldmethod=marker

@@ -15,3 +15,4 @@ int main() {
   std::cout << keys[0] << ' ' << keys[1] << ' ' << keys[2] << std::endl;
   return 0;
 }
+// vim: foldmethod=marker

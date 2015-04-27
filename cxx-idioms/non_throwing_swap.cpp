@@ -42,3 +42,4 @@ int main() {
 
 
 
+// vim: foldmethod=marker

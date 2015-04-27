@@ -5,6 +5,7 @@
 template<class Base, class Log>
 class aspect : private Base {
   public:
+  // {{{
   template <class T>
     class proxy : public Log {
       public:
@@ -20,16 +21,17 @@ class aspect : private Base {
       private:
         T* base;
     };
+  // }}}
 
-    aspect(Base&& base) : Base(std::move(base)) {}
+  aspect(Base&& base) : Base(std::move(base)) {}
 
-    proxy<Base> operator -> () {
-       return {static_cast<Base*>(this)};
-    }
+  proxy<Base> operator -> () {
+    return {static_cast<Base*>(this)};
+  }
 
-    proxy<const Base> operator -> () const {
-       return {static_cast<Base const*>(this)};
-    }
+  proxy<const Base> operator -> () const {
+    return {static_cast<Base const*>(this)};
+  }
 };
 
 struct logger {
@@ -46,3 +48,4 @@ int main()
   std::cout << const_cast<decltype(vec) const&>(vec)->front() << std::endl;
   return 0;
 }
+// vim: foldmethod=marker

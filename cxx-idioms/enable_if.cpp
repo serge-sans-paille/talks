@@ -1,9 +1,14 @@
 #include <limits>
 #include <iostream>
 template<class T>
-struct value_range : std::enable_if<std::is_integral<T>::value,
+struct value_range :
+  // {{{
+  std::enable_if<std::is_integral<T>::value,
+  // }}}
                                     std::integral_constant<size_t, (std::numeric_limits<T>::max() - std::numeric_limits<T>::min() + 1)>
+  // {{{
                                    >::type
+  // }}}
 {};
 
 int main() {
@@ -12,3 +17,4 @@ int main() {
   return 0;
 }
 
+// vim: foldmethod=marker

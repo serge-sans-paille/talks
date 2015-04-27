@@ -21,3 +21,4 @@ int main() {
   auto b = make_any(v);
   return 0;
 };
+// vim: foldmethod=marker

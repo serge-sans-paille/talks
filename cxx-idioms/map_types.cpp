@@ -30,3 +30,4 @@ int main()
 	using mapped = map<map_vector, std::tuple<int, std::string>>;
 	static_assert(std::is_same<mapped, std::tuple<std::vector<int>, std::vector<std::string>>>::value, "not good!");
 }
+// vim: foldmethod=marker

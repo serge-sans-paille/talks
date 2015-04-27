@@ -7,9 +7,12 @@ int * foo(bool pred) {
 }
 
 int main() {
+  // {{{
   if(auto ptr = foo(true)) {
+  // }}}
     std::cout << *ptr << std::endl;
     delete ptr;
   }
   return 0;
 }
+// vim: foldmethod=marker

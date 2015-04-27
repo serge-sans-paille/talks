@@ -24,3 +24,4 @@ int main()
   std::cout << get<1>(tuple) << std::endl;
   return 0;
 }
+// vim: foldmethod=marker

@@ -16,6 +16,7 @@ public:
   size_t size() const { return _str.size(); }
 };
 
+// {{{
 template <class Lhs, class Rhs>
 struct string_chain : std::pair<Lhs, Rhs> {
   string_chain(Lhs lhs, Rhs rhs) : std::pair<Lhs, Rhs>{lhs, rhs} {
@@ -35,6 +36,7 @@ struct string_chain : std::pair<Lhs, Rhs> {
   }
   size_t size() const { return std::get<0>(*this).size() + 1 + std::get<1>(*this).size(); }
 };
+// }}}
 
 template<class Lhs, class Rhs>
 string_chain<Lhs, Rhs> operator^(Lhs&& lhs, Rhs&& rhs) {
@@ -46,3 +48,4 @@ int main(int argc, char* argv[]) {
   std::cout << (exp::string("voici") ^ exp::string("venir") ^ exp::string("les") ^  exp::string("barbapa")).str() << std::endl;
   return 0;
 }
+// vim: foldmethod=marker

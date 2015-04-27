@@ -12,3 +12,4 @@ int main()
   std::cout << dump(1.5) << std::endl;
   return 0;
 }
+// vim: foldmethod=marker

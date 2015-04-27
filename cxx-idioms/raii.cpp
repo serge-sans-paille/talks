@@ -33,3 +33,4 @@ int main() {
   }
   std::cout << "youpi" << std::endl;
 }
+// vim: foldmethod=marker
