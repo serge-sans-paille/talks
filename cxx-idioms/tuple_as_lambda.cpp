@@ -9,7 +9,7 @@ auto length = [](auto xs) {
   return xs([](auto ...z) { return sizeof...(z); });
 };
 
-namespace size_ternal 
+namespace internal 
 {
   template <size_t N, typename... T>
   struct get;
@@ -30,12 +30,12 @@ namespace size_ternal
     : get<N-1, T...> (t...)
     {}
   };
-} //!size_ternal
+} //!internal
 
   template <size_t N, typename L>
 auto get(L && xs)
 {
-  return xs([] (auto ... list) { return size_ternal::get<N, decltype(list)...>(list...).value;});
+  return xs([] (auto ... list) { return internal::get<N, decltype(list)...>(list...).value;});
 }
 
 
