@@ -2,16 +2,16 @@
 #include <tuple>
 
 auto list = [](auto ...xs) {
-    return [=](auto access) { return access(xs...); };
+  return [=](auto access) { return access(xs...); };
 };
 
 auto length = [](auto xs) {
-    return xs([](auto ...z) { return sizeof...(z); });
+  return xs([](auto ...z) { return sizeof...(z); });
 };
 
-namespace internal 
+namespace size_ternal 
 {
-  template <int N, typename... T>
+  template <size_t N, typename... T>
   struct get;
 
   template <typename T0, typename... T>
@@ -23,29 +23,30 @@ namespace internal
     {}
   };
 
-  template <int N, typename T0, typename... T>
+  template <size_t N, typename T0, typename... T>
   struct get<N, T0, T...> : public get<N-1, T...>
   {
     get(T0 t0, T... t)
     : get<N-1, T...> (t...)
     {}
   };
-} //!internal
+} //!size_ternal
 
-template <int N, typename L>
+  template <size_t N, typename L>
 auto get(L && xs)
 {
-  return xs([] (auto ... list) { return internal::get<N, decltype(list)...>(list...).value;});
+  return xs([] (auto ... list) { return size_ternal::get<N, decltype(list)...>(list...).value;});
 }
 
 
 int main()
 {
-  auto tuple_int = list(int(1), short(2), char(3));
-  std::cout << sizeof(tuple_int) << " / " << sizeof(std::tuple<int, short, char>) << std::endl;
+  auto tuple_size_t = list(int(1), short(2), char(3));
+  std::cout << sizeof(tuple_size_t) << " / " << sizeof(std::tuple<size_t, short, char>) << std::endl;
 
   auto tuple = list(1, '2', "3");
   std::cout << length(tuple) << std::endl;
   std::cout << get<1>(tuple) << std::endl;
   return 0;
 }
+
