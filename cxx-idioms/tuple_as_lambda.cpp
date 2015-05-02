@@ -9,10 +9,35 @@ auto length = [](auto xs) {
     return xs([](auto ...z) { return sizeof...(z); });
 };
 
-template<size_t I, class T>
-auto get(T&& xs) {
-    return xs([](auto ...z) { return std::get<I>(std::make_tuple(z...)); });
+namespace internal 
+{
+  template <int N, typename... T>
+  struct get;
+
+  template <typename T0, typename... T>
+  struct get<0, T0, T...> 
+  {
+    T0 value;
+    get(T0 t0, T... t)
+    : value(t0)
+    {}
+  };
+
+  template <int N, typename T0, typename... T>
+  struct get<N, T0, T...> : public get<N-1, T...>
+  {
+    get(T0 t0, T... t)
+    : get<N-1, T...> (t...)
+    {}
+  };
+} //!internal
+
+template <int N, typename L>
+auto get(L && xs)
+{
+  return xs([] (auto ... list) { return internal::get<N, decltype(list)...>(list...).value;});
 }
+
 
 int main()
 {
