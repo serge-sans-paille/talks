@@ -32,8 +32,8 @@ namespace internal
   };
 } //!internal
 
-  template <size_t N, typename L>
-auto get(L && xs)
+template <size_t N>
+auto get(auto xs)
 {
   return xs([] (auto ... list) { return internal::get<N, decltype(list)...>(list...).value;});
 }
