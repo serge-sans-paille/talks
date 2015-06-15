@@ -11,7 +11,11 @@ struct B {
 };
 struct C {
   A a;
-  C() : a(42) {}
+  C()
+    // {{{
+    : a(42)
+    // }}}
+    {}
 };
 
 int main() {

@@ -9,10 +9,18 @@ std::unique_ptr<int> foo(bool pred) {
 }
 
 int main() {
-  if(std::unique_ptr<int> ptr = foo(true)) {
+  if(
+      // {{{
+      std::unique_ptr<int> ptr =
+      // }}}
+      foo(true)) {
     std::cout << *ptr << std::endl;
   }
-  if(std::unique_ptr<int> ptr = foo(false)) {
+  if(
+      // {{{
+      std::unique_ptr<int> ptr =
+      // }}}
+      foo(false)) {
     std::cout << "do not display this" << std::endl;
   }
   return 0;

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <typeinfo>
 
+// {{{
 template <class Mapper, class... Types>
 struct map_impl
 {
@@ -14,6 +15,7 @@ struct map_impl<Mapper, std::tuple<Types...>>
 {
 	using type = std::tuple<typename Mapper::template bind<Types>...>;
 };
+// }}}
 
 template <class Mapper, class... Types>
 using map = typename map_impl<Mapper, Types...>::type;

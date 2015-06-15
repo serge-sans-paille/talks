@@ -7,7 +7,10 @@ struct Eldrazi {
 struct Deck {
   Eldrazi _eldrazi;
 
-  Deck() try : _eldrazi() {} catch(...) { std::cerr << "surprise" << std::endl; }
+  Deck()
+    // {{{
+    try : _eldrazi() {} catch(...) { std::cerr << "surprise" << std::endl; }
+    // }}}
 };
 
 void foo()

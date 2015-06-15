@@ -8,10 +8,12 @@ int main() {
 
   std::vector<int> keys;
   keys.reserve(map.size());
+  // {{{
   std::transform(map.begin(), map.end(),
                  std::back_inserter(keys),
                  [](auto&& kv) { return kv.first; }
       );
+  // }}}
   std::cout << keys[0] << ' ' << keys[1] << ' ' << keys[2] << std::endl;
   return 0;
 }

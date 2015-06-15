@@ -10,10 +10,12 @@ class any {
   any(any const& other) : member(other.member) { puts(__PRETTY_FUNCTION__);}
 };
 
+// {{{
 template<class T>
 any<typename std::decay<T>::type> make_any(T&& arg) {
   return {std::forward<T>(arg)};
 }
+// }}}
 
 int main() {
   auto a = make_any(std::vector<int>{{1,2,3}});

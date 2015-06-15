@@ -2,7 +2,9 @@
 
 template<class... Args>
 void fwd(Args&&... args) {
-  int tmp[] __attribute__((unused))= {(std::cout << args << std::endl, 1)...};
+  // {{{
+  int tmp[] __attribute__((unused))= {0, (std::cout << args << std::endl, 1)...};
+  // }}}
 }
 
 int main() {

@@ -2,10 +2,12 @@
 
 template<class T>
 class has_member {
+  // {{{
   template<class C> static int has(decltype(&C::member));
   template<class C> static void has(...);
   public:
   static constexpr bool value = std::is_same<decltype(has<T>(nullptr)), int>::value;
+  // }}}
 };
 
 struct With {

@@ -2,6 +2,7 @@
 #include <sstream>
 
 class Capture {
+    // {{{
   std::ostringstream _capture;
   std::streambuf *_old;
 
@@ -18,6 +19,7 @@ class Capture {
   std::string str() const {
     return _capture.str();
   }
+    // }}}
 };
 
 void verbose() {

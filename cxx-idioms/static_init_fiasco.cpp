@@ -13,6 +13,7 @@ struct Bar {
 Bar f;
 Foo Bar::foo;
 #else
+// {{{
 struct Foo {
   Foo() { std::cout << "Foo" << std::endl; }
   void doit() { std::cout << "Foo::doit" << std::endl; }
@@ -24,6 +25,7 @@ struct Bar {
     return foo;
   }
 };
+// }}}
 
 Bar f;
 #endif

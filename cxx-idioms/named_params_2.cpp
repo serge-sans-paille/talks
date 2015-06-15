@@ -17,6 +17,7 @@ private:
 
 struct robot {
 
+  // {{{
   struct param
   {
     DECL_PARAM(name, std::string);
@@ -30,15 +31,18 @@ struct robot {
     std::initializer_list<int> v{(apply(std::forward<Params>(p)), 1)...};
     (void)v;
   }
+  // }}}
 
   std::string const& name() const { return _name;}
   size_t const& age() const { return _age;}
   size_t const& weight() const { return _weight;}
 
 private:
+  // {{{
   void apply(param::name&& p) { _name = p; }
   void apply(param::age&& p) { _age = p; }
   void apply(param::weight&& p) { _weight = p; }
+  // }}}
 
   std::string _name;
   size_t _age;

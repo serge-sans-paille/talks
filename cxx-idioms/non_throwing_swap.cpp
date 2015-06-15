@@ -13,19 +13,23 @@ class UniquePtr {
   int& operator*() { return *_ptr;}
   int operator*() const { return *_ptr;}
 
+  // {{{
   void swap(UniquePtr& other) {
     std::swap(_ptr, other._ptr);
   }
+  // }}}
 };
 
 }
 
+// {{{
 namespace std {
 template<>
 void swap<exp::UniquePtr>(exp::UniquePtr& self, exp::UniquePtr& other) {
   self.swap(other);
 }
 }
+// }}}
 
 
 int main() {

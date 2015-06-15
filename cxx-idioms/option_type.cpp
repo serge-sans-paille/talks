@@ -3,26 +3,35 @@
 
 template<class T>
 class OptionType {
+  // {{{
   char  _storage[sizeof(T)];
   T* _value;
+  // }}}
 
   public:
   OptionType() : _value(nullptr) {}
   OptionType(OptionType const&) = delete;
   OptionType(OptionType && other)
   {
-    if(other._value)
+    // {{{
+    if(other._value) {
       _value = new (_storage) T(std::move(*other._value));
+      other._value = nullptr;
+    }
     else
       _value = nullptr;
+    // }}}
   }
   template<class... Args>
   OptionType(Args&& ... args)
+  // {{{
     : _value{new (_storage) T(std::forward<Args>(args)...)}
+  // }}}
   {
   }
 
-  operator bool() const { return _value; }
+  // {{{
+  explicit operator bool() const { return _value; }
 
   T& get() {
     assert(_value && "not in error state");
@@ -32,6 +41,7 @@ class OptionType {
     assert(_value && "not in error state");
     return *_value;
   }
+  // }}}
 };
 
 OptionType<int> maybe(int value) {

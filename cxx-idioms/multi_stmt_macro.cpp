@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstdlib>
+// {{{
 #define DUMP(n) do { std::cout << n << std::endl; abort(); } while(0)
+// }}}
 
 int main(int argc, char*argv[]) {
   int a = 1;

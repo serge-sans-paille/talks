@@ -1,9 +1,11 @@
 TARGETS= \
+		 most_vexing_parse \
 		 raii \
 		 print_vector \
 		 convert_char_ptr_to_double \
 		 copy_and_swap \
 		 copy_elision \
+		 initialization_list \
 		 map_keys_to_vector \
 		 option_type \
 		 if_init \
@@ -15,14 +17,12 @@ TARGETS= \
 		 making_new_friends \
 		 has_member \
 		 has_member_function \
-		 execute_around_pointer \
 		 static_init_fiasco \
 		 expression_templates \
-		 most_vexing_parse \
-		 initialization_list \
+		 local_class_definition \
+		 execute_around_pointer \
 		 \
 		 named_params \
-		 named_params_2 \
 		 map_types \
 		 filter_types \
 		 curiously_recurring_template_pattern \
@@ -36,7 +36,7 @@ TARGETS= \
 		 multi_stmt_macro \
 		 vertical_or_horizontal_storage \
 		 sfinae \
-		 local_class_definition \
+		 named_params_2 \
 
 INDEX=index.rst
 

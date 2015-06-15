@@ -1,15 +1,17 @@
 #include <cstdio>
 // {{{
 template <class T>
+// }}}
 struct Base
 {
   void implementation()
   {
     puts(__PRETTY_FUNCTION__);
+    // {{{
     static_cast<T*>(this)->implementation();
+    // }}}
   }
 };
-// }}}
 
 struct Derived :
   // {{{
