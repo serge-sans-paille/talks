@@ -37,6 +37,7 @@ TARGETS= \
 		 vertical_or_horizontal_storage \
 		 sfinae \
 		 named_params_2 \
+		 lexicographical_compare_struct\
 
 INDEX=index.rst
 
