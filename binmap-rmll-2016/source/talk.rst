@@ -7,6 +7,10 @@ Binmap: scanning file systems with Binmap
 
 2016 RMLL Security Track
 
+*Serge Guelton*
+
+Sébastien Renaud
+
 
 The story of Happy Kitty
 ========================
@@ -50,7 +54,7 @@ A **Simple** Tool that:
 
 - Walks a filesystem
 - Analyses Binary files
-- Build the dependency graph
+- Builds the dependency graph
 
 Nothing more ``:-)``
 
@@ -60,17 +64,14 @@ Support
 
 https://github.com/quarkslab/binmap
 
-- Tested on:
-
-    - Linux
-    - Windows
+- Tested on Linux & Windows
 
 - Supported Binary Formats:
 
     - ELF
     - PE
 
-Usage - Build a database
+Usage - Build a Database
 ========================
 
 .. code-block:: console
@@ -95,7 +96,7 @@ Usage - Visualize the Database
 .. image:: _static/blobs.svg
 
 
-Usage - Explore the database
+Usage - Explore the Database
 ============================
 
 Python binding:
@@ -105,7 +106,7 @@ Python binding:
     >>> import blobmap
 
 
-Usage - Explore the database
+Usage - Explore the Database
 ============================
 
 Load the db:
@@ -160,7 +161,7 @@ Find binary that may be interesting:
 
     >>> max(blob.items(), key=lambda item: score(item[1]))
 
-Scenario #1 - score function
+Scenario #1 - Score Function
 ============================
 
 Using:
