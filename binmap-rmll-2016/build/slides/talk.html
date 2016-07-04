@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Binmap: scanning file systems with Binmap &mdash; Binmap: scanning file systems with Binmap</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="_static/slides.css" type="text/css" />
+    
+    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2016.07.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/common.js"></script>
+    
+    <script type="text/javascript" src="_static/slides.js"></script>
+    <script type="text/javascript" src="_static/sync.js"></script>
+    <script type="text/javascript" src="_static/controller.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    
+    
+    <link rel="top" title="Binmap: scanning file systems with Binmap" href="index.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="slide level-1" id="binmap-scanning-file-systems-with-binmap">
+
+<h1>Binmap: scanning file systems with Binmap</h1>
+
+<p>2016 RMLL Security Track</p>
+<p><em>Serge Guelton</em></p>
+<p>Sébastien Renaud</p>
+
+
+
+
+</article>
+<article class="slide level-1" id="the-story-of-happy-kitty">
+
+<h1>The story of Happy Kitty</h1>
+
+<p>Needs to audit a smartphone, where to start?</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> find / -name <span class="s1">&#39;*.so&#39;</span> <span class="p">|</span> <span class="se">\</span>
+<span class="go">    while read so; do \</span>
+<span class="go">        nm -CD &quot;$so&quot;  | grep strcpy &amp;&amp; echo $so ; \</span>
+<span class="go">    done</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="rince-and-repeat">
+
+<h1>Rince and Repeat</h1>
+
+<p>Similar commands to find libraries with:</p>
+<ul class="simple">
+<li>Hardening features (or without!)</li>
+<li>Sensible functions (<code class="docutils literal"><span class="pre">strcpy</span></code>, <code class="docutils literal"><span class="pre">system</span></code>)</li>
+<li>Dependencies on flaky libraries</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-1" id="recursively">
+
+<h1>Recursively</h1>
+
+<p>In the end we may want to build:</p>
+<ul class="simple">
+<li>A score for each binary, to focus on some libs</li>
+<li>A graph of library interactions</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-1" id="binmap">
+
+<h1>Binmap</h1>
+
+<p>A <strong>Simple</strong> Tool that:</p>
+<ul class="simple">
+<li>Walks a filesystem</li>
+<li>Analyses Binary files</li>
+<li>Builds the dependency graph</li>
+</ul>
+<p>Nothing more <code class="docutils literal"><span class="pre">:-)</span></code></p>
+
+
+
+
+</article>
+<article class="slide level-1" id="support">
+
+<h1>Support</h1>
+
+<p><a class="reference external" href="https://github.com/quarkslab/binmap">https://github.com/quarkslab/binmap</a></p>
+<ul>
+<li><p class="first">Tested on Linux &amp; Windows</p>
+</li>
+<li><p class="first">Supported Binary Formats:</p>
+<blockquote>
+<div><ul class="simple">
+<li>ELF</li>
+<li>PE</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-1" id="usage-build-a-database">
+
+<h1>Usage - Build a Database</h1>
+
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> binmap scan /usr/local -o local.dat
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ./binmap scan --chroot ./extracted_fs -o image.dat
+</pre></div>
+</div>
+<p>The graph + metadata is represented as serialized C++ data structure, <code class="docutils literal"><span class="pre">NoDB™</span></code></p>
+
+
+
+
+</article>
+<article class="slide level-1" id="usage-visualize-the-database">
+
+<h1>Usage - Visualize the Database</h1>
+
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ./binmap view -i local.dat -o local.dot
+</pre></div>
+</div>
+<img src="_images/blobs.svg" />
+
+
+
+</article>
+<article class="slide level-1" id="usage-explore-the-database">
+
+<h1>Usage - Explore the Database</h1>
+
+<p>Python binding:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">blobmap</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="id1">
+
+<h1>Usage - Explore the Database</h1>
+
+<p>Load the db:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">blobs</span> <span class="o">=</span> <span class="n">blobmap</span><span class="o">.</span><span class="n">BlobMap</span><span class="p">(</span><span class="s1">&#39;local.dat&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And the last scan result:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">blob</span> <span class="o">=</span> <span class="n">blobs</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="usage-explore-a-node">
+
+<h1>Usage - Explore a Node</h1>
+
+<p>Inspect nodes:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clang_metadata</span> <span class="o">=</span> <span class="n">blob</span><span class="p">[</span><span class="s1">&#39;/usr/local/bin/clang&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">clang_metadata</span><span class="p">)</span>
+<span class="go">clang: 8fcffc4a97cd4aaa1a32938a9e95d3b253476121(13223 exported symbols)(1303 imported symbols)(1 hardening features)</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="usage-metadata">
+
+<h1>Usage - Metadata</h1>
+
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clang_metadata</span><span class="o">.</span><span class="n">hash</span>
+<span class="go">8fcffc4a97cd4aaa1a32938a9e95d3b253476121</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clang_metadata</span><span class="o">.</span><span class="n">hardening_features</span>
+<span class="go">{&#39;fortified&#39;}</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="a-note-on-versioning">
+
+<h1>A Note on Versioning</h1>
+
+<ul class="simple">
+<li><strong>No</strong> Standard way to store version number in a binary</li>
+<li><strong>No</strong> Standard versioning scheme</li>
+</ul>
+<p>⇒ regexp on <code class="docutils literal"><span class="pre">.rodata</span></code> :-/</p>
+
+
+
+
+</article>
+<article class="slide level-1" id="scenario-1">
+
+<h1>Scenario #1</h1>
+
+<p>Find binary that may be interesting:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">max</span><span class="p">(</span><span class="n">blob</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">score</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="scenario-1-score-function">
+
+<h1>Scenario #1 - Score Function</h1>
+
+<p>Using:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LOOKATME</span> <span class="o">=</span> <span class="s1">&#39;strcpy&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="go">    return (len(s.imported_symbols.intersection(LOOKATME)) -</span>
+<span class="go">            len(s.hardening_features))</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="scenario-2">
+
+<h1>Scenario #2</h1>
+
+<p>Find all binaries that load a given shared library</p>
+<p>Using:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">induced_predecessors</span><span class="p">(</span><span class="s1">&#39;/lib32/libc.so.6&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="scenario-3">
+
+<h1>Scenario #3</h1>
+
+<p>Compare two snapshots of a system</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">blob0</span><span class="p">,</span> <span class="n">blob1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">blobs</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diff</span> <span class="o">=</span> <span class="n">blob00</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">blob1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diff</span><span class="o">.</span><span class="n">added</span>
+<span class="go">{&#39;/.../libmy1.so&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diff</span><span class="o">.</span><span class="n">removed</span>
+<span class="go">{&#39;/.../libmy0.so&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diff</span><span class="o">.</span><span class="n">updated</span>
+<span class="go">{&#39;/.../myprog&#39;}</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-1" id="technical-points">
+
+<h1>Technical Points</h1>
+
+<ul class="simple">
+<li>CMake +CTest +  C++98 (<code class="docutils literal"><span class="pre">:'(</span></code>) + OpenMP (optional)</li>
+<li><code class="docutils literal"><span class="pre">Boost.Python</span></code></li>
+<li>Git, Travis…</li>
+<li>Once tried <code class="docutils literal"><span class="pre">sqlite</span></code> as a backend</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-1" id="final-words">
+
+<h1>Final Words</h1>
+
+<p><a class="reference external" href="https://github.com/quarkslab/binmap">https://github.com/quarkslab/binmap</a></p>
+<ul class="simple">
+<li>Open Source + Plugin System = Contribute</li>
+<li>KISS: a simple tool, build upon it!</li>
+<li>Thanks <em>a lot</em> to <em>happy kitty</em> for his feedback!</li>
+</ul>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>

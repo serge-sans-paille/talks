@@ -1,0 +1,10 @@
+article {
+    background-image:url(qb.png);
+    background-repeat:no-repeat;
+    background-position:right bottom;
+    background-size: 20%;
+}
+
+article#binmap-scanning-file-systems-with-binmap {
+    background-size: 40%;
+}
