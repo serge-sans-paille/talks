@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>C++ Costless Abstractions: the Compiler View</title>
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+        <!-- Code syntax highlighting -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+<style>
+mark{
+        background: blue;
+}
+</style>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+       <section>
+
+				<section>
+                    <h2>C++ Costless Abstractions</h2>
+					<h3>the Compiler View</h3>
+					<p>
+                    <small>Proudly made in <em>Namek</em> by <a href="http://serge.liyun.free.fr/serge/">serge-sans-paille</a></small>
+					</p>
+				</section>
+
+				<section>
+                <h2><code data-noescape class="bash">/me</code></h2>
+                <h3>Serge « sans paille » Guelton</h3>
+                <p>
+                <pre><code data-noescape class="bash">$ whoami
+sguelton</code></pre>
+                <ul>
+                    <li>R&amp;D engineer at <a href="http://www.quarkslab.com/">QuarksLab</a> on compilation for security</li>
+                    <li>Associate researcher at Télécom Bretagne</li>
+                </ul>
+                </p>
+				</section>
+
+                <section>
+                    <h2>He that started it all</h2>
+                    <p>
+                    <blockquote>
+                    «C++ Is my favorite garbage collected language
+                    because it generates so little garbage» &#8211; Bjarn Stroustrup
+                    </blockquote>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Zero-Cost Abstraction</h2>
+                    <p>
+                    <blockquote>
+                    «C++ enables zero-overhead abstraction to get us away from the hardware without adding cost.» &#8211; Bjarn Stroustrup
+                    </blockquote>
+                    </p>
+                    <p>
+                    FACT: There's always a cost.
+                    </p>
+                    <p>
+                    But the compiler (and the language) pay it in <strong>complexity</strong>. You don't pay it in <strong>execution time</strong>.
+                    </p>
+                </section>
+
+            <section>
+                <h2><code data-noescape>constexpr</code> &ne; costless</h2>
+                <p>
+                <pre><code data-noescape class="c++"><mark>constexpr</mark> int fibo(int v) {
+  return v < 2 ? v : (fibo(v-1) + fibo(v-2));
+}
+int main() {
+  <mark>static_assert(fibo(26) == 121393, "ok");</mark>
+  // std::cout << fibo(26) << std::endl;
+  return 0;
+}</code></pre>
+                </p>
+                <ul>
+                    <li>Compilation times with <code data-noescape>constexpr</code>: ~0.9s</li>
+                    <li>Compilation times with<strong>out</strong> <code data-noescape>constexpr</code>: ~0.3s</li>
+            </section>
+
+            <section>
+                <h2><code data-noescape>constexpr</code> trivia</h2>
+                <p>Changing Fibo number from <strong>26</strong> to <strong>27</strong></p>
+                <pre><code data-noescape class="c++">% time clang++ constexpr.cpp -std=c++14
+constexpr.cpp:7:17: error: static_assert expression is not an integral constant expression
+  static_assert(fibo(27) == 196418, "ok");
+                ^~~~~~~~~~~~~~~~~~
+constexpr.cpp:2:27: note: <mark>constexpr evaluation hit maximum step limit</mark>; possible infinite loop?
+constexpr int fibo(int v) {
+
+}</code></pre>
+            </section>
+
+                <section>
+                    <h2>A Brief Word about Clang+LLVM</h2>
+                    <p>
+                    <ul>
+                        <li>Modern compiler infrastructure</li>
+                        <li>Historical focus on C-like languages</li>
+                        <li>Uses a typed IR, in SSA form</li>
+                    </ul>
+                    </p>
+                    <p>
+                    <strong>Used to illustrate all the following examples</strong>
+                    </p>
+                </section>
+
+        </section>
+
+
+        <section>
+
+            <section>
+                <h2><strong>Fun</strong>ctions</h2>
+                <p>Functions are an essential piece of abstraction:
+                <ul>
+                    <li>Give a name to a block of code</li>
+                    <li>Avoid redundancy</li>
+                    <li>Abstract with respect to types → overloading</li>
+                </ul>
+                </p>
+                <p>
+            </section>
+            <section>
+                <h2><strong>Fun</strong>ctions</h2>
+                <strong>But</strong> a function call implies a performance penality
+                <p>
+                <ul>
+                    <li>Jumping (twice)</li>
+                    <li>Saving context</li>
+                </ul>
+                </p>
+                And they are <strong>over-used in the STL:</strong>
+                <ul>
+                    <li><code data-noescape>std::copy</code></li>
+                    <li>calls <code data-noescape>std::__copy_move_a2</code></li>
+                    <li>that calls <code data-noescape>__copy_move_a</code></li>
+                    <li>that calls <code data-noescape>__copy_move</code></li>
+                    <li>that may calls <code data-noescape>__builtin_memmove</code></li>
+                </ul>
+
+            </section>
+
+
+            <section>
+                <h2>Inlining - Input</h2>
+                <pre><code data-noescape class="c++">struct foobar {
+  int doit(int a) const { return a+1;}
+};
+
+inline int foo(int a) {
+  return a+1;
+}
+int bar(foobar const &amp;fb, int val) {
+  return foo(fb.doit(val));
+}</code></pre>
+            </section>
+            <section>
+                <h2>Inlining - Output</h2>
+                <pre><code data-noescape data-noescape>define i32 @_Z3barRK6foobari(%struct.foobar* nocapture readnone dereferenceable(1) %fb, i32 %val) {
+  <mark>%1 = add nsw i32 %val, 2</mark>
+    ret i32 %1
+    }</code></pre>
+            </section>
+
+            <section>
+                <h2>Inlining</h2>
+                <p>Q: is <code data-noescape>inline</code> useful?</p>
+                <p><em>A: not much more than an hint (+ODR)</em></p>
+                <p>Q: how to take control?</p>
+                <p><em>A: <code data-noescape>-mllvm -inline-threshold=225</code> or <code data-noescape>-inlinehint-threshold=42</code></em></p>
+                <p>Q: how to really take control?</p>
+                <p><em>A: <code data-noescape>__attribute__((always_inline))</code></em></p>
+            </section>
+
+            <section>
+                <h2>Value semantic</h2>
+                <pre><code data-noescape class="c++">void foo(double &amp; f) {
+  f += 1.;
+}
+double bar(double f) {
+  return f + 1.;
+}</code></pre>
+            </section>
+            <section>
+                <h2>Value semantic</h2>
+               <pre><code data-noescape data-noescape>define void @_Z3fooRd(double* nocapture dereferenceable(8) %f) {
+  %1 = <mark>load</mark> double* %f, align 8, !tbaa !1
+  %2 = fadd double %1, 1.000000e+00
+  <mark>store</mark> double %2, double* %f, align 8, !tbaa !1
+  ret void
+}
+
+define double @_Z3bard(double %f) #1 {
+  %1 = fadd double %f, 1.000000e+00
+  ret double %1
+}</code></pre>
+            </section>
+
+            <section>
+                <h2>Const Ref or Value?</h2>
+                <pre><code data-noescape class="c++" data-noescape>static int foo(int <mark>const&amp;</mark> v) __attribute__((noinline)) { return v; }
+static int bar(int v) __attribute__((noinline)) { return v; }
+
+int caller(int v) {
+  return foo(v) + bar(v);
+}</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Const Ref or Value?</h2>
+                <strong>Compiled with <code data-noescape>-O2</code></strong>
+                <pre><code data-noescape data-noescape>define internal fastcc i32 @_ZL3fooRKi(<mark>i32*</mark> nocapture readonly dereferenceable(4) %v) #1 {
+  <mark>%1 = load i32* %v, align 4, !tbaa !1</mark>
+  ret i32 %1
+}
+
+define internal fastcc i32 @_ZL3bari(i32 %v) #2 {
+  ret i32 %v
+}</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Const Ref or Value?</h2>
+                <strong>Compiled with <code data-noescape>-O3</code></strong>
+                <pre><code data-noescape>define internal fastcc i32 @_ZL3fooRKi(<mark>i32</mark> %v.val) {
+  ret i32 %v.val
+}
+
+define internal fastcc i32 @_ZL3bari(i32 %v) #2 {
+  ret i32 %v
+}</code></pre>
+
+            </section>
+
+            <section>
+                <h2><code>struct const &amp;</code></h2>
+                <pre><code data-noescape class="c++">struct pack {
+  unsigned a,b,c;
+};
+
+<mark>static</mark> int foo(pack <mark>const&amp;</mark> v) __attribute__((noinline)) { return (v.a + v.b + v.c)/3; }
+int caller(pack <mark>const&amp;</mark> v) {
+  return foo(v);
+}</code></pre>
+            </section>
+
+            <section>
+                <h2>Passing struct by value</h2>
+                <p<strong>Changing signature!</strong></p>
+                <pre><code data-noescape>define internal fastcc i32 @_ZL3fooRK4pack(<mark>i32 %v.0.0.val, i32 %v.0.1.val, i32 %v.0.2.val</mark>) {
+  %1 = add i32 %v.0.1.val, %v.0.0.val
+  %2 = add i32 %1, %v.0.2.val
+  %3 = udiv i32 %2, 3
+  ret i32 %3
+}</code></pre>
+            </section>
+            <section>
+                <h2>Passing struct by value</h2>
+                <p<strong>Tail call + unboxing</strong></p>
+                <pre><code data-noescape>_Z6callerRK4pack:
+	movl	(%rdi), %eax
+	movl	4(%rdi), %esi
+	movl	8(%rdi), %edx
+	movl	%eax, %edi
+    <mark>jmp	_ZL3fooRK4pack</mark>          # TAILCALL
+
+_ZL3fooRK4pack:
+	addl	%esi, %edi
+	leal	(%rdi,%rdx), %ecx
+	movl	$2863311531, %eax
+	imulq	%rcx, %rax
+	shrq	$33, %rax
+	retq
+</code></pre>
+            </section>
+
+            <section>
+                <h2>Tag dispatching</h2>
+                <pre><code data-noescape class="c++">struct tag0 {};
+struct tag1 {};
+static int foo(int v, <mark>tag0</mark>) __attribute__((noinline)) { return v + 0; }
+static int foo(int v, <mark>tag1</mark>) __attribute__((noinline)) { return v * 2; }
+
+int caller(int v) {
+  return foo(v, <mark>tag0{}</mark>) + foo(v, <mark>tag1{}</mark>);
+}
+</code></pre>
+        </section>
+            <section>
+                <h2>Tag dispatching</h2>
+                <p><strong>No useless argument</strong></p>
+                <pre><code data-noescape>define internal fastcc i32 @_ZL3fooi4<mark>tag0</mark>(i32 %v) #1 {
+  ret i32 %v
+}
+
+define internal fastcc i32 @_ZL3fooi4<mark>tag1</mark>(i32 %v) #1 {
+  %1 = shl nsw i32 %v, 1
+  ret i32 %1
+}
+</code></pre>
+        </section>
+            <section>
+                <h2>Lambda</h2>
+                <pre><code data-noescape class="c++">int (*foo)(int, int) = [](int x, int y) { return x + y; };
+int bar(int x, int y) {
+  return x + y;
+}
+</pre></code>
+            </section>
+
+            <section>
+                <h2>Lambda</h2>
+                <p><strong>Not different from a regular function?</strong></p>
+                <pre><code data-noescape>define i32 @_Z3barii(i32 %x, i32 %y) {
+  %1 = add nsw i32 %y, %x
+  ret i32 %1
+}
+
+define internal i32 <mark>@"_ZN3$_08__invokeEii"</mark>(i32 %x, i32 %y) align 2 {
+  %1 = add nsw i32 %y, %x
+  ret i32 %1
+}
+</pre></code>
+            </section>
+
+
+            <section>
+                <h2>Lambda + capture</h2>
+                <pre><code data-noescape class="c++">auto foo(int val) {
+  return <mark>[val]</mark>(int x) { return x + val; };
+}
+auto bar() {
+  return <mark>[]</mark>(int x) { return x * 3 ; };
+}
+</pre></code>
+            </section>
+
+            <section>
+                <h2>Lambda + capture</h2>
+                <p><strong>Not different from its state!</strong><p>
+                <pre><code data-noescape>define <mark>i32</mark> @_Z3fooi(i32 %val) #0 {
+  ret i32 %val
+}
+
+define <mark>void</mark> @_Z3barv() #0 {
+  ret void
+}
+</pre></code>
+            </section>
+
+        </section>
+
+        <section>
+            <section>
+                <h2><code>struct</code>, <code>class</code> = data</h2>
+                <p>
+                <ul>
+                    <li>Use <code>class</code> to <strong>box</strong> data with type information</li>
+                    <li><em>Eventually</em> to associate treatment to data</li>
+                    <li>Manage the lifetime of data</li>
+                </ul>
+                </p>
+            </section>
+            <section>
+                <h2>Boxing values</h2>
+                <pre><code data-noescape class="c++">struct A {
+  char a_ = <mark>'a'</mark>;
+};
+struct B : A {
+  char b_ = <mark>'b'</mark>;
+};
+B* foo() {
+  return <mark>new</mark> B();
+}
+</code></pre>
+            </section>
+
+            <section>
+                <h2>Boxing values</h2>
+                <pre><code data-noescape>%struct.B = type { %struct.A, i8 }
+%struct.A = type { i8 }
+
+; Function Attrs: uwtable
+define noalias %struct.B* @_Z3foov() {
+  %1 = tail <mark>call noalias i8* @_Znwm(i64 2)</mark>
+  %2 = bitcast i8* %1 to %struct.B*
+  %3 = bitcast i8* %1 to i16*
+  <mark>store i16 0</mark>, i16* %3, align 1
+  <mark>store i8 97</mark>, i8* %1, align 1, !tbaa !1
+  %4 = getelementptr inbounds i8* %1, i64 1
+  <mark>store i8 98</mark>, i8* %4, align 1, !tbaa !5
+  ret %struct.B* %2
+}
+</code></pre>
+            </section>
+            <section>
+                <h2>Boxing values</h2>
+                <pre><code data-noescape>_Z3foov:
+	pushq	%rax
+.Ltmp0:
+	movl	$2, %edi
+	callq	_Znwm
+    <mark>movw	$0, (%rax)</mark>
+    <mark>movw	$25185, (%rax)</mark>
+	popq	%rdx
+	retq
+</code></pre>
+            </section>
+
+            <section>
+                <h2>More Boxing/Unboxing</h2>
+                <pre><code data-noescape class="c++">struct foo {
+  short val_;
+  struct {
+    short val_;
+    struct {
+      short val_;
+    } nest_;
+  } nest_;
+};
+
+foo bar(char val) {
+  foo a;
+  a.val_ = val;
+  a.nest_.val_ = val;
+  a.nest_.nest_.val_ = val;
+  return a;
+}
+</code></pre>
+
+            </section>
+            <section>
+                <h2>More Boxing/Unboxing</h2>
+                <p><strong>Fuse scalars!</strong></p>
+                <pre><code data-noescape>define i48 @_Z3barc(i8 signext %val) #0 {
+  %1 = sext i8 %val to i16
+  %2 = zext i16 %1 to i48
+  %3 = shl nuw <mark>i48</mark> %2, 32
+  %4 = shl nuw nsw <mark>i48</mark> %2, 16
+  %5 = or <mark>i48</mark> %4, %2
+  %6 = or <mark>i48</mark> %5, %3
+  ret i48 %6
+}
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Member Functions</h2>
+                <pre><code data-noescape class="c++">struct foo {
+  int bar() const;
+};
+
+int foo_bar(foo const&amp; f) {
+  return f.bar();
+}
+</code></pre>
+
+            </section>
+            <section>
+                <h2>Member Functions</h2>
+                <p><strong>Just a function</strong> (very Pythonic!)</p>
+                <pre><code data-noescape>%struct.foo = type { i32 }
+
+define i32 @_Z7foo_barRK3foo(%struct.foo* dereferenceable(4) %f){
+  %1 = tail call i32 <mark>@_ZNK3foo3barEv</mark>(%struct.foo* %f)
+  ret i32 %1
+}
+
+<mark>declare i32 @_ZNK3foo3barEv(%struct.foo*)</mark>
+
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Default Copy Constructor</h2>
+                <pre><code data-noescape class="c++">struct foo {
+  int a,b,c,d,e,f,g,h,i,j,k;
+};
+
+foo a;
+
+void test(foo b) {
+  <mark>a = b</mark>;
+}
+</code></pre>
+
+                </section>
+            <section>
+                <h2>Default Copy constructor</h2>
+                <p><strong><code>Memcpy</code> detected!</strong></p>
+                <pre><code data-noescape>%struct.foo = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 }
+
+@a = global %struct.foo <mark>zeroinitializer</mark>, align 4
+
+; Function Attrs: nounwind uwtable
+define void @_Z4test3foo(%struct.foo* byval nocapture readonly align 8 %b) {
+  %1 = bitcast %struct.foo* %b to i8*
+  call void <mark>@llvm.memcpy.p0i8.p0i8.i64</mark>(i8* bitcast (%struct.foo* @a to i8*), i8* %1, i64 44, i32 4, i1 false), !tbaa.struct !1
+  ret void
+}
+</code></pre>
+
+                </section>
+            <section>
+                <h2>Default Copy constructor</h2>
+                <p><strong><code>Memcpy</code>? Too expansive!</strong></p>
+                <pre><code data-noescape class="c++">struct foo {
+  <mark>int a,b,c,d;</mark>
+};
+
+foo a;
+
+void test(foo b) {
+  a = b;
+}
+</code></pre>
+
+                </section>
+
+            <section>
+                <h2>Default Copy constructor</h2>
+                <pre><code data-noescape> define void @_Z4test3foo(i64 %b.coerce0, i64 %b.coerce1) {
+  <mark>store i64</mark> %b.coerce0, i64* bitcast (%struct.foo* @a to i64*), align 8
+  <mark>store i64</mark> %b.coerce1, i64* bitcast (i32* getelementptr inbounds (%struct.foo* @a, i64 0, i32 2) to i64*), align 8
+  ret void
+}</code></pre>
+
+                </section>
+
+            <section>
+                <h2>Copy Elision</h2>
+                <pre><code data-noescape class="c++">struct S {
+  double x_, y_, z_;
+  S(double x) : x_{x}, y_{x}, z_{x} {}
+  S(S const&amp;) = default;
+};
+
+S init() {
+  <mark>return S(1.)</mark>;
+}
+S init2() {
+  S d(1.);
+  <mark>return d</mark>;
+}
+</code></pre>
+            </section>
+
+            <section>
+                <h2>CopyElision</h2>
+                <p><strong>For free thanks to the representation</strong></p>
+                <pre><code data-noescape>define void @_Z4initv(<mark>%struct.S* noalias nocapture sret</mark> %agg.result) {
+  %1 = bitcast %struct.S* %agg.result to &lt;2 x double&gt;*
+  store &lt;2 x double&gt; &lt;double 1.000000e+00, double 1.000000e+00&gt; &lt;2 x double&gt; %1, align 8, !tbaa !1
+  %2 = getelementptr inbounds %struct.S* %agg.result, i64 0, i32 2
+  store double 1.000000e+00, double* %2, align 8, !tbaa !5
+  ret void
+}
+</code></pre>
+
+        </section>
+            <section>
+                <h2>CopyElision</h2>
+                <p><strong>Same code with a temporary</strong></p>
+                <pre><code data-noescape>define void @_Z5init2v(%struct.S* noalias nocapture sret %agg.result) {
+  %1 = bitcast %struct.S* %agg.result to &lt;2 x double&gt;*
+  store &lt;2 x double&gt; &lt;double 1.000000e+00, double 1.000000e+00&gt; &lt;2 x double&gt; %1, align 8, !tbaa !1
+  %2 = getelementptr inbounds %struct.S* %agg.result, i64 0, i32 2
+  store double 1.000000e+00, double* %2, align 8, !tbaa !5
+  ret void
+</code></pre>
+
+        </section>
+
+        <section>
+            <h2>Initializer list</h2>
+            <pre><code data-noescape class="c++"><mark>std::array</mark>&lt;int, 16&gt; foo = {0,1,2,3,4,5,6,7,8,9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF};
+<mark>std::vector</mark>&lt;int&gt; bar = {0,1,2,3,4,5,6,7,8,9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF};
+            </code></pre>
+        </section>
+        <section>
+            <h2>Initializer list</h2>
+            <p><strong>Static initialisation</strong></p>
+            <pre><code data-noescape>@foo = global %"struct.std::array" <mark>{ [16 x i32] [i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15] }</mark>, align 4
+</code></pre>
+        </section>
+        <section>
+            <h2>Initializer list</h2>
+            <p><strong>Runtime initialisation</strong></p>
+            <pre><code data-noescape>@bar = global %"class.std::vector" zeroinitializer, align 8
+(...)
+
+__cxx_global_var_init.exit:                       ; preds = %0
+  %8 = bitcast i8* %1 to i32*
+  <mark>store</mark> i8* %1, i8** bitcast (%"class.std::vector"* @bar to i8**), align 8, !tbaa !1
+  %9 = getelementptr inbounds i8* %1, i64 64
+  <mark>store</mark> i8* %9, i8** bitcast (i32** getelementptr inbounds (%"class.std::vector"* @bar, i64 0, i32 0, i32 0, i32 2) to i8**), align 8, !tbaa !7
+  <mark>store</mark> i32 0, i32* %8, align 4
+  %10 = getelementptr inbounds i8* %1, i64 4
+  %11 = bitcast i8* %10 to i32*
+  <mark>store</mark> i32 1, i32* %11, align 4
+  %12 = getelementptr inbounds i8* %1, i64 8
+  %13 = bitcast i8* %12 to i32*
+  <mark>store</mark> i32 2, i32* %13, align 4
+  %14 = getelementptr inbounds i8* %1, i64 12
+  %15 = bitcast i8* %14 to i32*
+  <mark>store</mark> i32 3, i32* %15, align 4
+  %16 = getelementptr inbounds i8* %1, i64 16
+</code></pre>
+        </section>
+        </section>
+
+
+        <section>
+
+            <section>
+                <h2>Iterating over a Vector</h2>
+
+                <pre><code data-noescape class="c++">double foo(std::vector&lt;double&gt; const&amp; v) {
+  double s = 0.;
+  for(<mark>auto</mark> dat : v)
+    s += dat;
+  return s;
+}
+double bar(double const* v, std::size_t n) {
+  double s = 0.;
+  for(<mark>std::size_t</mark> i = 0; i < n; ++i)
+    s += v[i];
+  return s;
+}
+</pre></code>
+
+            </section>
+
+            <section>
+                <h2>Iterating over a vector</h2>
+                <p><strong>Auto version</strong></p>
+
+                <pre><code data-noescape>.lr.ph:                                           ; preds = %.lr.ph.preheader, %.lr.ph
+  %s.01 = phi double [ %8, %.lr.ph ], [ 0.000000e+00, %.lr.ph.preheader ]
+  %6 = phi double* [ %9, %.lr.ph ], [ %2, %.lr.ph.preheader ]
+  %7 = load double* %6, align 8, !tbaa !8
+  %8 = fadd double %s.01, %7
+  %9 = getelementptr inbounds double* %6, i64 1
+  %10 = icmp eq double* %9, %4
+  br i1 %10, label %._crit_edge.loopexit, label %.lr.ph
+</pre></code>
+
+            </section>
+
+
+            <section>
+                <h2>Iterating over a vector</h2>
+                <p><strong>Index version</strong></p>
+
+                <pre><code data-noescape>.lr.ph:
+  %i.02 = phi i64 [ %5, %.lr.ph ], [ 0, %.lr.ph.preheader ]
+  %s.01 = phi double [ %4, %.lr.ph ], [ 0.000000e+00, %.lr.ph.preheader ]
+  %2 = getelementptr inbounds double* %v, i64 %i.02
+  %3 = load double* %2, align 8, !tbaa !8
+  %4 = fadd double %s.01, %3
+  <mark>%5 = add nuw i64 %i.02, 1</mark>
+  %exitcond = icmp eq i64 %5, %n
+  br i1 %exitcond, label %._crit_edge.loopexit, label %.lr.ph
+</pre></code>
+
+            </section>
+
+            <section>
+                <h2>Indexing a vector</h2>
+                <pre><code data-noescape class="c++">double foo(<mark>std::vector&lt;double&gt; const&amp; data</mark>, std::size_t i) {
+  return data[i];
+}
+double bar(<mark>double const* data</mark>, std::size_t i) {
+  return data[i];
+}
+</code></pre>
+            </section>
+
+            <section>
+                <h2>Indexing a vector</h2>
+                <p><strong>Needs an extra adress computation</strong></p>
+                <pre><code data-noescape>define double @_Z3fooRKSt6vectorIdSaIdEEm(%"class.std::vector"* nocapture readonly dereferenceable(24) %data, i64 %i) {
+  <mark>%1 = getelementptr inbounds %"class.std::vector"* %data, i64 0, i32 0, i32 0, i32 0</mark>
+  %2 = load double** %1, align 8, !tbaa !1
+  %3 = getelementptr inbounds double* %2, i64 %i
+  %4 = load double* %3, align 8, !tbaa !7
+  ret double %4
+}
+
+define double @_Z3barPKdm(double* nocapture readonly %data, i64 %i) #0 {
+  %1 = getelementptr inbounds double* %data, i64 %i
+  %2 = load double* %1, align 8, !tbaa !7
+  ret double %2
+}
+</code></pre>
+            </section>
+
+            <section>
+                <h2>Virtual method calls</h2>
+                <pre><code data-noescape class="c++">struct Interface {
+  virtual int doit() = 0;
+  virtual ~Interface() {}
+};
+struct A : Interface {
+  int doit() final { return 0; }
+};
+
+int foo(<mark>Interface&amp;</mark> a) {
+  return a.doit();
+}
+int bar(<mark>A&amp;</mark> a) {
+  return a.doit();
+}
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Virtual method calls</h2>
+                <p><strong>Here comes the <code>vtable</code></strong></p>
+                <pre><code data-noescape>define i32 @_Z3fooR9Interface(%struct.Interface* dereferenceable(8) %a) #0 {
+  %1 = bitcast %struct.Interface* %a to i32 (%struct.Interface*)***
+  %2 = load i32 (%struct.Interface*)*** %1, align 8, !tbaa !1
+  %3 = load i32 (%struct.Interface*)** %2, align 8
+  %4 = <mark>tail call i32 %3(%struct.Interface* %a)</mark>
+  ret i32 %4
+}
+
+define i32 @_Z3barR1A(%struct.A* nocapture readnone dereferenceable(8) %a) #1 {
+  ret i32 0
+}
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Virtual method calls</h2>
+                <p><strong>Force virtual call</strong></p>
+                <pre><code data-noescape class="c++">int foobar() {
+  A a;
+  <mark>Interface&amp; b</mark> = a;
+  return <mark>b</mark>.doit();
+}
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Virtual method calls</h2>
+                <p><strong>It's devirtualized!</strong></p>
+                <pre><code data-noescape>define i32 @_Z6foobarv() {
+  ret i32 0
+}
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>New / Delete</h2>
+                <pre><code data-noescape class="c++">double foo(double x, double y) {
+  auto * z = <mark>new</mark> double( x + y);
+  auto tmp = *z;
+  <mark>delete</mark> z;
+  return tmp;
+}
+</code></pre>
+            </section>
+            <section>
+                <h2>New / Delete</h2>
+                <p><strong>No more heap allocation!</strong> (what about exceptions?)</p>
+                <pre><code data-noescape>define double @_Z3foodd(double %x, double %y) {
+  %1 = fadd double %x, %y
+  ret double %1
+</code></pre>
+            </section>
+
+            <section>
+                <h2>Except / NoExcept</h2>
+                <pre><code data-noescape class="c++">int bar() <mark>noexcept</mark>;
+int foobar();
+int foo() {
+  <mark>try</mark> {
+    return bar() + foobar();
+  }
+  <mark>catch(...)</mark> {
+    throw;
+  }
+}
+</code></pre>
+            </section>
+            <section>
+                <h2>Except / NoExcept</h2>
+                <p><strong>No global registration</code></p>
+                <pre><code data-noescape>declare i32 @_Z3barv() #1
+
+declare i32 @_Z6foobarv() #2
+
+attributes #1 = { <mark>nounwind</mark> "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "unsafe-fp-math"="false" "use-soft-float"="false" }
+</code></pre>
+            </section>
+
+            <section>
+                <h2>Except / NoExcept</h2>
+                <p>Different calling mechanism!</strong></p>
+                <pre><code data-noescape>define i32 @_Z3foov() #0 {
+  %1 = tail <mark>call i32 @_Z3barv()</mark>
+  %2 = <mark>invoke i32 @_Z6foobarv()</mark>
+          to label %3 unwind label %5
+
+; <label>:3                                       ; preds = %0
+  %4 = add nsw i32 %2, %1
+  ret i32 %4
+
+; <label>:5                                       ; preds = %0
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null
+  %7 = extractvalue { i8*, i32 } %6, 0
+  %8 = tail call i8* @__cxa_begin_catch(i8* %7) #4
+  invoke void @__cxa_rethrow() #5
+          to label %15 unwind label %9
+
+; <label>:9                                       ; preds = %5
+  %10 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+  invoke void @__cxa_end_catch()
+          to label %11 unwind label %12
+
+; <label>:11                                      ; preds = %9
+  resume { i8*, i32 } %10
+
+; <label>:12                                      ; preds = %9
+  %13 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null
+  %14 = extractvalue { i8*, i32 } %13, 0
+  tail call void @__clang_call_terminate(i8* %14) #6
+  unreachable
+
+; <label>:15                                      ; preds = %5
+  unreachable
+}
+</code></pre>
+            </section>
+
+
+
+        <section>
+            <h2>Outer Product</h2>
+            <pre><code data-noescape class="c++">std::vector&lt;double&gt; outer_product(std::vector&lt;double&gt; const&amp; self, std::vector&lt;double&gt; const&amp; other) {
+  std::vector&lt;double&gt; outer(self.size() * other.size());
+  for(std::size_t i = 0; i < self.size(); ++i)
+    for(std::size_t j = 0; j &lt; other.size(); ++j)
+      outer[i * other.size() +j] = <mark>self[i] * other[j]</mark>;
+  return outer;
+}</code></pre>
+
+
+        </section>
+
+        <section>
+            <h2>Outer Product</h2>
+            <p><strong>Vectorized</strong> (compiled with <code>-O3 -march=native</code>)</p>
+            <pre><code data-noescape>
+  %wide.load20 = load &lt;4 x double&gt;* %76, align 8, !tbaa !9
+  %77 = <mark>fmul &lt;4 x double&gt;</mark> %54, %wide.load
+  %78 = <mark>fmul &lt;4 x double&gt;</mark> %59, %wide.load18
+  %79 = <mark>fmul &lt;4 x double&gt;</mark> %63, %wide.load19
+  %80 = <mark>fmul &lt;4 x double&gt;</mark> %68, %wide.load20
+</code></pre>
+
+        </section>
+        </section>
+
+
+
+
+				<section>
+				<section>
+					<h2>Bring Home Message</h2>
+                    <h4><strong>♥ COMPILERS ♥</strong></h4>
+                    <p>They do their job, we do ours</p>
+                        <h4><strong>Learn to communicate with them</strong></h4>
+                        <p><code data-noescape>info gcc</code> &amp; <code data-noescape>clang --help</code></p>
+                        <h4><strong>☺ trust no one &amp; be curious☺</strong></h4>
+                        <p>Verify assembly, verify code</p>
+
+				</section>
+
+				<section>
+					<h1>THE END</h1>
+                        <h4><strong>HIGH-LEVEL THANKS</strong></h4>
+                        <p>Joël Falcou and Pierrick Brunet</p>
+                        <h4><strong>LOW-LEVEL THANKS</strong></h4>
+                        <p>Adrien Guinet and Kévin Szkudlapski</p>
+                        <h4><strong>ALL-AROUND THANKS</strong></h4>
+                        <p>CppCon &amp; Quarkslab for allowing me to be there!</p>
+
+				</section>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
