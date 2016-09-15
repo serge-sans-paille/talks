@@ -601,6 +601,74 @@ S init2() {
 </code></pre>
 
         </section>
+            <section>
+                <h2>Virtual method calls</h2>
+                <pre><code data-noescape class="c++">struct Interface {
+  virtual int doit() = 0;
+  virtual ~Interface() {}
+};
+struct A : Interface {
+  int doit() final { return 0; }
+};
+
+int foo(<mark>Interface&amp;</mark> a) {
+  return a.doit();
+}
+int bar(<mark>A&amp;</mark> a) {
+  return a.doit();
+}
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Virtual method calls</h2>
+                <p><strong>Here comes the <code>vtable</code></strong></p>
+                <pre><code data-noescape>define i32 @_Z3fooR9Interface(%struct.Interface* dereferenceable(8) %a) #0 {
+  %1 = bitcast %struct.Interface* %a to i32 (%struct.Interface*)***
+  %2 = load i32 (%struct.Interface*)*** %1, align 8, !tbaa !1
+  %3 = load i32 (%struct.Interface*)** %2, align 8
+  %4 = <mark>tail call i32 %3(%struct.Interface* %a)</mark>
+  ret i32 %4
+}
+
+define i32 @_Z3barR1A(%struct.A* nocapture readnone dereferenceable(8) %a) #1 {
+  ret i32 0
+}
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Virtual method calls</h2>
+                <p><strong>Force virtual call</strong></p>
+                <pre><code data-noescape class="c++">int foobar() {
+  A a;
+  <mark>Interface&amp; b</mark> = a;
+  return <mark>b</mark>.doit();
+}
+</code></pre>
+
+            </section>
+
+            <section>
+                <h2>Virtual method calls</h2>
+                <p><strong>It's devirtualized!</strong></p>
+                <pre><code data-noescape>define i32 @_Z6foobarv() {
+  ret i32 0
+}
+</code></pre>
+
+            </section>
+        </section>
+
+
+        <section>
+
+            <section>
+                <h2>Misc</h2>
+                <p>Various bells and whistles in C++ you don't pay for</p>
+            </section>
 
         <section>
             <h2>Initializer list</h2>
@@ -638,10 +706,6 @@ __cxx_global_var_init.exit:                       ; preds = %0
   %16 = getelementptr inbounds i8* %1, i64 16
 </code></pre>
         </section>
-        </section>
-
-
-        <section>
 
             <section>
                 <h2>Iterating over a Vector</h2>
@@ -726,65 +790,6 @@ define double @_Z3barPKdm(double* nocapture readonly %data, i64 %i) #0 {
 </code></pre>
             </section>
 
-            <section>
-                <h2>Virtual method calls</h2>
-                <pre><code data-noescape class="c++">struct Interface {
-  virtual int doit() = 0;
-  virtual ~Interface() {}
-};
-struct A : Interface {
-  int doit() final { return 0; }
-};
-
-int foo(<mark>Interface&amp;</mark> a) {
-  return a.doit();
-}
-int bar(<mark>A&amp;</mark> a) {
-  return a.doit();
-}
-</code></pre>
-
-            </section>
-
-            <section>
-                <h2>Virtual method calls</h2>
-                <p><strong>Here comes the <code>vtable</code></strong></p>
-                <pre><code data-noescape>define i32 @_Z3fooR9Interface(%struct.Interface* dereferenceable(8) %a) #0 {
-  %1 = bitcast %struct.Interface* %a to i32 (%struct.Interface*)***
-  %2 = load i32 (%struct.Interface*)*** %1, align 8, !tbaa !1
-  %3 = load i32 (%struct.Interface*)** %2, align 8
-  %4 = <mark>tail call i32 %3(%struct.Interface* %a)</mark>
-  ret i32 %4
-}
-
-define i32 @_Z3barR1A(%struct.A* nocapture readnone dereferenceable(8) %a) #1 {
-  ret i32 0
-}
-</code></pre>
-
-            </section>
-
-            <section>
-                <h2>Virtual method calls</h2>
-                <p><strong>Force virtual call</strong></p>
-                <pre><code data-noescape class="c++">int foobar() {
-  A a;
-  <mark>Interface&amp; b</mark> = a;
-  return <mark>b</mark>.doit();
-}
-</code></pre>
-
-            </section>
-
-            <section>
-                <h2>Virtual method calls</h2>
-                <p><strong>It's devirtualized!</strong></p>
-                <pre><code data-noescape>define i32 @_Z6foobarv() {
-  ret i32 0
-}
-</code></pre>
-
-            </section>
 
             <section>
                 <h2>New / Delete</h2>
