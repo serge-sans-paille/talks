@@ -123,12 +123,19 @@ constexpr int fibo(int v) {
                     <ul>
                         <li>Modern compiler infrastructure</li>
                         <li>Historical focus on C-like languages</li>
-                        <li>Uses a typed IR, in SSA form</li>
+                        <li>Uses a typed Internal Representation</li>
                     </ul>
                     </p>
                     <p>
                     <strong>Used to illustrate all the following examples</strong>
                     </p>
+                </section>
+                <section>
+                    <h2>Disclaimer</h2>
+                    <p>
+                    The results in theses slides are relative to the compiler used (clang++3.6) and the code snippets.
+                    </p>
+                    <p>Almost nothing is guaranteed by the standard</p>
                 </section>
 
         </section>
@@ -152,8 +159,8 @@ constexpr int fibo(int v) {
                 <strong>But</strong> a function call implies a performance penality
                 <p>
                 <ul>
+                    <li><strong>Saving context</strong></li>
                     <li>Jumping (twice)</li>
-                    <li>Saving context</li>
                 </ul>
                 </p>
                 And they are <strong>over-used in the STL:</strong>
@@ -211,13 +218,13 @@ double bar(double f) {
             <section>
                 <h2>Value semantic</h2>
                <pre><code data-noescape data-noescape>define void @_Z3fooRd(double* nocapture dereferenceable(8) %f) {
-  %1 = <mark>load</mark> double* %f, align 8, !tbaa !1
+  %1 = <mark>load</mark> double* %f
   %2 = fadd double %1, 1.000000e+00
-  <mark>store</mark> double %2, double* %f, align 8, !tbaa !1
+  <mark>store</mark> double %2, double* %f
   ret void
 }
 
-define double @_Z3bard(double %f) #1 {
+define double @_Z3bard(double %f) {
   %1 = fadd double %f, 1.000000e+00
   ret double %1
 }</code></pre>
@@ -237,12 +244,12 @@ int caller(int v) {
             <section>
                 <h2>Const Ref or Value?</h2>
                 <strong>Compiled with <code data-noescape>-O2</code></strong>
-                <pre><code data-noescape data-noescape>define internal fastcc i32 @_ZL3fooRKi(<mark>i32*</mark> nocapture readonly dereferenceable(4) %v) #1 {
-  <mark>%1 = load i32* %v, align 4, !tbaa !1</mark>
+                <pre><code data-noescape data-noescape>define internal fastcc i32 @_ZL3fooRKi(<mark>i32*</mark> nocapture readonly dereferenceable(4) %v) {
+  <mark>%1 = load i32* %v</mark>
   ret i32 %1
 }
 
-define internal fastcc i32 @_ZL3bari(i32 %v) #2 {
+define internal fastcc i32 @_ZL3bari(i32 %v) {
   ret i32 %v
 }</code></pre>
 
@@ -255,7 +262,7 @@ define internal fastcc i32 @_ZL3bari(i32 %v) #2 {
   ret i32 %v.val
 }
 
-define internal fastcc i32 @_ZL3bari(i32 %v) #2 {
+define internal fastcc i32 @_ZL3bari(i32 %v) {
   ret i32 %v
 }</code></pre>
 
@@ -318,11 +325,11 @@ int caller(int v) {
             <section>
                 <h2>Tag dispatching</h2>
                 <p><strong>No useless argument</strong></p>
-                <pre><code data-noescape>define internal fastcc i32 @_ZL3fooi4<mark>tag0</mark>(i32 %v) #1 {
+                <pre><code data-noescape>define internal fastcc i32 @_ZL3fooi4<mark>tag0</mark>(i32 %v) {
   ret i32 %v
 }
 
-define internal fastcc i32 @_ZL3fooi4<mark>tag1</mark>(i32 %v) #1 {
+define internal fastcc i32 @_ZL3fooi4<mark>tag1</mark>(i32 %v) {
   %1 = shl nsw i32 %v, 1
   ret i32 %1
 }
@@ -345,7 +352,7 @@ int bar(int x, int y) {
   ret i32 %1
 }
 
-define internal i32 <mark>@"_ZN3$_08__invokeEii"</mark>(i32 %x, i32 %y) align 2 {
+define internal i32 <mark>@"_ZN3$_08__invokeEii"</mark>(i32 %x, i32 %y) {
   %1 = add nsw i32 %y, %x
   ret i32 %1
 }
@@ -367,11 +374,11 @@ auto bar() {
             <section>
                 <h2>Lambda + capture</h2>
                 <p><strong>Not different from its state!</strong><p>
-                <pre><code data-noescape>define <mark>i32</mark> @_Z3fooi(i32 %val) #0 {
+                <pre><code data-noescape>define <mark>i32</mark> @_Z3fooi(i32 %val) {
   ret i32 %val
 }
 
-define <mark>void</mark> @_Z3barv() #0 {
+define <mark>void</mark> @_Z3barv() {
   ret void
 }
 </pre></code>
@@ -414,10 +421,10 @@ define noalias %struct.B* @_Z3foov() {
   %1 = tail <mark>call noalias i8* @_Znwm(i64 2)</mark>
   %2 = bitcast i8* %1 to %struct.B*
   %3 = bitcast i8* %1 to i16*
-  <mark>store i16 0</mark>, i16* %3, align 1
-  <mark>store i8 97</mark>, i8* %1, align 1, !tbaa !1
+  <mark>store i16 0</mark>, i16* %3
+  <mark>store i8 97</mark>, i8* %1
   %4 = getelementptr inbounds i8* %1, i64 1
-  <mark>store i8 98</mark>, i8* %4, align 1, !tbaa !5
+  <mark>store i8 98</mark>, i8* %4
   ret %struct.B* %2
 }
 </code></pre>
@@ -461,7 +468,7 @@ foo bar(char val) {
             <section>
                 <h2>More Boxing/Unboxing</h2>
                 <p><strong>Fuse scalars!</strong></p>
-                <pre><code data-noescape>define i48 @_Z3barc(i8 signext %val) #0 {
+                <pre><code data-noescape>define i48 @_Z3barc(i8 signext %val) {
   %1 = sext i8 %val to i16
   %2 = zext i16 %1 to i48
   %3 = shl nuw <mark>i48</mark> %2, 32
@@ -521,10 +528,10 @@ void test(foo b) {
                 <p><strong><code>Memcpy</code> detected!</strong></p>
                 <pre><code data-noescape>%struct.foo = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 }
 
-@a = global %struct.foo <mark>zeroinitializer</mark>, align 4
+@a = global %struct.foo <mark>zeroinitializer</mark>
 
 ; Function Attrs: nounwind uwtable
-define void @_Z4test3foo(%struct.foo* byval nocapture readonly align 8 %b) {
+define void @_Z4test3foo(%struct.foo* byval nocapture readonly %b) {
   %1 = bitcast %struct.foo* %b to i8*
   call void <mark>@llvm.memcpy.p0i8.p0i8.i64</mark>(i8* bitcast (%struct.foo* @a to i8*), i8* %1, i64 44, i32 4, i1 false), !tbaa.struct !1
   ret void
@@ -551,8 +558,8 @@ void test(foo b) {
             <section>
                 <h2>Default Copy constructor</h2>
                 <pre><code data-noescape> define void @_Z4test3foo(i64 %b.coerce0, i64 %b.coerce1) {
-  <mark>store i64</mark> %b.coerce0, i64* bitcast (%struct.foo* @a to i64*), align 8
-  <mark>store i64</mark> %b.coerce1, i64* bitcast (i32* getelementptr inbounds (%struct.foo* @a, i64 0, i32 2) to i64*), align 8
+  <mark>store i64</mark> %b.coerce0, i64* bitcast (%struct.foo* @a to i64*)
+  <mark>store i64</mark> %b.coerce1, i64* bitcast (i32* getelementptr inbounds (%struct.foo* @a, i64 0, i32 2) to i64*)
   ret void
 }</code></pre>
 
@@ -581,9 +588,9 @@ S init2() {
                 <p><strong>For free thanks to the representation</strong></p>
                 <pre><code data-noescape>define void @_Z4initv(<mark>%struct.S* noalias nocapture sret</mark> %agg.result) {
   %1 = bitcast %struct.S* %agg.result to &lt;2 x double&gt;*
-  store &lt;2 x double&gt; &lt;double 1.000000e+00, double 1.000000e+00&gt; &lt;2 x double&gt; %1, align 8, !tbaa !1
+  store &lt;2 x double&gt; &lt;double 1.000000e+00, double 1.000000e+00&gt; &lt;2 x double&gt; %1
   %2 = getelementptr inbounds %struct.S* %agg.result, i64 0, i32 2
-  store double 1.000000e+00, double* %2, align 8, !tbaa !5
+  store double 1.000000e+00, double* %2
   ret void
 }
 </code></pre>
@@ -594,9 +601,9 @@ S init2() {
                 <p><strong>Same code with a temporary</strong></p>
                 <pre><code data-noescape>define void @_Z5init2v(%struct.S* noalias nocapture sret %agg.result) {
   %1 = bitcast %struct.S* %agg.result to &lt;2 x double&gt;*
-  store &lt;2 x double&gt; &lt;double 1.000000e+00, double 1.000000e+00&gt; &lt;2 x double&gt; %1, align 8, !tbaa !1
+  store &lt;2 x double&gt; &lt;double 1.000000e+00, double 1.000000e+00&gt; &lt;2 x double&gt; %1
   %2 = getelementptr inbounds %struct.S* %agg.result, i64 0, i32 2
-  store double 1.000000e+00, double* %2, align 8, !tbaa !5
+  store double 1.000000e+00, double* %2
   ret void
 </code></pre>
 
@@ -624,15 +631,15 @@ int bar(<mark>A&amp;</mark> a) {
             <section>
                 <h2>Virtual method calls</h2>
                 <p><strong>Here comes the <code>vtable</code></strong></p>
-                <pre><code data-noescape>define i32 @_Z3fooR9Interface(%struct.Interface* dereferenceable(8) %a) #0 {
+                <pre><code data-noescape>define i32 @_Z3fooR9Interface(%struct.Interface* dereferenceable(8) %a) {
   %1 = bitcast %struct.Interface* %a to i32 (%struct.Interface*)***
-  %2 = load i32 (%struct.Interface*)*** %1, align 8, !tbaa !1
-  %3 = load i32 (%struct.Interface*)** %2, align 8
+  %2 = load i32 (%struct.Interface*)*** %1
+  %3 = load i32 (%struct.Interface*)** %2
   %4 = <mark>tail call i32 %3(%struct.Interface* %a)</mark>
   ret i32 %4
 }
 
-define i32 @_Z3barR1A(%struct.A* nocapture readnone dereferenceable(8) %a) #1 {
+define i32 @_Z3barR1A(%struct.A* nocapture readnone dereferenceable(8) %a) {
   ret i32 0
 }
 </code></pre>
@@ -679,30 +686,30 @@ define i32 @_Z3barR1A(%struct.A* nocapture readnone dereferenceable(8) %a) #1 {
         <section>
             <h2>Initializer list</h2>
             <p><strong>Static initialisation</strong></p>
-            <pre><code data-noescape>@foo = global %"struct.std::array" <mark>{ [16 x i32] [i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15] }</mark>, align 4
+            <pre><code data-noescape>@foo = global %"struct.std::array" <mark>{ [16 x i32] [i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15] }</mark>
 </code></pre>
         </section>
         <section>
             <h2>Initializer list</h2>
             <p><strong>Runtime initialisation</strong></p>
-            <pre><code data-noescape>@bar = global %"class.std::vector" zeroinitializer, align 8
+            <pre><code data-noescape>@bar = global %"class.std::vector" zeroinitializer
 (...)
 
 __cxx_global_var_init.exit:                       ; preds = %0
   %8 = bitcast i8* %1 to i32*
-  <mark>store</mark> i8* %1, i8** bitcast (%"class.std::vector"* @bar to i8**), align 8, !tbaa !1
+  <mark>store</mark> i8* %1, i8** bitcast (%"class.std::vector"* @bar to i8**)
   %9 = getelementptr inbounds i8* %1, i64 64
-  <mark>store</mark> i8* %9, i8** bitcast (i32** getelementptr inbounds (%"class.std::vector"* @bar, i64 0, i32 0, i32 0, i32 2) to i8**), align 8, !tbaa !7
-  <mark>store</mark> i32 0, i32* %8, align 4
-  %10 = getelementptr inbounds i8* %1, i64 4
+  <mark>store</mark> i8* %9, i8** bitcast (i32** getelementptr inbounds (%"class.std::vector"* @bar, i64 0, i32 0, i32 0, i32 2) to i8**)
+  <mark>store</mark> i32 0, i32* %8
+  %10 = getelementptr inbounds i8* %1
   %11 = bitcast i8* %10 to i32*
-  <mark>store</mark> i32 1, i32* %11, align 4
-  %12 = getelementptr inbounds i8* %1, i64 8
+  <mark>store</mark> i32 1, i32* %11
+  %12 = getelementptr inbounds i8* %1
   %13 = bitcast i8* %12 to i32*
-  <mark>store</mark> i32 2, i32* %13, align 4
-  %14 = getelementptr inbounds i8* %1, i64 12
+  <mark>store</mark> i32 2, i32* %13
+  %14 = getelementptr inbounds i8* %1
   %15 = bitcast i8* %14 to i32*
-  <mark>store</mark> i32 3, i32* %15, align 4
+  <mark>store</mark> i32 3, i32* %15
   %16 = getelementptr inbounds i8* %1, i64 16
 </code></pre>
         </section>
@@ -733,7 +740,7 @@ double bar(double const* v, std::size_t n) {
                 <pre><code data-noescape>.lr.ph:                                           ; preds = %.lr.ph.preheader, %.lr.ph
   %s.01 = phi double [ %8, %.lr.ph ], [ 0.000000e+00, %.lr.ph.preheader ]
   %6 = phi double* [ %9, %.lr.ph ], [ %2, %.lr.ph.preheader ]
-  %7 = load double* %6, align 8, !tbaa !8
+  %7 = load double* %6
   %8 = fadd double %s.01, %7
   %9 = getelementptr inbounds double* %6, i64 1
   %10 = icmp eq double* %9, %4
@@ -751,7 +758,7 @@ double bar(double const* v, std::size_t n) {
   %i.02 = phi i64 [ %5, %.lr.ph ], [ 0, %.lr.ph.preheader ]
   %s.01 = phi double [ %4, %.lr.ph ], [ 0.000000e+00, %.lr.ph.preheader ]
   %2 = getelementptr inbounds double* %v, i64 %i.02
-  %3 = load double* %2, align 8, !tbaa !8
+  %3 = load double* %2
   %4 = fadd double %s.01, %3
   <mark>%5 = add nuw i64 %i.02, 1</mark>
   %exitcond = icmp eq i64 %5, %n
@@ -776,15 +783,15 @@ double bar(<mark>double const* data</mark>, std::size_t i) {
                 <p><strong>Needs an extra adress computation</strong></p>
                 <pre><code data-noescape>define double @_Z3fooRKSt6vectorIdSaIdEEm(%"class.std::vector"* nocapture readonly dereferenceable(24) %data, i64 %i) {
   <mark>%1 = getelementptr inbounds %"class.std::vector"* %data, i64 0, i32 0, i32 0, i32 0</mark>
-  %2 = load double** %1, align 8, !tbaa !1
+  %2 = load double** %1
   %3 = getelementptr inbounds double* %2, i64 %i
-  %4 = load double* %3, align 8, !tbaa !7
+  %4 = load double* %3
   ret double %4
 }
 
-define double @_Z3barPKdm(double* nocapture readonly %data, i64 %i) #0 {
+define double @_Z3barPKdm(double* nocapture readonly %data, i64 %i) {
   %1 = getelementptr inbounds double* %data, i64 %i
-  %2 = load double* %1, align 8, !tbaa !7
+  %2 = load double* %1
   ret double %2
 }
 </code></pre>
@@ -852,8 +859,8 @@ attributes #2 = { "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "
   %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
           catch i8* null
   %7 = extractvalue { i8*, i32 } %6, 0
-  %8 = tail call i8* @__cxa_begin_catch(i8* %7) #4
-  invoke void @__cxa_rethrow() #5
+  %8 = tail call i8* @__cxa_begin_catch(i8* %7)
+  invoke void @__cxa_rethrow()
           to label %15 unwind label %9
 
 ; <label>:9                                       ; preds = %5
@@ -869,7 +876,7 @@ attributes #2 = { "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "
   %13 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
           catch i8* null
   %14 = extractvalue { i8*, i32 } %13, 0
-  tail call void @__clang_call_terminate(i8* %14) #6
+  tail call void @__clang_call_terminate(i8* %14)
   unreachable
 
 ; <label>:15                                      ; preds = %5
@@ -897,7 +904,7 @@ attributes #2 = { "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "
             <h2>Outer Product</h2>
             <p><strong>Vectorized</strong> (compiled with <code>-O3 -march=native</code>)</p>
             <pre><code data-noescape>
-  %wide.load20 = load &lt;4 x double&gt;* %76, align 8, !tbaa !9
+  %wide.load20 = load &lt;4 x double&gt;* %76
   %77 = <mark>fmul &lt;4 x double&gt;</mark> %54, %wide.load
   %78 = <mark>fmul &lt;4 x double&gt;</mark> %59, %wide.load18
   %79 = <mark>fmul &lt;4 x double&gt;</mark> %63, %wide.load19
