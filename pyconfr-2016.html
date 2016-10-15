@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>GAST, daou naer !</title>
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+        <!-- Code syntax highlighting -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+<style>
+mark{
+        background: blue;
+}
+</style>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+            <section>
+                <h2>GAST, daou naer !</h2>
+                <h3>Une implémentation portable et minimaliste du module <code>ast</code></h3>
+                <p>
+                <small>Délicatement assemblé sur <em>Namek</em> par <a href="http://serge.liyun.free.fr/serge/">serge-sans-paille</a></small>
+                </p>
+            </section>
+
+            <section>
+                <h2><code>ast</code></h2>
+                <p>
+                <ul>
+                    <li class='fragment'>2.6</li>
+                    <li class='fragment'>2.7</li>
+                    <li class='fragment'>3.1</li>
+                    <li class='fragment'>3.2</li>
+                    <li class='fragment'>3.3</li>
+                    <li class='fragment'>3.4</li>
+                    <li class='fragment'>3.5</li>
+                </ul>
+                </p>
+                <h2 class='fragment'><strong>Gast!</strong></h2>
+            </section>
+
+            <section>
+            <h2><code data-noescape class="bash">/me</code></h2>
+            <h3>Serge « sans paille » Guelton</h3>
+            <p>
+            <pre><code data-noescape class="bash">$ whoami
+sguelton</code></pre>
+            <ul>
+                <li>Ingénieur R&amp;D engineer à <a href="http://www.quarkslab.com/">QuarksLab</a> en Compil' appliquée à la Sécu'</li>
+                <li>Chercheur associé à Télécom Bretagne</li>
+                <li>Co-Auteur du compilo <code>pythran</code> pour le calcul scientifique en Python</li>
+            </ul>
+            </p>
+            </section>
+
+            <section>
+                <h2><code>import ast</code></h2>
+
+                    <pre><code class="python">>>> import ast
+>>> tree = ast.parse("'galette' + 'saucisse'")
+>>> ast.dump(tree)
+Module(body=[Expr(value=BinOp(left=Str(s='galette'),
+... op=Add(), right=Str(s='saucisse')))])
+</code></pre>
+            </section>
+
+            <section>
+                <h2>Vu d'un arbre</h2>
+                <pre><code>Module
+    Expr
+        BinOp
+            Str(s='galette')
+            Add()
+            Str(s='saucisse')</code></pre>
+            </section>
+
+            <section>
+                <h2>Problème à l'affichage</h2>
+                <h3>Python 2</h3>
+                <p>
+               <pre class='fragment'><code>(python2) >>> import ast
+(python2) >>> tree = ast.parse("'print('yaouankiz')")
+(python2) >>> ast.dump(tree)
+Module(body=[Print(dest=None, values=[Str(s='yaouankiz')], nl=True)])
+               </code></pre></p>
+                <h3>Python 3</h3>
+                <p>
+               <pre class='fragment'><code>(python3) >>> import ast
+(python3) >>> tree = ast.parse("'print('yaouankiz')")
+(python3) >>> ast.dump(tree)
+Module(body=[Expr(value=Call(func=Name(id='print', ctx=Load()),
+... "args=[Str(s='yaouankiz')], keywords=[], starargs=None, kwargs=None))])
+               </code></pre></p>
+            </section>
+
+            <section>
+                <h2>Arbreizh Aventure</h2>
+                <h4>parcours d'arbre</h4>
+
+<pre><code class='python'>class PP(ast.NodeVisitor):
+
+    def __init__(self):
+        self.depth = 0
+
+    def generic_visit(self, node):
+        print('{}{}'.format(' ' * self.depth, type(node).__name__))
+        self.depth += 1
+        super(PP, self).generic_visit(node)
+        self.depth -= 1</code></pre>
+            </section>
+
+            <section>
+                <h2>Les visiteurs</h2>
+                <h4>ils ne sont pas nés d'hier</h4>
+
+<pre><code class='python'>def visit(self, node):
+    """Visit a node."""
+    method = 'visit_' + node.__class__.__name__
+    visitor = getattr(self, method, self.generic_visit)
+    return visitor(node)
+</code></pre>
+
+<pre class='fragment'><code class='python'>def generic_visit(self, node):
+    """Called if no explicit visitor function exists for a node."""
+    for field, value in iter_fields(node):
+        if isinstance(value, list):
+            for item in value:
+                if isinstance(item, AST):
+                    self.visit(item)
+        elif isinstance(value, AST):
+            self.visit(value)</code></pre>
+            </section>
+
+            <section>
+                <h2>Va Doué !</h2>
+                <p>
+                <strong>Comment parcourir indifférement des AST 2 et 3 ?</strong>
+                </p>
+                <p>
+                <ul>
+                    <li class='fragment'>Nœuds ajoutés <em>e.g.</em> <code>YieldFrom</code> ou <code>NameConstant</code></li>
+                    <li class='fragment'>Nœuds supprimés <em>e.g.</em> <code>Print</code> ou <code>TryFinally</code></li>
+                    <li class='fragment'>Nœuds modifiés <em>e.g.</em> <code>FunctionDef</code> gagne un champs <code>returns</code> et <code>ClassDef</code> gagne un champs <code>keywords</code></li>
+                </ul>
+                </p>
+            </section>
+
+            <section>
+                <h2>Fuuuuusion</h2>
+                <p>
+                <ul>
+                    <li class='fragment'>Nœuds ajoutés : <strong>On les ajoute !</strong></li>
+                    <li class='fragment'>Nœuds supprimés : <strong>On les garde !</strong></li>
+                    <li class='fragment'>Nœuds modifiés : <strong>On les fusionne !</strong> (pas tjrs facile)</li>
+                </ul>
+                </p>
+                <div class='fragment'>
+                    <p>
+                Deux convertisseurs :
+                <ul>
+                    <li><code>ast</code> (python2) <code>=&gt;</code> <code>gast</code></li>
+                    <li><code>ast</code> (python3) <code>=&gt;</code> <code>gast</code></li>
+                    </p>
+                </div>
+            </section>
+            <section>
+                <h2>Interlude</h2>
+                <h4>Q &amp; R</h4>
+                <p>
+                <strong>Q : </strong> Pourquoi ne pas convertire le nœud <code>ast.Print</code> en <code>ast.Call</code> ?
+                <em>Après tout, c'est pareil !</em><br />
+                </p>
+
+                <p class='fragment'>
+                <strong>R : </strong>Parce que <code>print = str</code> et c'est l'enfer
+                </p>
+                <div class='fragment'>
+
+                <h4>Quizz</h4>
+                <p>Comment se comporte (en Python 2):
+                <pre><code class='python'>code = '''
+from __future__ import print_function
+print(1)'''
+ast.dump(ast.parse(code))</code></pre></p></div>
+            </section>
+
+            <section>
+                <h2>Bihan</h2>
+                <h4>Traduction automatique</h4>
+                <p>
+<pre><code class='python'>def _generate_translators(to):
+
+    class Translator(ast.NodeTransformer):
+        'stuff that matters'
+        # ...
+
+    return Translator
+
+AstToGAst = _generate_translators(gast)
+GAstToAst = _generate_translators(ast)</code></pre>
+                </p>
+            </section>
+
+            <section>
+                <h2>Petit concentré d'introspection</h2>
+                <p><pre><code class='python'>def generic_visit(self, node):
+    cls = type(node).__name__
+    new_node = getattr(to, cls)()  # default constructor
+
+    # generate fields recursively
+    for field in node._fields:
+        setattr(new_node, field,
+                self._visit(getattr(node, field)))
+
+    # copy any attributes
+    for attr in getattr(node, '_attributes'):
+        if hasattr(node, attr):
+            setattr(new_node, attr,
+                    getattr(node, attr))
+
+    # job done!
+    return new_node</code></pre>
+                </p>
+            </section>
+            <section>
+                <h2>Spécialisation</h2>
+                <p>
+<pre><code class="python">class Ast2ToGAst(AstToGAst):
+
+    # stmt
+    def visit_FunctionDef(self, node):
+        new_node = gast.FunctionDef(
+            self._visit(node.name),
+            self._visit(node.args),
+            self._visit(node.body),
+            self._visit(node.decorator_list),
+            None,  # returns
+        )
+        ast.copy_location(new_node, node)
+        return new_node</code></pre>
+                </p>
+
+            </section>
+
+            <section>
+                <h2>Un cas exceptionnel</h2>
+                <h4>En Python 2</h4>
+                <p><pre><code class='python'>raise Except, Val, Tbk</code></pre>
+
+                <h4>En Python 3</h4>
+                <p><pre><code class='python'>raise Except(Val).with_traceback(Tbk)</code></pre>
+
+                <p class='fragment'>Ce qui est faux si un zozo surcharge mal (ou dégage) <code>with_traceback</code></p>
+
+            </section>
+
+            <section>
+                <h2>Différences d'API</h2>
+                <p>
+                <ul>
+                    <li>Toutes les fonctions/classes de <code>ast</code> sont dans <code>gast</code></li>
+                    <li class='fragment'><strong>Mais</strong> elles ne fonctionnent que sur des arbres <code>gast</code></li>
+                    <li class='fragment'><code>gast.gast_to_ast</code> et <code>gast.ast_to_gast</code> font ce que leur nom les prédispose à faire</li>
+                    <li class='fragment'><code>gast.parse</code> est équivalent à <code>gast.ast_to_gast(ast.parse(*args))</code>
+                </ul>
+                </p>
+
+
+            </section>
+
+            <section>
+                <h2>Doc</h2>
+                <p>Vous reprendrez bien un petit peu de grammaire?
+
+                <pre><code>module Python
+{
+    mod = Module(stmt* body)
+        | Interactive(stmt* body)
+        | Expression(expr body)
+
+        -- not really an actual node but useful in Jython's typesystem.
+        | Suite(stmt* body)
+
+    stmt = FunctionDef(identifier name, arguments args,
+                       stmt* body, expr* decorator_list, expr? returns)
+          | AsyncFunctionDef(identifier name, arguments args,
+                             stmt* body, expr* decorator_list, expr? returns)
+
+          | ClassDef(identifier name,
+             expr* bases,
+             keyword* keywords,
+             stmt* body,
+             expr* decorator_list)
+          | Return(expr? value)
+
+          | Delete(expr* targets)
+          | Assign(expr* targets, expr value)
+          | AugAssign(expr target, operator op, expr value)
+
+          -- not sure if bool is allowed, can always use int
+          | Print(expr? dest, expr* values, bool nl)
+
+          -- use 'orelse' because else is a keyword in target languages
+          | For(expr target, expr iter, stmt* body, stmt* orelse)
+          | AsyncFor(expr target, expr iter, stmt* body, stmt* orelse)
+          | While(expr test, stmt* body, stmt* orelse)
+          | If(expr test, stmt* body, stmt* orelse)
+          | With(withitem* items, stmt* body)
+          | AsyncWith(withitem* items, stmt* body)
+
+          | Raise(expr? exc, expr? cause)
+          | Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
+          | Assert(expr test, expr? msg)
+
+          | Import(alias* names)
+          | ImportFrom(identifier? module, alias* names, int? level)
+
+          | Global(identifier* names)
+          | Nonlocal(identifier* names)
+          | Expr(expr value)
+          | Pass | Break | Continue
+
+          -- XXX Jython will be different
+          -- col_offset is the byte offset in the utf8 string the parser uses
+          attributes (int lineno, int col_offset)
+
+          -- BoolOp() can use left & right?
+    expr = BoolOp(boolop op, expr* values)
+         | BinOp(expr left, operator op, expr right)
+         | UnaryOp(unaryop op, expr operand)
+         | Lambda(arguments args, expr body)
+         | IfExp(expr test, expr body, expr orelse)
+         | Dict(expr* keys, expr* values)
+         | Set(expr* elts)
+         | ListComp(expr elt, comprehension* generators)
+         | SetComp(expr elt, comprehension* generators)
+         | DictComp(expr key, expr value, comprehension* generators)
+         | GeneratorExp(expr elt, comprehension* generators)
+         -- the grammar constrains where yield expressions can occur
+         | Await(expr value)
+         | Yield(expr? value)
+         | YieldFrom(expr value)
+         -- need sequences for compare to distinguish between
+         -- x < 4 < 3 and (x < 4) < 3
+         | Compare(expr left, cmpop* ops, expr* comparators)
+         | Call(expr func, expr* args, keyword* keywords)
+         | Num(object n) -- a number as a PyObject.
+         | Str(string s) -- need to specify raw, unicode, etc?
+         | Bytes(bytes s)
+         | NameConstant(singleton value)
+         | Ellipsis
+
+         -- the following expression can appear in assignment context
+         | Attribute(expr value, identifier attr, expr_context ctx)
+         | Subscript(expr value, slice slice, expr_context ctx)
+         | Starred(expr value, expr_context ctx)
+         | Name(identifier id, expr_context ctx, expr? annotation)
+         | List(expr* elts, expr_context ctx)
+         | Tuple(expr* elts, expr_context ctx)
+
+          -- col_offset is the byte offset in the utf8 string the parser uses
+          attributes (int lineno, int col_offset)
+
+    expr_context = Load | Store | Del | AugLoad | AugStore | Param
+
+    slice = Slice(expr? lower, expr? upper, expr? step)
+          | ExtSlice(slice* dims)
+          | Index(expr value)
+
+    boolop = And | Or
+
+    operator = Add | Sub | Mult | MatMult | Div | Mod | Pow | LShift
+                 | RShift | BitOr | BitXor | BitAnd | FloorDiv
+
+    unaryop = Invert | Not | UAdd | USub
+
+    cmpop = Eq | NotEq | Lt | LtE | Gt | GtE | Is | IsNot | In | NotIn
+
+    comprehension = (expr target, expr iter, expr* ifs)
+
+    excepthandler = ExceptHandler(expr? type, expr? name, stmt* body)
+                    attributes (int lineno, int col_offset)
+
+    arguments = (expr* args, expr? vararg, expr* kwonlyargs, expr* kw_defaults,
+                 expr? kwarg, expr* defaults)
+
+    -- keyword arguments supplied to call (NULL identifier for **kwargs)
+    keyword = (identifier? arg, expr value)
+
+    -- import name with optional 'as' alias.
+    alias = (identifier name, identifier? asname)
+
+    withitem = (expr context_expr, expr? optional_vars)
+}</code></pre>
+            </section>
+
+            <section>
+                <h2>Application : Compil@eur</h2>
+                <p>
+                Permet d'écrire des analysuers de code Python portable :
+                <dl>
+                    <dt>Pythran</dt>
+                    <dd>un optimiseur pour Python scientifique</dt>
+                    <dt>Tog</dt>
+                    <dd>un POC d'inférence de type</dd>
+                </dl>
+                </p>
+                <p>
+                Et pourquoi pas <code>asteroids</code>, <code>bandit</code>, <code>astoptimizer</code>…
+                </p>
+            </section>
+
+            <section>
+                <h2>Un pok pour <code>tox</code></h2>
+                <h4>car tox est a(r)mo(u)r</h4>
+                <p><pre><code>[tox]
+envlist = py27,py30,py31,py32,py33,py34,py35
+[testenv]
+deps=pytest-pep8
+commands=py.test --pep8</code></pre>
+                </p>
+                <p><strong>Petit challenge</strong> : compiler une version fonctionnelle de chacun de ses interpreteurs</p>
+
+            </section>
+
+
+            <section>
+                <h1>Trugarez</h1>
+                    <p>
+                    <code>pip install gast</code><br />
+                    <a href="https://github.com/serge-sans-paille/gast">https://github.com/serge-sans-paille/gast</a>
+                    </p>
+                    <p><strong>♥ Logilab ♥</strong> pour avoir soufflé l'idée (ils embauchent)</p>
+                    <p><strong>♥ QuarksLab ♥</strong> pour la liberté (on embauche)</p>
+                    <p><strong>☺ PyConFr ☺</strong> &amp; l'orga pour avoir choisi Roazhon !</p>
+                <p>
+                <ul>
+                </ul>
+                </p>
+
+            </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
