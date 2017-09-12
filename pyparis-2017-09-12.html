@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Pythran - C++ for Snakes</title>
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+        <!-- Code syntax highlighting -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+       <section>
+
+				<section>
+                    <h2>Pythran: Static Compilation of Parallel Scientific Kernels</h2>
+					<h3>a.k.a. Python/Numpy compiler for the mass</h3>
+					<p>
+                    <small>Proudly made in <em>Namek</em> by <a href="http://serge.liyun.free.fr/serge/">serge-sans-paille</a> &amp; <a  href="http://fr.viadeo.com/fr/profile/pierrick.brunet">pbrunet</a></small>
+					</p>
+				</section>
+
+				<section>
+                <h2><code class="bash">/me</code></h2>
+                <h3>Serge « sans paille » Guelton</h3>
+                <p>
+                <pre><code class="bash">$ whoami
+sguelton</code></pre>
+                <ul>
+                    <li>R&amp;D engineer at <a href="http://www.quarkslab.com/">QuarksLab</a> on compilation for security</li>
+                    <li>Associate researcher at Télécom Bretagne</li>
+                    <li>Soldier of fortune</li>
+                </ul>
+                </p>
+				</section>
+
+                <section>
+                    <h2>Pythran in a snake shell</h2>
+                    <p>
+                    <img src="pythran-logo.svg" />
+                    </p>
+                    <p>
+                    <ul>
+                        <li>A Numpy-centric Python-to-NativeCode translator</li>
+                        <li>A Python code <em>optimizer</em></li>
+                        <li>A Pythonic C++ library</li>
+                    </ul>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Core concepts</h2>
+                    <p>
+                    <ul>
+                        <li>Focus on high-level constructs</li>
+                        <li>Generate <strike>clean</strike> high level code</li>
+                        <li>Optimize Python code before generated code</li>
+                        <li>Generate GIl-free, Python-free code</li>
+                        <li>Vectorization and Parallelism</li>
+                        <li>Test, test, test</li>
+                        <li>Bench, bench, bench</li>
+                    </ul>
+                    </p>
+                </section>
+
+        </section>
+
+        <section>
+
+
+				<section>
+					<h2>Ask StackOverflow</h2>
+                    <em>when you're looking for <strong>test cases</strong></em><br/>
+                    <a href="http://stackoverflow.com/questions/26823312/numba-or-cython-acceleration-in-reaction-diffusion-algorithm">http://stackoverflow.com/[...]numba-or-cython-acceleration-in-reaction-diffusion-algorithm</a>
+                <pre><code class="python">import numpy as np
+def GrayScott(counts, Du, Dv, F, k):
+    n = 300
+    U = np.zeros((n+2,n+2), dtype=np.float32)
+    V = np.zeros((n+2,n+2), dtype=np.float32)
+    u, v = U[1:-1,1:-1], V[1:-1,1:-1]
+
+    r = 20
+    u[:] = 1.0
+    U[n/2-r:n/2+r,n/2-r:n/2+r] = 0.50
+    V[n/2-r:n/2+r,n/2-r:n/2+r] = 0.25
+    u += 0.15*np.random.random((n,n))
+    v += 0.15*np.random.random((n,n))
+
+    for i in range(counts):
+        Lu = (                 U[0:-2,1:-1] +
+              U[1:-1,0:-2] - 4*U[1:-1,1:-1] + U[1:-1,2:] +
+                               U[2:  ,1:-1] )
+        Lv = (                 V[0:-2,1:-1] +
+              V[1:-1,0:-2] - 4*V[1:-1,1:-1] + V[1:-1,2:] +
+                               V[2:  ,1:-1] )
+        uvv = u*v*v
+        u += Du*Lu - uvv + F*(1 - u)
+        v += Dv*Lv + uvv - (F + k)*v
+
+    return V</code></pre>
+				</section>
+
+                <section>
+                    <h2>Thread Summary</h2>
+
+                    <dl>
+                        <dt>OP</dt>
+                        <dd>My code is slow with Cython and Numba</dd>
+                        <dt>Best Answer</dt>
+                        <dd>You need to make all loops explicit</dd>
+                    </dl>
+
+                </section>
+
+                <section>
+                    <h2>Cython Version</h2>
+                <pre><code class="python">cimport cython
+import numpy as np
+cimport numpy as np
+
+cpdef cythonGrayScott(int counts, double Du, double Dv, double F, double k):
+    cdef int n = 300
+    cdef np.ndarray U = np.zeros((n+2,n+2), dtype=np.float_)
+    cdef np.ndarray V = np.zeros((n+2,n+2), dtype=np.float_)
+    cdef np.ndarray u = U[1:-1,1:-1]
+    cdef np.ndarray v = V[1:-1,1:-1]
+
+    cdef int r = 20
+    u[:] = 1.0
+    U[n/2-r:n/2+r,n/2-r:n/2+r] = 0.50
+    V[n/2-r:n/2+r,n/2-r:n/2+r] = 0.25
+    u += 0.15*np.random.random((n,n))
+    v += 0.15*np.random.random((n,n))
+
+    cdef np.ndarray Lu = np.zeros_like(u)
+    cdef np.ndarray Lv = np.zeros_like(v)
+    cdef int i, c, r1, c1, r2, c2
+    cdef double uvv
+
+    cdef double[:, ::1] bU = U
+    cdef double[:, ::1] bV = V
+    cdef double[:, ::1] bLu = Lu
+    cdef double[:, ::1] bLv = Lv
+
+    for i in range(counts):
+        for r in range(n):
+            r1 = r + 1
+            r2 = r + 2
+            for c in range(n):
+                c1 = c + 1
+                c2 = c + 2
+                bLu[r,c] = bU[r1,c2] + bU[r1,c] + bU[r2,c1] + bU[r,c1] - 4*bU[r1,c1]
+                bLv[r,c] = bV[r1,c2] + bV[r1,c] + bV[r2,c1] + bV[r,c1] - 4*bV[r1,c1]
+
+        for r in range(n):
+            r1 = r + 1
+            for c in range(n):
+                c1 = c + 1
+                uvv = bU[r1,c1]*bV[r1,c1]*bV[r1,c1]
+                bU[r1,c1] += Du*bLu[r,c] - uvv + F*(1 - bU[r1,c1])
+                bV[r1,c1] += Dv*bLv[r,c] + uvv - (F + k)*bV[r1,c1]
+
+    return V</code></pre>
+
+                </section>
+
+                <section>
+                    <h2>Pythran version</h2>
+                    <p>Add this line to the original kernel:
+                    <pre><code class="python">#pythran export GrayScott(int, float, float, float, float)</code></pre>
+                    </pre>
+                    <h3>Timings</h3>
+                    <pre><code class="shell">$ python -m perf timeit -s 'from grayscott import GrayScott' 'GrayScott(40, 0.16, 0.08, 0.04, 0.06)'
+Median +- std dev: 108 ms +- 2 ms
+$ cython grayscott.pyx
+$ clang grayscott.c `python-config --cflags --libs` -shared -fPIC -o grayscott.so -Ofast -march=native
+$ python -m perf timeit -s 'from grayscott import GrayScott' 'GrayScott(40, 0.16, 0.08, 0.04, 0.06)'
+Median +- std dev: 23.9 ms +- 0.3 ms
+$ pythran grayscott.py -Ofast -march=native  # using same clang as backend
+$ python -m perf timeit -s 'from grayscott import GrayScott' 'GrayScott(40, 0.16, 0.08, 0.04, 0.06)'
+Median +- std dev: 12.9 ms +- 1.6 ms</code></pre>
+                </section>
+
+                <section>
+                    <h2>Beware of Benchmarks(BoB)</h2>
+                    <h3>GCC 6.3 Timings</h3>
+                    <pre><code class="shell">$ gcc grayscott.c `python-config --cflags --libs` -shared -fPIC -o grayscott.so -O3 -march=native
+$ python -m perf timeit -s 'from grayscott import GrayScott' 'GrayScott(40, 0.16, 0.08, 0.04, 0.06)'
+Median +- std dev: 26.4 ms +- 0.5 ms
+$ CXX=g++ CC=gcc pythran grayscott.py -Ofast -march=native
+$ python -m perf timeit -s 'from grayscott import GrayScott' 'GrayScott(40, 0.16, 0.08, 0.04, 0.06)'
+Median +- std dev: 37.4 ms +- 0.5 ms</code></pre>
+                </section>
+
+                <section>
+                    <h2>Lessons learnt</h2>
+                    <p>
+                    <ul>
+                        <li>Explicit is not always better than implicit</li>
+                        <li>Many ``optimization hints'' can be deduced by the compiler</li>
+                        <li>High level constructs carry valuable informations</li>
+                        <li>Each compiler has its strenghts</li>
+                    </ul>
+                    </p>
+                    <p>
+                    <em>I am <strong>not</strong> saying Cython is bad. Cython does a <strong>great</strong> job. It is just <strong>pragmatic</strong> where Pythran is <strong>idealist</strong></em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Compilation Challenges</h2>
+                    <pre><code class="python">u = U[1:-1,1:-1]
+U[n/2-r:n/2+r,n/2-r:n/2+r] = 0.50
+u += 0.15*np.random.random((n,n))</code></pre>
+                    <p>
+                    <ul>
+                        <li>Array views</li>
+                        <li>Value broadcasting</li>
+                        <li>Temporary arrays creation</li>
+                        <li>Extended slices composition</li>
+                        <li>Numpy API calls</li>
+                    </ul>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Optimization Opportunities</h2>
+                    <pre><code class="python">Lu = (U[0:-2,1:-1] + U[1:-1,0:-2]
+  - 4*U[1:-1,1:-1] + U[1:-1,2:] + U[2:  ,1:-1])</code></pre>
+
+                    <p>
+                    <ul>
+                        <li>Many useless temporaries</li>
+                        <li><code class="python">Lu</code> could be forward-substituted</li>
+                        <li>SIMD instruction generation opportunities</li>
+                        <li>Parallel loop opportunities</li>
+                    </ul>
+                    </p>
+                </section>
+
+
+        </section>
+
+        <section>
+
+                <section>
+                    <h2>Pythran Usage</h2>
+                    <p>
+                    <pre><code class="shell">$ pythran --help
+usage: pythran [-h] [-o OUTPUT_FILE] [-E] [-e] [-f flag] [-v] [-p pass]
+               [-m machine] [-I include_dir] [-L ldflags]
+               [-D macro_definition] [-O level] [-g]
+               input_file
+
+pythran: a python to C++ compiler
+
+positional arguments:
+  input_file           the pythran module to compile, either a .py or a .cpp
+                       file
+
+optional arguments:
+  -h, --help           show this help message and exit
+  -o OUTPUT_FILE       path to generated file
+  -E                   only run the translator, do not compile
+  -e                   similar to -E, but does not generate python glue
+  -f flag              any compiler switch relevant to the underlying C++
+                       compiler
+  -v                   be verbose
+  -p pass              any pythran optimization to apply before code
+                       generation
+  -m machine           any machine flag relevant to the underlying C++
+                       compiler
+  -I include_dir       any include dir relevant to the underlying C++ compiler
+  -L ldflags           any search dir relevant to the linker
+  -D macro_definition  any macro definition relevant to the underlying C++
+                       compiler
+  -O level             any optimization level relevant to the underlying C++
+                       compiler
+  -g                   any debug level relevant to the underlying C++ compiler
+
+It's a megablast!</code></pre>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Sample Usage</h2>
+                    <p>
+                                        <pre><code class="shell">$ pythran input.py # generates input.so
+$ pythran input.py -E # generates input.cpp
+$ pythran input.py -O3 -fopenmp # parallel!
+$ pythran input.py -march=native -Ofast # Esod Mumixam !</code></pre>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Type Annotations</h2>
+                    <p>
+                    Only for <em>exported</em> functions
+                    <pre><code class="pythran">#pythran export foo0()
+#pythran export foo1(int)
+
+#pythran export foo2(float32[][])
+#pythran export foo2(float64[][])
+#pythran export foo2(int8[][][])
+
+#pythran export foo3((int, float), int list, str:str dict)</code></pre>
+</p>
+                </section>
+
+                <section>
+                    <h2>Extra Type Annotations</h2>
+                    <p>
+                    Combine several signatures in one
+                    <pre><code class="pythran">#pythran export foo0(int or str)
+#pythran export foo3(float32[][] or float32[], int or None)
+</code></pre>
+</p>
+                </section>
+                <section>
+                    <h2>Extern Type Annotations</h2>
+                    <p>
+                    <code>foo.pythran</code> file as a companion of <code>foo.py</code>
+                    <pre><code class="pythran">foo0()
+foo1(int)
+foo2(float32[][])
+foo2(float64[][])
+foo2(int8[][][])
+foo3((int, float), int list, str:str dict)</code></pre>
+</p>
+                </section>
+
+
+        </section>
+
+        <section>
+
+                <section>
+                    <h2>Pythran Compilation Flow</h2>
+                    <img height="500px" src="pythran.svg" />
+
+                </section>
+
+                <section>
+                    <h2>Front End</h2>
+                    <p>
+                    <ul>
+                        <li>100% based on the <code>gast</code> module</li>
+                        <li>Supports
+                            <ul>
+                                <li>Several standard module (incl. partial Numpy)</li>
+                                <li>Polymorphic functions</li>
+                                <li>ndarray, list, tuple, dict, str, int, long, float</li>
+                                <li>Named parameters, default arguments</li>
+                                <li>Generators…</li>
+                            </ul>
+                        </li>
+                        <li>Does not Support
+                            <ul>
+                                <li>Non-implicitly typed code</li>
+                                <li>Non-const Global variable</li>
+                                <li>Most Python modules (no CPython mode!)</li>
+                                <li>User-defined classes…</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Middle End</h2>
+                    <p>
+                    Iteratively applies high level, Python-aware optimizations:
+                    <ul>
+                        <li>Interprocedural Constant Folding</li>
+                        <li>For-Based-Loop Unrolling</li>
+                        <li>Forward Substitution</li>
+                        <li>Instruction Selection</li>
+                        <li>Deforestation</li>
+                        <li>Scalar Renaming</li>
+                        <li>Dead Code Elimination</li>
+                    </ul>
+                    </p>
+                    <em>Fun Facts: can evaluate pure functions at compile time ☺</em>
+                </section>
+
+                <section>
+                    <h2>Back Ends</h2>
+                    <h3>Python Back End</h3>
+                    <p>Useful for debugging!</p>
+
+                    <h3>C++11 Back End</h3>
+                    <p>
+                    <ul>
+                        <li>C++11 implementation of <code>__builtin__ numpy itertools</code>…</li>
+                        <li>Lazy evaluation through Expression Templates</li>
+                        <li>Relies on OpenMP and <code>boost::simd</code> for the parallelization / vectorization</li>
+                    </ul>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>C++11: Typing</h2>
+                    <p><em>the W.T.F. slide</em><p>
+                    <p>Pythran translates Python implicitly statically typed <strong>polymorphic</strong> code into C++ <strong>meta-programs</strong> that are instanciated for the user-given types, and specialize them for the target architecture</p>
+                    <p>In case of errors, it performes some fuzzy type inference to produce a decent error message</p>
+
+                </section>
+
+                <section>
+                    <h2>C++11: Parallelism</h2>
+                    <h3>Implicit</h3>
+                    <p>Array operations and several numpy functions are written using OpenMP and Boost.simd</p>
+                    <h3>Explicit</h3>
+                    <p>OpenMP 3 support, ported to Python
+                    <pre><code class="python">#omp parallel for reduction(+:r)
+for i, v in enumerate(l):
+    r += i * v</code></pre>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>OpenMP Extra</h2>
+                    <p>Supports
+                    <ul>
+                        <li>Atomic clause</li>
+                        <li>Critical clause</li>
+                        <li>Task clause</li>
+                        <li>libomp through a custom <code>import omp</code></li>
+                    </ul>
+                    </p>
+                </section>
+
+        </section>
+
+        <section>
+
+            <section>
+                <h2>Trickz #0</h2>
+                <h3>Cython coupling</h3>
+                <p>Cython version 0.26</p>
+
+<pre><code class="python"># cython: np_pythran=True
+import numpy as np
+cimport numpy as cnp
+
+def diffuse_numpy(cnp.ndarray[double, ndim=2] u, int N):
+    cdef cnp.ndarray[double, ndim=2] temp = np.zeros_like(u)
+    mu = 0.1
+
+    for n in range(N):
+        temp[1:-1, 1:-1] = u[1:-1, 1:-1] + mu * (
+            u[2:, 1:-1] - 2L * u[1:-1, 1:-1] + u[0:-2, 1:-1] +
+            u[1:-1, 2:] - 2L * u[1:-1, 1:-1] + u[1:-1, 0:-2])
+        u[:, :] = temp[:, :]
+        temp[:, :] = 0.0</code></pre>
+                    </p>
+                    <p>Thanks to Adrien Guinet &amp; OpenDreamKit!</p>
+            </section>
+
+            <section>
+                <h2>Trickz #1</h2>
+                <h3>Generate pure c++ code</h3>
+                    <p>
+                    <pre><code class="shell">$ pythran -e input.py</code></pre>
+
+                    <ul>
+                        <li>No Python conversion code, C-API handling etc</li>
+                        <li>Very under-tested</li>
+                        <li>Started as a joke, but…</li>
+                    </ul>
+                    </p>
+            </section>
+
+            <section>
+                <h2>Trickz #2</h2>
+                <h3>Releasing the GIL</h3>
+                <p>Get speedup from that kind of code:
+<pre><code class="python">threads = [Thread(target=pythranized, args=[i])
+           for i in range(1, thread_count)]
+for thread in threads:
+    thread.start()
+for thread in threads:
+    thread.join()</code></pre>
+                </p>
+            </section>
+
+            <section>
+                <h2>Trickz #3</h2>
+                <h3>Jupyter Integration</h3>
+                <p>Pythran magic cell:
+<pre><code class="python">%%pythran -O3
+import numpy as np
+def arc_distance(theta_1, phi_1, theta_2, phi_2):
+    temp = (np.sin((theta_2-theta_1)/2)**2
+           + np.cos(theta_1)*np.cos(theta_2) * np.sin((phi_2-phi_1)/2)**2)
+    distance_matrix = 2 * np.arctan2(np.sqrt(temp), np.sqrt(1-temp))
+    return distance_matrix</code></pre>
+            </section>
+
+            <section>
+                <h2>Trickz #4</h2>
+                <h3>Fancy Indexing and the likes</h3>
+                <p>Pythran supports
+                <ul>
+                    <li>Lazy evaluation (incl. for <code>np.where</code></li>
+                    <li>Broadcasting</li>
+                    <li>Expression Broadcasting (overhead there)</li>
+                    <li><code>&lt;ufunc&gt;.accumulate</code></li>
+                </ul>
+                </p>
+            </section>
+
+
+
+
+        </section>
+
+
+        <section>
+
+                <section>
+                    <h2>Benchmarks</h2>
+                    <p>
+                    <a href="https://github.com/serge-sans-paille/numpy-benchmarks">https://github.com/serge-sans-paille/numpy-benchmarks</a><br/>
+                    A collection of high-level benchmarks
+                    <ul>
+                        <li>Code gathered from StackOverflow + other compiler code base</li>
+                        <li>Mostly high-level code</li>
+                        <li>Generate results for CPython, PyPy, Numba, Parakeet, Hope and Pythran</li>
+                    </ul>
+                    <em>Most kernels are too high level for Numba and Hope…</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Benchmarks</h2>
+                    <p>no parallelism, no vectorisation (, no fat)</p>
+                    <img src="benchmarks-2017-09-11.png"/>
+
+                </section>
+
+                <section>
+                    <h2>(Num)Focus: growcut</h2>
+                    <p>From the Numba codebase!</p>
+                    <pre><code class="python">#pythran export growcut(float[][][], float[][][], float[][][], int)
+import math
+import numpy as np
+def window_floor(idx, radius):
+    if radius > idx:
+        return 0
+    else:
+        return idx - radius
+
+
+def window_ceil(idx, ceil, radius):
+    if idx + radius > ceil:
+        return ceil
+    else:
+        return idx + radius
+
+def growcut(image, state, state_next, window_radius):
+    changes = 0
+    sqrt_3 = math.sqrt(3.0)
+
+    height = image.shape[0]
+    width = image.shape[1]
+
+    for j in xrange(width):
+        for i in xrange(height):
+
+            winning_colony = state[i, j, 0]
+            defense_strength = state[i, j, 1]
+
+            for jj in xrange(window_floor(j, window_radius),
+                             window_ceil(j+1, width, window_radius)):
+                for ii in xrange(window_floor(i, window_radius),
+                                 window_ceil(i+1, height, window_radius)):
+                    if (ii != i and jj != j):
+                        d = image[i, j, 0] - image[ii, jj, 0]
+                        s = d * d
+                        for k in range(1, 3):
+                            d = image[i, j, k] - image[ii, jj, k]
+                            s += d * d
+                        gval = 1.0 - math.sqrt(s)/sqrt_3
+
+                        attack_strength = gval * state[ii, jj, 1]
+
+                        if attack_strength > defense_strength:
+                            defense_strength = attack_strength
+                            winning_colony = state[ii, jj, 0]
+                            changes += 1
+
+            state_next[i, j, 0] = winning_colony
+            state_next[i, j, 1] = defense_strength
+
+    return changes</code></pre>
+
+
+                </section>
+                <section>
+                    <h2>(Num)Focus: growcut</h2>
+                    <img height="500px" src="growcut-2017-09-11.png" />
+                    <p>Remember BoB?</p>
+                </section>
+                <section>
+                    <h2>(Num)Focus: arc_distance</h2>
+                    <p>That's some number crunching!</p>
+                    <pre><code class="python">#pythran export arc_distance(float64 [], float64[],
+#                            float64[], float64[])
+import numpy as np
+def arc_distance(theta_1, phi_1, theta_2, phi_2):
+    tmp = (np.sin((theta_2-theta_1)/2)**2 +
+           np.cos(theta_1)*np.cos(theta_2)*np.sin((phi_2-phi_1)/2)**2)
+    distance_matrix = 2 * (np.arctan2(np.sqrt(tmp),np.sqrt(1-tmp)))
+    return distance_matrix</code></pre>
+                </section>
+                <section>
+                    <h2>(Num)Focus: arc_distance</h2>
+                    <img height="500px" src="arc-2017-09-11.png" />
+                </section>
+
+
+                <section>
+                <h2>Academic Results</h2>
+                <ul>
+                    <li><strong>Pythran: Enabling Static Optimization of Scientific Python Programs</strong>,
+                    S. Guelton, P. Brunet et al. in <em>CSD</em>, 2015</li>
+                    <li><strong>Exploring the Vectorization of Python Constructs Using Pythran and Boost SIMD</strong>,
+                    S. Guelton, J. Falcou and P. Brunet, in <em>WPMVP</em>, 2014</li>
+                    <li><strong>Compiling Python modules to native parallel modules using Pythran and OpenMP Annotations</strong>,
+                    S. Guelton, P. Brunet and M. Amini, in <em>PyHPC</em>, 2013</li>
+                    <li><strong>Pythran: Enabling Static Optimization of Scientific Python Programs</strong>,
+                    S. Guelton, P. Brunet et al. in <em>SciPy</em>, 2013</li>
+                </ul>
+                </p>
+                </section>
+
+
+                <section>
+                <h3>Powered by Tireless Engineering</h3>
+                <h4>Preprequisite for reproductible science</h4>
+                <p>
+                <ul>
+                    <li>2772 test cases, incl. unit testing, doctest, <strong>Continuous integration</strong> (thx <a href="https://travis-ci.org/serge-sans-paille/pythran">Travis</a>!)</li>
+                    <li>Various flag/compiler combination tested</li>
+                    <li>Peer-reviewed code</li>
+                    <li>Python2.7 and Python3.6, C++11</li>
+                    <li>Linux, OSX (almost okay), Windows (through WinPython)</li>
+                    <li>User and Developer doc: <a href="http://pythonhosted.org/pythran/">http://pythonhosted.org/pythran/</a></li>
+                    <li>Hosted on <a href="https://github.com/serge-sans-paille/pythran">https://github.com/serge-sans-paille/pythran</a></li>
+                    <li>Releases on PyPi: <code class="bash">$ pip install pythran</code></li>
+                </ul>
+
+                </p>
+                </section>
+
+                <section>
+                    <h2>We need more peons</h2>
+                    <p>
+                    <ul>
+                        <li>Report performance bugs!</li>
+                        <li><code>numpy.random</code> and <code>numpy.linalg</code></li>
+                    </ul>
+                    </p>
+                </section>
+
+        </section>
+
+
+
+
+				<section>
+					<h1>THE END</h1>
+                    <p>
+                    <dl>
+                        <dt><strong>AUTHORS</strong></dt>
+                        <dd>Serge Guelton, Pierrick Brunet + TB Student + <strong>Contributors</strong></dd>
+                        <dt><strong>INDUSTRIAL SUPPORT</strong></dt>
+                        <dd><a href="http://www.silkan.com/">Silkan</a>, <a href="http://www.numscale.com">NumScale</a>, <a href="http://opendreamkit.org/">OpenDreamKit</a> <strong>→You←</strong></dd>
+                        <dt><strong>CONTRIBUTE</strong></dt>
+                        <dd>#pythran on FreeNode, pythran@freelists.org, GitHub repo</dd>
+                    </dl>
+                    </p>
+
+				</section>
+
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
