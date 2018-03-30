@@ -1,4 +1,4 @@
-:title: Optimizing the core of Python Scientific Stack
+:title: Frozen data structures meet constexpr
 :data-transition-duration: 150
 :skip-help: true
 :slide-numbers: true
@@ -36,7 +36,7 @@ Foreword
     $ g++ --version
     g++ (Debian 7.3.0-11) 7.3.0
 
-- All benchmarks are run on an Intel i7 (i.e. my laptop) using Google benchamrk
+- All benchmarks are run on an Intel i7-6600U (i.e. my laptop) using Google benchamrk
 
 ----
 
@@ -79,13 +79,15 @@ About Perfect Minimal Hashing
 ``constexpr`` is the new ``const``
 ==================================
 
+With a ``constexpr`` constructor:
+
 .. code:: c++
 
     extern const frozen::set<int, 3> nekrataal = { 1, 8, 7 };
 
 .. code:: sh
 
-    $ nm a.o
+    $ objdump -S -Mintel -j .rodata a.o
     ...
     0:	00 00 00 00 01 00 00 00 07 00 00 00 08 00 00 00
 
@@ -113,6 +115,11 @@ Use Case: string ⋄ enum
 Use Case: Static Config
 ========================
 
+    Date: Wed, 28 Mar 2018 15:21:51 +0000
+    From: Chris Beck <xxxxxxxxx>
+    To: serge guelton <yyyyyyyy>
+    Subject: Re: Frozen use at Tesla
+
 
     Tesla autopilot uses shared memory segments (...).
 
@@ -120,7 +127,7 @@ Use Case: Static Config
     used by different parts of the program, and a struct that describes the
     configuration of each segment – (...).
 
-    In the past we had a `const std::map` for this. Now we use a frozen::map,
+    In the past we had a ``const std::map`` for this. Now we use a ``frozen::map``,
     which simplifies the startup of the tasks.
 
 
@@ -132,7 +139,7 @@ Why? Shrink the binaries
 enum style
 ----------
 
-**6072** bytes
+``.o`` size: **6072** bytes
 
 .. code:: c++
 
@@ -151,7 +158,7 @@ Why? Shrink the binaries
 std::map style
 --------------
 
-**8496** bytes
+``.o`` size: **8496** bytes
 
 .. code:: c++
 
@@ -174,7 +181,7 @@ Why? Shrink the binaries
 frozen::map style
 -----------------
 
-**4088** bytes
+``.o`` size: **4088** bytes
 
 .. code:: c++
 
@@ -281,38 +288,35 @@ Compile Time Binary Search: Assembly
 ====================================
 
 
-Compiler with ``-march=native`` for dense assembly output :-)
+Compiler with clang for (almost) branchless code
 
 .. code:: sh
 
+    $ clang a.c -O2 -std=c++14 -c
     $ objdump -S -Mintel -j .text a.o
 
-    Disassembly of section .text:
-
-     0:	83 ff 14             	cmp    edi,0x14
-     3:	48 8d 15 00 00 00 00 	lea    rdx,[rip+0x0]
-     a:	19 c0                	sbb    eax,eax
-     c:	48 8d 4a e0          	lea    rcx,[rdx-0x20]
-    10:	83 e0 e2             	and    eax,0xffffffe2
-    13:	83 c0 25             	add    eax,0x25
-    16:	83 ff 13             	cmp    edi,0x13
-    19:	48 0f 46 d1          	cmovbe rdx,rcx
-    1d:	39 c7                	cmp    edi,eax
-    1f:	48 8d 4a 10          	lea    rcx,[rdx+0x10]
-    23:	48 0f 47 d1          	cmova  rdx,rcx
-    27:	3b 7a 04             	cmp    edi,DWORD PTR [rdx+0x4]
-    2a:	76 04                	jbe    30 <_Z14is_small_primei+0x30>
-    2c:	48 83 c2 08          	add    rdx,0x8
-    30:	48 8d 42 04          	lea    rax,[rdx+0x4]
-    34:	3b 3a                	cmp    edi,DWORD PTR [rdx]
-    36:	48 8d 0d 00 00 00 00 	lea    rcx,[rip+0x0]
-    3d:	48 0f 47 d0          	cmova  rdx,rax
-    41:	31 c0                	xor    eax,eax
-    43:	48 39 ca             	cmp    rdx,rcx
-    46:	74 05                	je     4d <_Z14is_small_primei+0x4d>
-    48:	3b 3a                	cmp    edi,DWORD PTR [rdx]
-    4a:	0f 93 c0             	setae  al
-    4d:	c3                   	ret
+    0000000000000000 <_Z14is_small_primei>:
+       0:	83 ff 13             	cmp    $0x13,%edi
+       3:	b8 00 00 00 00       	mov    $0x0,%eax
+       8:	b9 00 00 00 00       	mov    $0x0,%ecx
+       d:	48 0f 47 c8          	cmova  %rax,%rcx
+      11:	39 79 0c             	cmp    %edi,0xc(%rcx)
+      14:	48 8d 41 10          	lea    0x10(%rcx),%rax
+      18:	48 0f 43 c1          	cmovae %rcx,%rax
+      1c:	39 78 04             	cmp    %edi,0x4(%rax)
+      1f:	48 8d 48 08          	lea    0x8(%rax),%rcx
+      23:	48 0f 43 c8          	cmovae %rax,%rcx
+      27:	39 39                	cmp    %edi,(%rcx)
+      29:	48 8d 41 04          	lea    0x4(%rcx),%rax
+      2d:	48 0f 43 c1          	cmovae %rcx,%rax
+      31:	b9 00 00 00 00       	mov    $0x0,%ecx
+      36:	48 39 c8             	cmp    %rcx,%rax
+      39:	74 06                	je     41 <_Z14is_small_primei+0x41>
+      3b:	39 38                	cmp    %edi,(%rax)
+      3d:	0f 96 c0             	setbe  %al
+      40:	c3                   	retq
+      41:	31 c0                	xor    %eax,%eax
+      43:	c3                   	retq
 
 
 
@@ -329,7 +333,8 @@ Compile Time Hashing, aka ``gperf``
 
     .. code:: c++
 
-        constexpr std::size_t operator()(string value, std::size_t seed) const {
+        constexpr std::size_t
+        operator()(string value, std::size_t seed) const {
           std::size_t d = seed;
           for (std::size_t i = 0; i < value.size(); ++i)
             d = (d * 0x01000193) ^ value[i];
@@ -367,11 +372,13 @@ All methods calls are ``constexpr`` thus...
 
     #include <frozen/set.h>
 
-    static constexpr frozen::set<unsigned, 3> supported_sizes = {
+    static constexpr frozen::set<unsigned, 3>
+    supported_sizes = {
       1, 2, 4
     };
 
-    static_assert(supported_sizes.count(sizeof(long)), "unsupported size");
+    static_assert(supported_sizes.count(sizeof(long)),
+                  "unsupported size");
 
 ----
 
@@ -383,15 +390,18 @@ From c++17
 .. code:: c++
 
     std::search(in.begin(), in.end(),
-                std::boyer_moore_searcher(needle.begin(), needle.end())
+                std::boyer_moore_searcher(needle.begin(),
+                                          needle.end())
 
 Make the init phase constexpr!
 
 .. code:: c++
 
     std::string haystack = "ABC ABCDAB ABCDABCDABDE";
-    auto index = frozen::search(haystack.begin(), haystack.end(),
-                                frozen::make_boyer_moore_searcher("ABCDABD"));
+    auto index = frozen::search(
+        haystack.begin(), haystack.end(),
+        frozen::make_boyer_moore_searcher("ABCDABD")
+    );
 
 
 ----
@@ -472,7 +482,8 @@ Thanks to Quarkslab for allowing me to sped time on that project.
 
 Kudos to Chris Beck and  Jérôme Dumesnil for the common work!
 
-```
-https://github.com/serge-sans-paille/frozen
-```
+.. code:: sh
+
+    $ lynx https://github.com/serge-sans-paille/frozen
+
 
