@@ -4,27 +4,39 @@
         messageStyle: "none",
         TeX : { extensions : ['color.js'] }
       });
-    </script></head><body class="impress-not-supported"><div id="impress" data-transition-duration="150"><div class="step step-level-1" step="0" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="0" data-y="0" data-z="0"><h1 id="c-in-elvenland">C++ in ElvenLand</h1><p><em>Serge &#xAB; sans paille &#xBB; Guelton &lt;serge.guelton@quarkslab.com&gt;</em></p><p>CppCon 2018 -- USA / 23 -- 29 September 2018</p></div><div class="step step-level-1" step="1" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="1600" data-y="0" data-z="0"><h1 id="about-me">About me</h1><ul><li>R&amp;D engineer on compilation for security @ QuarksLab</li><li>Associate Researcher at Telecom Bretagne</li><li>Happy developer of <a href="https://github.com/serge-sans-paille/pythran">Pythran</a></li><li>LLVM commiter</li></ul></div><div class="step step-level-1" step="2" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="3200" data-y="0" data-z="0"><h1 id="elen-sila-lumenn-omentielvo">Elen s&#xED;la l&#xFA;menn' omentielvo</h1><blockquote><p><em>a star shines on the hour of our meeting</em></p></blockquote><p>A trip in elven land, with a focus on C++ artefacts.</p><p>Many ancient artefacts come from C.</p></div><div class="step step-level-1" step="3" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="4800" data-y="0" data-z="0"><h1 id="concerning-elves">Concerning Elves</h1><img src="./imgs/silmarrillion.jpg" width="800px"></img></div><div class="step step-level-1" step="4" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="6400" data-y="0" data-z="0"><h1 id="the-cs-view">The CS View</h1><blockquote><p>&#xAB; A Wyvern, a Gnu or an Orc give birth to an Elf sometimes teamed-up with a Dwarf. &#xBB;</p></blockquote></div><div class="step step-level-1" step="5" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="8000" data-y="0" data-z="0"><h1 id="the-elf-format">The Elf Format</h1><p>Used mostly in the (Li|U)nix world by:</p><blockquote><ul><li>Object files <tt>.o</tt></li><li>Shared object files <tt>.o</tt></li><li>Core files <tt>core</tt></li><li>Executable <tt>a.out</tt></li></ul></blockquote></div><div class="step step-level-1" step="6" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="9600" data-y="0" data-z="0"><h1 id="a-top-down-approach-to-elf">A Top Down Approach to Elf</h1><pre class="highlight code C"><span class="cm">/* hello.c */</span>
+    </script></head><body class="impress-not-supported"><div id="impress" data-transition-duration="150"><div class="step step-level-1" step="0" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="0" data-y="0" data-z="0"><h1 id="foreword">Foreword</h1><pre class="highlight code">To: serge.guelton@telecom-bretagne.eu
+Cc: Speaker Liaison &lt;speakers@cppcon.org&gt;
+Subject: Regarding your CppCon talk
+
+Serge,
+
+Hi! I really love the title of your talk,
+but I'm a little worried
+that this talk title might suggest that
+it's about C++11 -
+
+"Elvenland" is very close to "Elevenland".</pre></div><div class="step step-level-1" step="1" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="1600" data-y="0" data-z="0"><h1 id="c-in-elvenland">C++ in ElvenLand</h1><p><em>Serge &#xAB; sans paille &#xBB; Guelton &lt;serge.guelton@quarkslab.com&gt;</em></p><p>CppCon 2018 -- USA / 23 -- 29 September 2018</p></div><div class="step step-level-1" step="2" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="3200" data-y="0" data-z="0"><h1 id="about-me">About me</h1><ul><li>R&amp;D engineer on compilation for security @ QuarksLab</li><li>Associate Researcher at Telecom Bretagne</li><li>Happy developer of <a href="https://github.com/serge-sans-paille/pythran">Pythran</a></li><li>(modest) LLVM commiter</li></ul></div><div class="step step-level-1" step="3" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="4800" data-y="0" data-z="0"><h1 id="elen-sila-lumenn-omentielvo">Elen s&#xED;la l&#xFA;menn' omentielvo</h1><blockquote><p><em>a star shines on the hour of our meeting</em></p></blockquote><p>A trip in elven land, with a focus on C++ artefacts.</p><p>Many ancient artefacts come from C.</p></div><div class="step step-level-1" step="4" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="6400" data-y="0" data-z="0"><h1 id="concerning-elves">Concerning Elves</h1><img src="./imgs/silmarrillion.jpg" width="800px"></img></div><div class="step step-level-1" step="5" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="8000" data-y="0" data-z="0"><h1 id="concerning-elf">Concerning ELF</h1><blockquote><p>&#xAB; A Wyvern, a Gnu or an Orc give birth to an Elf sometimes teamed-up with a Dwarf. &#xBB;</p></blockquote></div><div class="step step-level-1" step="6" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="9600" data-y="0" data-z="0"><h1 id="the-elf-format">The ELF Format</h1><p>Used mostly in the (Li|U)nix world by:</p><blockquote><ul><li>Object files <tt>.o</tt></li><li>Shared object files <tt>.o</tt></li><li>Core files <tt>core</tt></li><li>Executable <tt>a.out</tt></li></ul></blockquote></div><div class="step step-level-1" step="7" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="11200" data-y="0" data-z="0"><h1 id="a-top-down-approach-to-elf">A Top Down Approach to ELF</h1><pre class="highlight code C"><span class="cm">/* hello.c */</span>
 <span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">puts</span><span class="p">(</span><span class="s">"Hello CppCon"</span><span class="p">);</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></pre><pre class="highlight code sh">&gt; gcc hello.c -o hello</pre></div><div class="step step-level-1" step="7" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="11200" data-y="0" data-z="0"><h1 id="file-speaks-elvish"><tt>file</tt> speaks elvish</h1><pre class="highlight code sh">&gt; file hello
+<span class="p">}</span></pre><pre class="highlight code sh">&gt; gcc hello.c -o hello</pre></div><div class="step step-level-1" step="8" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="12800" data-y="0" data-z="0"><h1 id="file-speaks-elvish"><tt>file</tt> speaks elvish</h1><pre class="highlight code sh">&gt; file hello
 hello: ELF <span class="m">64</span>-bit LSB pie executable x86-64, <span class="se">\
 </span>       version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked, <span class="se">\
 </span>       interpreter /lib64/ld-linux-x86-64.so.2, <span class="se">\
 </span>       <span class="k">for</span> GNU/Linux <span class="m">3</span>.2.0, <span class="se">\
 </span>       BuildID<span class="o">[</span>sha1<span class="o">]=</span>84a84138ec39086f2f7553316c6093e599f8ddd2, <span class="se">\
-</span>       not stripped</pre></div><div class="step step-level-1" step="8" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="12800" data-y="0" data-z="0"><h1 id="header">Header</h1><h2 id="elf-64-bit"><tt>ELF 64-bit</tt></h2><blockquote><p>There exist two kind of elf blob: the 64bit version and the 32 bit version. This basically determines how addresses and offsets are encoded</p></blockquote></div><div class="step step-level-1" step="9" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="14400" data-y="0" data-z="0"><h1 id="id1">Header</h1><h2 id="id2"><tt>ELF 64-bit</tt></h2><blockquote><p>There exist two kind of elf blob: the 64bit version and the 32 bit version. This basically determines how addresses and offsets are encoded</p><p>(image d'un petit et d'un grand elf)</p></blockquote><h2 id="lsb"><tt>LSB</tt></h2><blockquote><p>Least-Significant Byte a.k.a. little endian</p></blockquote></div><div class="step step-level-1" step="10" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="16000" data-y="0" data-z="0"><h1 id="id3">Header</h1><h2 id="pie"><tt>pie</tt></h2><blockquote><p>Position Independent Executable, this binary can be loaded at any adress. Plays nice with ASLR</p></blockquote><h2 id="x86-64"><tt>x86-64</tt></h2><blockquote><p>The instruction set used by this binary</p></blockquote><h2 id="version-1"><tt>version 1</tt></h2><blockquote><p>There is only one version of the ELF standard anyway</p></blockquote></div><div class="step step-level-1" step="11" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="17600" data-y="0" data-z="0"><h1 id="id4">Header</h1><h2 id="sysv"><tt>SYSV</tt></h2><blockquote><p><em>Sys*tem *V</em> Application Binary Interface, set of sepcs about object format, calling convention etc</p></blockquote><h2 id="dynamically-linked"><tt>dynamically linked</tt></h2><blockquote><p>Not a stand-alone executable, uses shared library and thus needs a...</p></blockquote><h2 id="interpreter-lib64-ld-linux-x86-64-so-2"><tt>interpreter /lib64/ld-linux-x86-64.so.2</tt></h2><blockquote><p>Dynamic loader</p></blockquote></div><div class="step step-level-1" step="12" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="19200" data-y="0" data-z="0"><h1 id="statically-linked">Statically linked?</h1><pre class="highlight code sh">&gt; ldd hello
-linux-vdso.so.1 <span class="o">(</span>0x00007ffed7dd9000<span class="o">)</span> <span class="c1"># see ``man 7 vdso``
-</span>libc.so.6 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libc.so.6 <span class="o">(</span>...<span class="o">)</span>
+</span>       not stripped</pre></div><div class="step step-level-1" step="9" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="14400" data-y="0" data-z="0"><h1 id="header">Header</h1><h2 id="elf-64-bit"><tt>ELF 64-bit</tt></h2><p>There exist two kinds of ELF blob: the 64bit version and the 32 bit version.</p><p>This basically determines how addresses and offsets are encoded</p><h2 id="lsb"><tt>LSB</tt></h2><p>Least-Significant Byte a.k.a. little endian</p></div><div class="step step-level-1" step="10" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="16000" data-y="0" data-z="0"><h1 id="id1">Header</h1><h2 id="pie"><tt>pie</tt></h2><p>Position Independent Executable, this binary can be loaded at any adress.</p><p>Plays nice with ASLR.</p><h2 id="x86-64"><tt>x86-64</tt></h2><p>The instruction set used by this binary</p><h2 id="version-1"><tt>version 1</tt></h2><p>There is only one version of the ELF standard anyway</p></div><div class="step step-level-1" step="11" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="17600" data-y="0" data-z="0"><h1 id="id2">Header</h1><h2 id="sysv"><tt>SYSV</tt></h2><p><strong>Sys</strong>&#xA0;tem <strong>V</strong> Application Binary Interface, set of sepcs about object format, calling convention etc</p><h2 id="dynamically-linked"><tt>dynamically linked</tt></h2><p>Not a stand-alone executable, uses shared library and thus needs an...</p><h2 id="interpreter-lib64-ld-linux-x86-64-so-2"><tt>interpreter /lib64/ld-linux-x86-64.so.2</tt></h2><p>Dynamic loader</p></div><div class="step step-level-1" step="12" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="19200" data-y="0" data-z="0"><h1 id="statically-linked">Statically linked?</h1><pre class="highlight code sh">&gt; ldd hello
+<span class="c1"># see ``man 7 vdso``
+</span>linux-vdso.so.1 <span class="o">(</span>0x00007ffed7dd9000<span class="o">)</span>
+libc.so.6 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libc.so.6 <span class="o">(</span>...<span class="o">)</span>
 /lib64/ld-linux-x86-64.so.2 <span class="o">(</span>0x00007f873c71f000<span class="o">)</span></pre><pre class="highlight code sh">&gt; gcc hello.c -static -o hello-static
 &gt; file hello-static
 hello-static: ELF <span class="m">64</span>-bit LSB executable, x86-64,<span class="se">\
 </span> version <span class="m">1</span> <span class="o">(</span>GNU/Linux<span class="o">)</span>, statically linked <span class="o">(</span>...<span class="o">)</span>
 &gt; ldd hello-static
-not a dynamic executable</pre></div><div class="step step-level-1" step="13" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="20800" data-y="0" data-z="0"><h1 id="id5">Header</h1><h2 id="for-gnu-linux-3-2-0"><tt>for GNU/Linux 3.2.0</tt></h2><blockquote><p>The libc ABI we are using</p></blockquote><h2 id="buildid-sha1-84a8413"><tt>BuildID[sha1]=84a8413...</tt></h2><blockquote><p>same BuildID ~= semantically identical binary, useful as a maintainer to quickly identify a build from a core</p></blockquote><h2 id="not-stripped"><tt>not stripped</tt></h2><blockquote><p>still has symbol and debug information</p></blockquote></div><div class="step step-level-1" step="14" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="22400" data-y="0" data-z="0"><h1 id="summary">Summary</h1><pre class="highlight code sh">&gt; readelf -h hello
+not a dynamic executable</pre></div><div class="step step-level-1" step="13" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="20800" data-y="0" data-z="0"><h1 id="id3">Header</h1><h2 id="for-gnu-linux-3-2-0"><tt>for GNU/Linux 3.2.0</tt></h2><p>The libc ABI we are using</p><h2 id="buildid-sha1-84a8413"><tt>BuildID[sha1]=84a8413...</tt></h2><p>Same BuildID ~= semantically identical binary.</p><p>Useful as a maintainer to quickly identify a build from a core</p><h2 id="not-stripped"><tt>not stripped</tt></h2><p>Still has symbol (+ debug?) information</p></div><div class="step step-level-1" step="14" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="22400" data-y="0" data-z="0"><h1 id="summary">Summary</h1><pre class="highlight code sh">&gt; readelf -h hello
 ELF Header:
   Magic:   7f <span class="m">45</span> 4c <span class="m">46</span> <span class="m">02</span> <span class="m">01</span> <span class="m">01</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>
   Class:                             ELF64
@@ -51,30 +63,32 @@ Number of section headers:         <span class="m">28</span>
 Section header string table index: <span class="m">27</span></pre></div><div class="step step-level-1" step="16" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="25600" data-y="0" data-z="0"><h1 id="what-is-a-symbol-table-anyway">What is a Symbol table anyway?</h1><pre class="highlight code sh">&gt; objdump -t hello
 Address <span class="p">|</span>Tags   <span class="p">|</span>section  <span class="p">|</span>algn/sz  <span class="p">|</span>name
 <span class="o">(</span>...<span class="o">)</span>
-<span class="m">0000000</span>       F *UND*     <span class="m">00000000</span>   puts@@GLIBC_2.2.5
-<span class="m">0004030</span> g       .data     <span class="m">00000000</span>   _edata
-00011f4 g     F .fini     <span class="m">00000000</span>   _fini
-<span class="m">0000000</span>       F *UND*     <span class="m">00000000</span>   __libc_start_main@@GLIBC_2.2.5
-<span class="m">0004020</span> g       .data     <span class="m">00000000</span>   __data_start
-<span class="m">0000000</span>  w      *UND*     <span class="m">00000000</span>   __gmon_start__
-<span class="m">0004028</span> g     O .data     <span class="m">00000000</span>   .hidden __dso_handle
-<span class="m">0002000</span> g     O .rodata   <span class="m">00000004</span>   _IO_stdin_used
-<span class="m">0001180</span> g     F .text     <span class="m">00000065</span>   __libc_csu_init
-<span class="m">0004038</span> g       .bss      <span class="m">00000000</span>   _end
-<span class="m">0001050</span> g     F .text     0000002b   _start
-<span class="m">0004030</span> g       .bss      <span class="m">00000000</span>   __bss_start
-000115a g     F .text     <span class="m">00000017</span>   main
-<span class="m">0004030</span> g     O .data     <span class="m">00000000</span>   .hidden __TMC_END__
-<span class="m">0000000</span>  w      *UND*     <span class="m">00000000</span>   _ITM_registerTMCloneTable
-<span class="m">0000000</span>  w    F *UND*     <span class="m">00000000</span>   __cxa_finalize@@GLIBC_2.2.5
-<span class="m">0001000</span> g     F .init     <span class="m">00000000</span>   _init</pre></div><div class="step step-level-1" step="17" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="27200" data-y="0" data-z="0"><h1 id="why-is-puts-in-an-und-section">Why is <tt>puts</tt> in an <tt>*UND*</tt> section?</h1><pre class="highlight code sh">&gt; objdump -T hello
+<span class="m">0000000</span>       F *UND*     <span class="m">00000000</span>  puts@@GLIBC_2.2.5
+<span class="m">0004030</span> g       .data     <span class="m">00000000</span>  _edata
+00011f4 g     F .fini     <span class="m">00000000</span>  _fini
+<span class="m">0000000</span>       F *UND*     <span class="m">00000000</span>  __libc_start_main@@GLIBC_2.2.5
+<span class="m">0004020</span> g       .data     <span class="m">00000000</span>  __data_start
+<span class="m">0000000</span>  w      *UND*     <span class="m">00000000</span>  __gmon_start__
+<span class="m">0004028</span> g     O .data     <span class="m">00000000</span>  .hidden __dso_handle
+<span class="m">0002000</span> g     O .rodata   <span class="m">00000004</span>  _IO_stdin_used
+<span class="m">0001180</span> g     F .text     <span class="m">00000065</span>  __libc_csu_init
+<span class="m">0004038</span> g       .bss      <span class="m">00000000</span>  _end
+<span class="m">0001050</span> g     F .text     0000002b  _start
+<span class="m">0004030</span> g       .bss      <span class="m">00000000</span>  __bss_start
+000115a g     F .text     <span class="m">00000017</span>  main
+<span class="m">0004030</span> g     O .data     <span class="m">00000000</span>  .hidden __TMC_END__
+<span class="m">0000000</span>  w      *UND*     <span class="m">00000000</span>  _ITM_registerTMCloneTable
+<span class="m">0000000</span>  w    F *UND*     <span class="m">00000000</span>  __cxa_finalize@@GLIBC_2.2.5
+<span class="m">0001000</span> g     F .init     <span class="m">00000000</span>  _init</pre></div><div class="step step-level-1" step="17" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="27200" data-y="0" data-z="0"><h1 id="why-is-puts-in-an-und-section">Why is <tt>puts</tt> in an <tt>*UND*</tt> section?</h1><pre class="highlight code sh">&gt; objdump -T hello
 DYNAMIC SYMBOL TABLE:
 <span class="m">0000000</span>  w   D  *UND*  <span class="m">0000000</span>              _ITM_deregisterTMCloneTable
 <span class="m">0000000</span>      DF *UND*  <span class="m">0000000</span>  GLIBC_2.2.5 puts
 <span class="m">0000000</span>      DF *UND*  <span class="m">0000000</span>  GLIBC_2.2.5 __libc_start_main
 <span class="m">0000000</span>  w   D  *UND*  <span class="m">0000000</span>              __gmon_start__
 <span class="m">0000000</span>  w   D  *UND*  <span class="m">0000000</span>              _ITM_registerTMCloneTable
-<span class="m">0000000</span>  w   DF *UND*  <span class="m">0000000</span>  GLIBC_2.2.5 __cxa_finalize</pre></div><div class="step step-level-1" step="18" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="28800" data-y="0" data-z="0"><h1 id="what-we-have-learnt-so-far">What we have learnt so far</h1><ul><li>ELF is a binary format, made of a header</li><li>It also contains plenty of sections</li><li>And even more symbols</li><li>There is nothing specific to C++ in there</li></ul></div><div class="step step-level-1" step="19" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="30400" data-y="0" data-z="0"><h1 id="bonus">Bonus</h1><pre class="highlight code sh">&gt; file cppcon.png
+<span class="m">0000000</span>  w   DF *UND*  <span class="m">0000000</span>  GLIBC_2.2.5 __cxa_finalize</pre></div><div class="step step-level-1" step="18" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="28800" data-y="0" data-z="0"><h1 id="filling-the-holes">Filling the holes</h1><pre class="highlight code sh">&gt; objdump -T /lib/x86_64-linux-gnu/libc.so.6 <span class="p">|</span><span class="se">\
+</span>     grep <span class="s1">' puts$'</span>
+000705e0  w   DF .text      <span class="m">00000200</span>  GLIBC_2.2.5 puts</pre></div><div class="step step-level-1" step="19" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="30400" data-y="0" data-z="0"><h1 id="what-we-have-learnt-so-far">What we have learnt so far</h1><ul><li>ELF is a binary format, with an informative header</li><li>It also contains plenty of sections</li><li>And plenty symbols</li><li>There is nothing specific to C++ in there</li></ul></div><div class="step step-level-1" step="20" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="32000" data-y="0" data-z="0"><h1 id="bonus">Bonus</h1><pre class="highlight code sh">&gt; file cppcon.png
 cppcon.png: PNG image data, <span class="m">400</span> x <span class="m">400</span>, <span class="m">8</span>-bit/color RGBA,<span class="se">\
 </span> non-interlaced
 &gt; objcopy --input binary --output elf64-x86-64 <span class="se">\
@@ -84,7 +98,7 @@ SYMBOL TABLE:
 <span class="m">0000000</span> l    d  .data  <span class="m">0000000</span> .data
 <span class="m">0000000</span> g       .data  <span class="m">0000000</span> _binary_cppcon_png_start
 0007c25 g       .data  <span class="m">0000000</span> _binary_cppcon_png_end
-0007c25 g       *ABS*  <span class="m">0000000</span> _binary_cppcon_png_size</pre></div><div class="step step-level-1" step="20" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="32000" data-y="0" data-z="0"><h1 id="dissecting-an-elf">Dissecting an Elf</h1><img src="./imgs/elf-simple.png" width="400px"></img></div><div class="step step-level-1" step="21" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="33600" data-y="0" data-z="0"><h1 id="dissecting-an-elf-2">Dissecting an Elf (2)</h1><img src="./imgs/dual.png" width="400px"></img></div><div class="step step-level-1" step="22" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="35200" data-y="0" data-z="0"><h1 id="segments">Segments</h1><pre class="highlight code sh">&gt; readelf --segment hello
+0007c25 g       *ABS*  <span class="m">0000000</span> _binary_cppcon_png_size</pre></div><div class="step step-level-1" step="21" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="33600" data-y="0" data-z="0"><h1 id="dissecting-an-elf">Dissecting an ELF</h1><img src="./imgs/elf-simple.png" width="400px"></img><p><em>credits: WikipediA</em></p></div><div class="step step-level-1" step="22" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="35200" data-y="0" data-z="0"><h1 id="dissecting-an-elf-2">Dissecting an ELF (2)</h1><img src="./imgs/dual.png" width="400px"></img><p><em>credits: Oracle</em></p></div><div class="step step-level-1" step="23" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="36800" data-y="0" data-z="0"><h1 id="segments">Segments</h1><pre class="highlight code sh">&gt; readelf --segment hello
 <span class="o">(</span>...<span class="o">)</span>
  Section to Segment mapping:
   Segment Sections...
@@ -98,13 +112,13 @@ SYMBOL TABLE:
    <span class="m">07</span>     .note.ABI-tag .note.gnu.build-id
    <span class="m">08</span>     .eh_frame_hdr
    <span class="m">09</span>
-   <span class="m">10</span>     .init_array .fini_array .dynamic .got</pre></div><div class="step step-level-1" step="23" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="36800" data-y="0" data-z="0"><h1 id="function-symbols">Function symbols</h1><pre class="highlight code c++"><span class="cm">/* hello.cpp */</span>
+   <span class="m">10</span>     .init_array .fini_array .dynamic .got</pre></div><div class="step step-level-1" step="24" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="38400" data-y="0" data-z="0"><h1 id="function-symbols">Function Symbols</h1><pre class="highlight code c++"><span class="cm">/* hello.cpp */</span>
 <span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">std</span><span class="o">::</span><span class="n">iostream</span> <span class="o">&lt;&lt;</span> <span class="s">"Hello CppCon"</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></pre><pre class="highlight code sh">&gt; g++ hello.cpp -o hello++</pre></div><div class="step step-level-1" step="24" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="38400" data-y="0" data-z="0"><h1 id="symbol-mangling">Symbol mangling</h1><pre class="highlight code sh">&gt; nm hello++
+<span class="p">}</span></pre><pre class="highlight code sh">&gt; g++ hello.cpp -o hello++</pre></div><div class="step step-level-1" step="25" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="40000" data-y="0" data-z="0"><h1 id="symbol-mangling">Symbol Mangling</h1><pre class="highlight code sh">&gt; nm hello++
 <span class="o">(</span>...<span class="o">)</span>
 000118a T main
 00010f0 t register_tm_clones
@@ -118,7 +132,7 @@ SYMBOL TABLE:
         U _ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_@@GLIBCXX_3.4
 <span class="m">0002004</span> r _ZStL19piecewise_construct
 <span class="m">0004171</span> b _ZStL8__ioinit
-        U _ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@@GLIBCXX_3.4</pre></div><div class="step step-level-1" step="25" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="40000" data-y="0" data-z="0"><h1 id="symbol-demangling">Symbol demangling</h1><pre class="highlight code sh">&gt; nm -C hello++
+        U _ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@@GLIBCXX_3.4</pre></div><div class="step step-level-1" step="26" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="41600" data-y="0" data-z="0"><h1 id="symbol-demangling">Symbol Demangling</h1><pre class="highlight code sh">&gt; nm -C hello++
 <span class="o">(</span>...<span class="o">)</span>
 000118a T main
 00010f0 t register_tm_clones
@@ -132,7 +146,7 @@ SYMBOL TABLE:
         U std::basic_ostream&lt;char, std::char_traits&lt;char&gt; &gt;<span class="p">&amp;</span> std::endl&lt;char, std::char_traits&lt;char&gt; &gt;<span class="o">(</span>std::basic_ostream&lt;char, std::char_traits&lt;char&gt; &gt;<span class="p">&amp;</span><span class="o">)</span>@@GLIBCXX_3.4
 <span class="m">0002004</span> r std::piecewise_construct
 <span class="m">0004171</span> b std::__ioinit
-        U std::basic_ostream&lt;char, std::char_traits&lt;char&gt; &gt;<span class="p">&amp;</span> std::operator&lt;&lt; &lt;std::char_traits&lt;char&gt; &gt;<span class="o">(</span>std::basic_ostream&lt;char, std::char_traits&lt;char&gt; &gt;<span class="p">&amp;</span>, char const*<span class="o">)</span>@@GLIBCXX_3.4</pre></div><div class="step step-level-1" step="26" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="41600" data-y="0" data-z="0"><h1 id="fun-with-mangling">Fun with Mangling</h1><pre class="highlight code C++"><span class="cm">/* mangling.cpp */</span>
+        U std::basic_ostream&lt;char, std::char_traits&lt;char&gt; &gt;<span class="p">&amp;</span> std::operator&lt;&lt; &lt;std::char_traits&lt;char&gt; &gt;<span class="o">(</span>std::basic_ostream&lt;char, std::char_traits&lt;char&gt; &gt;<span class="p">&amp;</span>, char const*<span class="o">)</span>@@GLIBCXX_3.4</pre></div><div class="step step-level-1" step="27" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="43200" data-y="0" data-z="0"><h1 id="fun-with-mangling-1">Fun with Mangling (1)</h1><pre class="highlight code C++"><span class="cm">/* mangling.cpp */</span>
 <span class="k">extern</span> <span class="s">"C"</span> <span class="kt">int</span> <span class="n">foo</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
 <span class="kt">int</span> <span class="nf">foobar</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
 <span class="kt">int</span> <span class="nf">bar</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span>
@@ -142,27 +156,27 @@ SYMBOL TABLE:
                  U foo
                  U _GLOBAL_OFFSET_TABLE_
 <span class="m">0000000000000000</span> T _Z3bari
-                 U _Z6foobari</pre></div><div class="step step-level-1" step="27" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="43200" data-y="0" data-z="0"><h1 id="fun-with-mangling-2">Fun with Mangling 2</h1><pre class="highlight code C"><span class="cm">/* mangling_companion.c */</span>
+                 U _Z6foobari</pre></div><div class="step step-level-1" step="28" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="44800" data-y="0" data-z="0"><h1 id="fun-with-mangling-2">Fun with Mangling (2)</h1><pre class="highlight code C"><span class="cm">/* mangling_companion.c */</span>
 <span class="kt">int</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="kt">int</span> <span class="nf">_Z3bari</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
-<span class="p">}</span></pre><p>Definitively non-portable but valid :-)</p></div><div class="step step-level-1" step="28" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="44800" data-y="0" data-z="0"><h1 id="constant-symbols">Constant Symbols</h1><pre class="highlight code c++"><span class="cm">/* constants.cpp */</span>
+<span class="p">}</span></pre><p>Definitively non-portable but valid :-)</p></div><div class="step step-level-1" step="29" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="46400" data-y="0" data-z="0"><h1 id="constant-symbols">Constant Symbols</h1><pre class="highlight code c++"><span class="cm">/* constants.cpp */</span>
 <span class="cp">#include</span> <span class="cpf">&lt;tuple&gt;</span><span class="cp">
 </span>
 <span class="kt">int</span> <span class="k">const</span> <span class="n">some_int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">float</span><span class="o">&gt;</span> <span class="k">const</span> <span class="n">some_tuple</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2.</span><span class="p">};</span></pre><pre class="highlight code sh">&gt; gcc -O2 constants.cpp -c
 &gt; nm constants.o
 &gt; nm -D constants.o
-nm: constants.o: no symbols</pre></div><div class="step step-level-1" step="29" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="46400" data-y="0" data-z="0"><h1 id="extern-constant-symbols">Extern Constant symbols</h1><pre class="highlight code c++"><span class="cm">/* extern_constants.cpp */</span>
+nm: constants.o: no symbols</pre></div><div class="step step-level-1" step="30" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="48000" data-y="0" data-z="0"><h1 id="extern-constant-symbols">Extern Constant Symbols</h1><pre class="highlight code c++"><span class="cm">/* extern_constants.cpp */</span>
 <span class="cp">#include</span> <span class="cpf">&lt;tuple&gt;</span><span class="cp">
 </span>
 <span class="k">extern</span> <span class="kt">int</span> <span class="k">const</span> <span class="n">some_int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="k">extern</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">float</span><span class="o">&gt;</span> <span class="k">const</span> <span class="n">some_tuple</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2.</span><span class="p">};</span></pre><pre class="highlight code sh">&gt; gcc -O2 extern_constants.cpp -c
 &gt; nm extern_constants.o
 <span class="m">00000008</span> R some_int
-<span class="m">00000000</span> R some_tuple</pre></div><div class="step step-level-1" step="30" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="48000" data-y="0" data-z="0"><h1 id="about-symbol-conflict">About Symbol conflict</h1><pre class="highlight code c++"><span class="cm">/* noinline0.cpp */</span>
+<span class="m">00000000</span> R some_tuple</pre></div><div class="step step-level-1" step="31" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="49600" data-y="0" data-z="0"><h1 id="about-symbol-conflict">About Symbol Conflict</h1><pre class="highlight code c++"><span class="cm">/* noinline0.cpp */</span>
 <span class="kt">int</span> <span class="nf">foo</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
 <span class="kt">int</span> <span class="nf">bar0</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">foo</span><span class="p">();</span> <span class="p">}</span>
 <span class="cm">/* noinline1.cpp */</span>
@@ -170,7 +184,9 @@ nm: constants.o: no symbols</pre></div><div class="step step-level-1" step="29" 
 <span class="kt">int</span> <span class="nf">bar1</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">foo</span><span class="p">();</span> <span class="p">}</span></pre><pre class="highlight code sh">&gt; g++ -c noinline0.cpp <span class="p">;</span> g++ -c noinline1.cpp
 &gt; g++ noinline<span class="o">[</span><span class="m">01</span><span class="o">]</span>.o -shared
 /usr/bin/ld: noinline1.o: in <span class="k">function</span> <span class="sb">`</span>foo<span class="o">()</span><span class="s1">':
-noinline1.cpp:(.text+0x0): multiple definition of `foo()'</span><span class="p">;</span> noinline0.o:noinline0.cpp:<span class="o">(</span>.text+0x0<span class="o">)</span>: first defined here</pre></div><div class="step step-level-1" step="31" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="49600" data-y="0" data-z="0"><h1 id="about-the-inline-keyword">About the <tt>inline</tt> keyword</h1><pre class="highlight code c++"><span class="cm">/* inline0.cpp */</span>
+noinline1.cpp:(.text+0x0): multiple definition \
+    of `foo()'</span><span class="p">;</span> <span class="se">\
+</span>noinline0.o:noinline0.cpp:<span class="o">(</span>.text+0x0<span class="o">)</span>: first defined here</pre></div><div class="step step-level-1" step="32" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="51200" data-y="0" data-z="0"><h1 id="about-the-inline-keyword">About the <tt>inline</tt> Keyword</h1><pre class="highlight code c++"><span class="cm">/* inline0.cpp */</span>
 <span class="kr">inline</span> <span class="kt">int</span> <span class="nf">foo</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
 <span class="kt">int</span> <span class="nf">bar0</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">foo</span><span class="p">();</span> <span class="p">}</span>
 <span class="cm">/* inline1.cpp */</span>
@@ -182,7 +198,7 @@ noinline1.cpp:(.text+0x0): multiple definition of `foo()'</span><span class="p">
 <span class="m">00000000</span> T _Z4bar0v
 &gt; nm noinline0.o
 O0000000 T _Z3foov
-0000000b T _Z4bar0v</pre></div><div class="step step-level-1" step="32" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="51200" data-y="0" data-z="0"><h1 id="other-weak-usage">Other <tt>weak</tt> usage</h1><pre class="highlight code c++"><span class="cm">/* inlinemethod0.cpp */</span>
+0000000b T _Z4bar0v</pre></div><div class="step step-level-1" step="33" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="52800" data-y="0" data-z="0"><h1 id="other-weak-usage">Other <tt>weak</tt> Usage</h1><pre class="highlight code c++"><span class="cm">/* inlinemethod0.cpp */</span>
 <span class="k">struct</span> <span class="n">foo</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">get</span><span class="p">()</span> <span class="p">{</span><span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span> <span class="p">};</span>
 <span class="kt">int</span> <span class="nf">bar0</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">foo</span><span class="p">().</span><span class="n">get</span><span class="p">();</span> <span class="p">}</span>
 <span class="cm">/* inlinemethod1.cpp */</span>
@@ -192,10 +208,10 @@ O0000000 T _Z3foov
 &gt; nm inlinemethod0.o
 nm inlinemethod0.o
 <span class="m">00000000</span> T _Z4bar0v
-<span class="m">00000000</span> W _ZN3foo3getEv</pre></div><div class="step step-level-1" step="33" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="52800" data-y="0" data-z="0"><h1 id="another-reading-of-odr">Another reading of ODR</h1><ol><li>Pick any of the defined symbol</li><li>normal linkage is stronger than weak linkage</li></ol><pre class="highlight code sh">&gt; nm -D  /lib/x86_64-linux-gnu/libc.so.6 <span class="p">|</span> grep <span class="s1">' W '</span>
+<span class="m">00000000</span> W _ZN3foo3getEv</pre></div><div class="step step-level-1" step="34" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="54400" data-y="0" data-z="0"><h1 id="another-reading-of-odr">Another Reading of ODR</h1><ol><li>Pick any of the defined symbol</li><li>Normal linkage is stronger than weak linkage</li></ol><pre class="highlight code sh">&gt; nm -D  /lib/x86_64-linux-gnu/libc.so.6 <span class="p">|</span> grep <span class="s1">' W '</span>
 <span class="o">(</span>...<span class="o">)</span>
 <span class="m">00039550</span> W random
-<span class="o">(</span>...<span class="o">)</span></pre></div><div class="step step-level-1" step="34" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="54400" data-y="0" data-z="0"><h1 id="id6">What we have learnt so far</h1><ol><li>C++ supports overloads through name mangling</li><li>Different keywords control different symbol type</li><li>ODR and inline implie weak type</li></ol></div><div class="step step-level-1" step="35" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="56000" data-y="0" data-z="0"><h1 id="bonus-a-new-random-number-generator">Bonus: A new random number generator</h1><pre class="highlight code c++"><span class="cm">/* random.cpp */</span>
+<span class="o">(</span>...<span class="o">)</span></pre></div><div class="step step-level-1" step="35" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="56000" data-y="0" data-z="0"><h1 id="id4">What we have learnt so far</h1><ol><li>C++ supports overloads through name mangling</li><li>Different keywords control different symbol type</li><li>ODR and inline implie weak type</li></ol></div><div class="step step-level-1" step="36" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="57600" data-y="0" data-z="0"><h1 id="bonus-a-new-random-number-generator">Bonus: A new random number generator</h1><pre class="highlight code c++"><span class="cm">/* random.cpp */</span>
 <span class="cp">#include</span> <span class="cpf">&lt;cstdlib&gt;</span><span class="cp">
 </span><span class="kt">long</span> <span class="kt">int</span> <span class="nf">random</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="mi">0L</span><span class="p">;</span>
@@ -203,17 +219,35 @@ nm inlinemethod0.o
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">random</span><span class="p">();</span>
 <span class="p">}</span></pre><pre class="highlight code sh">&gt; g++ random.cpp -static -o random_static
-&gt; g++ random.cpp -o random</pre></div><div class="step step-level-1" step="36" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="57600" data-y="0" data-z="0"><h1 id="text-section"><tt>.text</tt> section</h1><pre class="highlight code sh">&gt; objdump -t hello <span class="p">|</span> grep main
+&gt; g++ random.cpp -o random</pre></div><div class="step step-level-1" step="37" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="59200" data-y="0" data-z="0"><h1 id="bonus-library-detection">Bonus: Library Detection</h1><pre class="highlight code c"><span class="cm">/* lib_detect.c */</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">"hello"</span><span class="p">;</span>
+<span class="kt">long</span> <span class="nf">pop</span><span class="p">()</span> <span class="n">__attribute__</span> <span class="p">((</span><span class="n">weak</span><span class="p">));</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s">"hello with pop"</span><span class="p">;</span>
+  <span class="p">}</span>
+    <span class="n">puts</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></pre></div><div class="step step-level-1" step="38" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="60800" data-y="0" data-z="0"><h1 id="id5">Bonus: Library Detection</h1><pre class="highlight code sh">&gt; gcc lib_detect.c<span class="o">&amp;&amp;</span> ./a.out
+hello</pre></div><div class="step step-level-1" step="39" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="62400" data-y="0" data-z="0"><h1 id="id6">Bonus: Library Detection</h1><pre class="highlight code sh">&gt; gcc lib_detect.c -L. -lpop -Wl,-rpath<span class="o">=</span>. <span class="o">&amp;&amp;</span> ./a.out
+hello with pop</pre><pre class="highlight code sh">&gt; readelf -d a.out
+Dynamic section at offset 0x2dd0 contains <span class="m">28</span> entries:
+Tag        Type         Name/Value
+0x0000001 <span class="o">(</span>NEEDED<span class="o">)</span>      Shared library: <span class="o">[</span>libpop.so<span class="o">]</span>
+0x0000001 <span class="o">(</span>NEEDED<span class="o">)</span>      Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
+0x000001d <span class="o">(</span>RUNPATH<span class="o">)</span>     Library runpath: <span class="o">[</span>.<span class="o">]</span></pre></div><div class="step step-level-1" step="40" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="64000" data-y="0" data-z="0"><h1 id="text-section"><tt>.text</tt> section</h1><pre class="highlight code sh">&gt; objdump -t hello <span class="p">|</span> grep main
 <span class="o">(</span>...<span class="o">)</span>
 0000115a g     F .text  <span class="m">00000017</span>
 &gt; readelf -W -t hello
  <span class="o">[</span>Nr<span class="o">]</span> Name
-   Type           Address  Off    Size   ES   Lk Inf Al
+   Type       Address  Off    Size   ES   Lk Inf Al
    Flags
 <span class="o">(</span>...<span class="o">)</span>
  <span class="o">[</span> <span class="m">3</span><span class="o">]</span> .text
-  PROGBITS        <span class="m">00000000</span> <span class="m">000058</span> <span class="m">000000</span> <span class="m">00</span>   <span class="m">0</span>   <span class="m">0</span>  <span class="m">1</span>
-  <span class="o">[</span><span class="m">00000006</span><span class="o">]</span>: ALLOC, EXEC</pre></div><div class="step step-level-1" step="37" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="59200" data-y="0" data-z="0"><h1 id="data-and-rodata-sections"><tt>.data</tt> and <tt>.rodata</tt> sections</h1><pre class="highlight code c++"><span class="cm">/* data.cpp */</span>
+  PROGBITS    <span class="m">00000000</span> <span class="m">000058</span> <span class="m">000000</span> <span class="m">00</span>   <span class="m">0</span>   <span class="m">0</span>  <span class="m">1</span>
+  <span class="o">[</span><span class="m">00000006</span><span class="o">]</span>: ALLOC, EXEC</pre></div><div class="step step-level-1" step="41" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="65600" data-y="0" data-z="0"><h1 id="data-and-rodata-sections"><tt>.data</tt> and <tt>.rodata</tt> sections</h1><pre class="highlight code c++"><span class="cm">/* data.cpp */</span>
 <span class="kt">int</span> <span class="n">some_data0</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
 <span class="k">extern</span> <span class="kt">int</span> <span class="k">const</span> <span class="n">some_data1</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span></pre><pre class="highlight code sh">&gt; g++ data.cpp -c
 &gt; objdump -Ct data.o <span class="p">|</span> grep some_data
@@ -222,22 +256,22 @@ nm inlinemethod0.o
 &gt; objdump -s -j.data data.o
 <span class="o">(</span>...<span class="o">)</span>
 Contents of section .data:
-<span class="m">0000</span> <span class="m">07000000</span></pre></div><div class="step step-level-1" step="38" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="60800" data-y="0" data-z="0"><h1 id="what-about-std-vector-initialization">What about <tt>std::vector</tt> initialization?</h1><pre class="highlight code c++"><span class="cm">/* vector.cpp */</span>
+<span class="m">0000</span> <span class="m">07000000</span></pre></div><div class="step step-level-1" step="42" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="67200" data-y="0" data-z="0"><h1 id="what-about-std-vector-initialization">What about <tt>std::vector</tt> initialization?</h1><pre class="highlight code c++"><span class="cm">/* vector.cpp */</span>
 <span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
 </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span> <span class="n">some_data</span> <span class="o">=</span> \
     <span class="p">{</span> <span class="sc">'c'</span><span class="p">,</span> <span class="sc">'p'</span><span class="p">,</span> <span class="sc">'p'</span><span class="p">,</span> <span class="sc">'c'</span><span class="p">,</span> <span class="sc">'o'</span><span class="p">,</span> <span class="sc">'n'</span> <span class="p">};</span></pre><pre class="highlight code sh">&gt; g++ vector.cpp -O2 -c
 &gt; objdump -Ct vector.o <span class="p">|</span> grep some_data
 <span class="m">00000000</span> l     F .text.startup  0000008f _GLOBAL__sub_I_some_data
-<span class="m">00000000</span> g     O .bss           <span class="m">00000018</span> some_data</pre></div><div class="step step-level-1" step="39" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="62400" data-y="0" data-z="0"><h1 id="bss-section"><tt>.bss</tt> section</h1><pre class="highlight code sh">&gt; readelf -Wt vector.o
+<span class="m">00000000</span> g     O .bss           <span class="m">00000018</span> some_data</pre></div><div class="step step-level-1" step="43" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="68800" data-y="0" data-z="0"><h1 id="bss-section"><tt>.bss</tt> section</h1><pre class="highlight code sh">&gt; readelf -Wt vector.o
  <span class="o">[</span>Nr<span class="o">]</span> Name
    Type          Address  Off    Size   ES   Lk Inf Al
    Flags
 <span class="o">(</span>...<span class="o">)</span>
 <span class="o">[</span> <span class="m">5</span><span class="o">]</span> .bss
  NOBITS          <span class="m">00000000</span> <span class="m">000060</span> <span class="m">000018</span> <span class="m">00</span>   <span class="m">0</span>   <span class="m">0</span> <span class="m">16</span>
- <span class="o">[</span><span class="m">00000003</span><span class="o">]</span>: WRITE, ALLOC</pre></div><div class="step step-level-1" step="40" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="64000" data-y="0" data-z="0"><h1 id="where-is-my-data">Where is my data?</h1><pre class="highlight code sh">&gt; objdump -s -j.rodata vector.o
+ <span class="o">[</span><span class="m">00000003</span><span class="o">]</span>: WRITE, ALLOC</pre></div><div class="step step-level-1" step="44" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="70400" data-y="0" data-z="0"><h1 id="where-is-my-data">Where is my data?</h1><pre class="highlight code sh">&gt; objdump -s -j.rodata vector.o
 Contents of section .rodata:
- <span class="m">0000</span> <span class="m">63707063</span> 6f6e                        cppcon</pre></div><div class="step step-level-1" step="41" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="65600" data-y="0" data-z="0"><h1 id="random-sections-comment">Random sections: <tt>.comment</tt></h1><pre class="highlight code sh">&gt; readelf -Wt hello
+ <span class="m">0000</span> <span class="m">63707063</span> 6f6e                        cppcon</pre></div><div class="step step-level-1" step="45" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="72000" data-y="0" data-z="0"><h1 id="random-sections-comment">Random sections: <tt>.comment</tt></h1><pre class="highlight code sh">&gt; readelf -Wt hello
   <span class="o">[</span><span class="m">16</span><span class="o">]</span> .comment
    PROGBITS        <span class="m">00000000</span> <span class="m">000138</span> 00001e <span class="m">01</span>   <span class="m">0</span>   <span class="m">0</span>  <span class="m">1</span>
    <span class="o">[</span><span class="m">00000030</span><span class="o">]</span>: MERGE, STRINGS
@@ -247,12 +281,12 @@ Contents of section .rodata:
 <span class="o">(</span>...<span class="o">)</span>
 Contents of section .comment:
  <span class="m">0000</span> 4743433a <span class="m">20284465</span> 6269616e 20372e33  GCC: <span class="o">(</span>Debian <span class="m">7</span>.3
- <span class="m">0010</span> 2e302d32 <span class="m">34292037</span> 2e332e30 <span class="m">00</span>        .0-24<span class="o">)</span> <span class="m">7</span>.3.0.</pre></div><div class="step step-level-1" step="42" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="67200" data-y="0" data-z="0"><h1 id="id7">What we have learnt so far</h1><ol><li>There a re plenty of sections in a sectionned ELF</li><li>Several c++ concepts clearly map to a given section</li><li>Different section behave differently with respect to linkage and execution</li></ol></div><div class="step step-level-1" step="43" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="68800" data-y="0" data-z="0"><h1 id="bonus-updating-a-section-content">Bonus: updating a section content</h1><pre class="highlight code sh">&gt; <span class="nb">printf</span> <span class="s2">"\o\ cppcon /o/"</span> &gt; ucomment
+ <span class="m">0010</span> 2e302d32 <span class="m">34292037</span> 2e332e30 <span class="m">00</span>        .0-24<span class="o">)</span> <span class="m">7</span>.3.0.</pre></div><div class="step step-level-1" step="46" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="73600" data-y="0" data-z="0"><h1 id="id7">What we have learnt so far</h1><ol><li>There are plenty of sections in a sectionned ELF</li><li>Several c++ concepts clearly map to a given section</li><li>Different section behave differently with respect to linkage and execution</li></ol></div><div class="step step-level-1" step="47" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="75200" data-y="0" data-z="0"><h1 id="bonus-updating-a-section-content">Bonus: updating a section content</h1><pre class="highlight code sh">&gt; <span class="nb">printf</span> <span class="s2">"\o\ cppcon /o/"</span> &gt; ucomment
 &gt; objcopy --update-section .comment<span class="o">=</span>ucomment hello
 &gt; objdump -s -j.comment hello
 <span class="o">(</span>...<span class="o">)</span>
 Contents of section .comment:
- <span class="m">0000</span> 5c6f5c20 <span class="m">63707063</span> 6f6e202f 6f2f      <span class="se">\o\ </span>cppcon /o/</pre></div><div class="step step-level-1" step="44" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="70400" data-y="0" data-z="0"><h1 id="bonus-lto-and-elf">Bonus: LTO and ELF</h1><pre class="highlight code sh">&gt; gcc -c -flto hello.c
+ <span class="m">0000</span> 5c6f5c20 <span class="m">63707063</span> 6f6e202f 6f2f    <span class="se">\o\ </span>cppcon /o/</pre></div><div class="step step-level-1" step="48" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="76800" data-y="0" data-z="0"><h1 id="bonus-lto-and-elf">Bonus: LTO and ELF</h1><pre class="highlight code sh">&gt; gcc -c -flto hello.c
 &gt; readelf -t hello.o <span class="p">|</span> grep lto
  <span class="o">[</span> <span class="m">4</span><span class="o">]</span> .gnu.lto_.inline.59f9e5d1fd5ce1d0
  <span class="o">[</span> <span class="m">5</span><span class="o">]</span> .gnu.lto_main.59f9e5d1fd5ce1d0
@@ -272,7 +306,7 @@ Contents of section .comment:
  c: <span class="m">59</span>                      pop    %rcx
  d: <span class="m">03</span> <span class="m">21</span>                   add    <span class="o">(</span>%rcx<span class="o">)</span>,%esp
  f: da 8a 6c b1 <span class="m">29</span> <span class="m">52</span>       fimull 0x5229b16c<span class="o">(</span>%rdx<span class="o">)</span>
-<span class="m">15</span>: c4 c2 9f <span class="m">88</span>             <span class="o">(</span>bad<span class="o">)</span></pre></div><div class="step step-level-1" step="45" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="72000" data-y="0" data-z="0"><h1 id="bonus-lto-and-clang">Bonus: LTO and Clang</h1><pre class="highlight code sh">&gt; clang -c -flto hello.c
+<span class="m">15</span>: c4 c2 9f <span class="m">88</span>             <span class="o">(</span>bad<span class="o">)</span></pre></div><div class="step step-level-1" step="49" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="78400" data-y="0" data-z="0"><h1 id="bonus-lto-and-clang">Bonus: LTO and Clang</h1><pre class="highlight code sh">&gt; clang -c -flto hello.c
 &gt; readelf -t hello.o
 readelf: Error: Not an ELF file - it has the wrong magic bytes at the start
 &gt; file hello.o
@@ -291,7 +325,25 @@ define i32 @main<span class="o">()</span> <span class="c1">#0 {
   store i32 <span class="m">0</span>, i32* %1, align <span class="m">4</span>
   %2 <span class="o">=</span> call i32 @puts<span class="o">(</span>i8* getelementptr inbounds <span class="o">([</span><span class="m">13</span> x i8<span class="o">]</span>, <span class="o">[</span><span class="m">13</span> x i8<span class="o">]</span>* @.str, i32 <span class="m">0</span>, i32 <span class="m">0</span><span class="o">))</span>
   ret i32 <span class="m">0</span>
-<span class="o">}</span></pre></div><div class="step step-level-1" step="46" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="73600" data-y="0" data-z="0"><h1 id="debug-information">Debug information</h1><pre class="highlight code sh">&gt; g++ hello.cpp -g -o hello++
+<span class="o">}</span></pre></div><div class="step step-level-1" step="50" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="80000" data-y="0" data-z="0"><h1 id="bonus-embed-bitcode">Bonus: embed bitcode</h1><pre class="highlight code sh">&gt; clang++ -O2 -c -fembed-bitcode hello.cpp
+&gt; objdump -h embed_bitcode.o <span class="p">|</span> grep llvm
+<span class="m">5</span> .llvmbc   000011b0  <span class="m">00000000</span>  <span class="m">00000000</span>  000000a0  <span class="m">2</span>**4
+<span class="m">6</span> .llvmcmd  000002da  <span class="m">00000000</span>  <span class="m">00000000</span>  <span class="m">00001250</span>  <span class="m">2</span>**4</pre></div><div class="step step-level-1" step="51" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="81600" data-y="0" data-z="0"><h1 id="id8">Bonus: embed bitcode</h1><pre class="highlight code sh">&gt; objcopy --dump-section .llvmcmd<span class="o">=</span>/dev/stdout hello.o
+-triplex86_64-pc-linux-gnu-emit-obj-fembed-bitcode<span class="o">=</span>all<span class="se">\
+</span>-disable-llvm-passes-disable-free-disable-llvm-verifier<span class="se">\
+</span>-discard-value-names-main-file-namehello.cpp-mrelocation<span class="se">\
+</span>...</pre></div><div class="step step-level-1" step="52" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="83200" data-y="0" data-z="0"><h1 id="id9">Bonus: embed bitcode</h1><pre class="highlight code sh">&gt; objcopy --dump-section .llvmbc<span class="o">=</span>hello.bc hello.o
+&gt; llvm-dis hello.bc -o -
+<span class="p">;</span> <span class="nv">ModuleID</span> <span class="o">=</span> <span class="s1">'hello.bc'</span>
+<span class="nv">source_filename</span> <span class="o">=</span> <span class="s2">"hello.cpp"</span>
+target <span class="nv">datalayout</span> <span class="o">=</span> <span class="s2">"e-m:e-i64:64-f80:128-n8:16:32:64-S128"</span>
+target <span class="nv">triple</span> <span class="o">=</span> <span class="s2">"x86_64-pc-linux-gnu"</span>
+
+%<span class="s2">"class.std::ios_base::Init"</span> <span class="o">=</span> <span class="nb">type</span> <span class="o">{</span> i8 <span class="o">}</span>
+%<span class="s2">"class.std::basic_ostream"</span> <span class="o">=</span> <span class="nb">type</span> <span class="o">{</span> i32 <span class="o">(</span>...<span class="o">)</span>**, %<span class="s2">"class.std::basic_ios"</span> <span class="o">}</span>
+%<span class="s2">"class.std::basic_ios"</span> <span class="o">=</span> <span class="nb">type</span> <span class="o">{</span> %<span class="s2">"class.std::ios_base"</span>, %<span class="s2">"class.std::basic_ostream"</span>*, i8, i8, %<span class="s2">"class.std::basic_streambuf"</span>*, %<span class="s2">"class.std::ctype"</span>*, %<span class="s2">"class.std::num_put"</span>*, %<span class="s2">"class.std::num_get"</span>* <span class="o">}</span>
+%<span class="s2">"class.std::ios_base"</span> <span class="o">=</span> <span class="nb">type</span> <span class="o">{</span> i32 <span class="o">(</span>...<span class="o">)</span>**, i64, i64, i32, i32, i32, %<span class="s2">"struct.std::ios_base::_Callback_list"</span>*, %<span class="s2">"struct.std::ios_base::_Words"</span>, <span class="o">[</span><span class="m">8</span> x %<span class="s2">"struct.std::ios_base::_Words"</span><span class="o">]</span>, i32, %<span class="s2">"struct.std::ios_base::_Words"</span>*, %<span class="s2">"class.std::locale"</span> <span class="o">}</span>
+%<span class="s2">"struct.std::ios_base::_Callback_list"</span> <span class="o">=</span> <span class="nb">type</span> <span class="o">{</span> %<span class="s2">"struct.std</span></pre></div><div class="step step-level-1" step="53" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="84800" data-y="0" data-z="0"><h1 id="debug-information">Debug information</h1><pre class="highlight code sh">&gt; g++ hello.cpp -g -o hello++
 &gt; readelf -t hello++ <span class="p">|</span> grep debug
   <span class="o">[</span><span class="m">27</span><span class="o">]</span> .debug_aranges
   <span class="o">[</span><span class="m">28</span><span class="o">]</span> .debug_info
@@ -306,7 +358,7 @@ Contents of section .debug_str:
  <span class="m">0020</span> 5f705f63 735f7072 <span class="m">65636564</span> 6573005f  _p_cs_precedes._
  <span class="m">0030</span> 5a4e5374 31355f5f <span class="m">65786365</span> 7074696f  ZNSt15__exceptio
  <span class="m">0040</span> 6e5f7074 <span class="m">72313365</span> <span class="m">78636570</span> 74696f6e  n_ptr13exception
-<span class="o">(</span>...<span class="o">)</span></pre></div><div class="step step-level-1" step="47" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="75200" data-y="0" data-z="0"><h1 id="id8">Debug information</h1><pre class="highlight code sh">&gt; readelf --debug-dump<span class="o">=</span>info hello++
+<span class="o">(</span>...<span class="o">)</span></pre></div><div class="step step-level-1" step="54" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="86400" data-y="0" data-z="0"><h1 id="id10">Debug information</h1><pre class="highlight code sh">&gt; readelf --debug-dump<span class="o">=</span>info hello++
 Contents of the .debug_info section:
 
   Compilation Unit @ offset 0x0:
@@ -321,13 +373,13 @@ Contents of the .debug_info section:
     &lt;<span class="m">15</span>&gt;   DW_AT_comp_dir    : <span class="o">(</span>indirect string, offset: 0x1c0<span class="o">)</span>: /home/serge/sources/talks/cppcon2018/elvenland
     &lt;<span class="m">19</span>&gt;   DW_AT_low_pc      : 0x118a
     &lt;<span class="m">21</span>&gt;   DW_AT_high_pc     : 0x91
-    &lt;<span class="m">29</span>&gt;   DW_AT_stmt_list   : 0x0</pre></div><div class="step step-level-1" step="48" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="76800" data-y="0" data-z="0"><h1 id="split-or-strip">Split or Strip</h1><p>from <tt>man 3 strip</tt></p><pre class="highlight code sh">&gt; cp foo foo.full
-&gt; strip --strip-debug foo
-&gt; objcopy --add-gnu-debuglink<span class="o">=</span>foo.full foo</pre></div><div class="step step-level-1" step="49" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="78400" data-y="0" data-z="0"><h1 id="exceptions-and-elf">Exceptions and ELF</h1><pre class="highlight code">&gt; readelf -t vector.o | grep eh
+    &lt;<span class="m">29</span>&gt;   DW_AT_stmt_list   : 0x0</pre></div><div class="step step-level-1" step="55" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="88000" data-y="0" data-z="0"><h1 id="split-or-strip">Split or Strip</h1><p>from <tt>man 1 strip</tt></p><pre class="highlight code sh">&gt; objcopy --only-keep-debug foo foo.dbg
+&gt; objcopy --strip-debug foo
+&gt; objcopy --add-gnu-debuglink<span class="o">=</span>foo.dbg foo</pre></div><div class="step step-level-1" step="56" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="89600" data-y="0" data-z="0"><h1 id="exceptions-and-elf">Exceptions and ELF</h1><pre class="highlight code">&gt; readelf -t vector.o | grep eh
   [18] .eh_frame
-  [19] .rela.eh_frame</pre><p><tt>.eh_frame</tt> describes the call frames that much be unwound during the processing of an exception</p><pre class="highlight code">&gt; objdump -t vector.o | grep personality
+  [19] .rela.eh_frame</pre><p><tt>.eh_frame</tt> describes the call frames to uniond during the processing of an exception</p><pre class="highlight code">&gt; objdump -t vector.o | grep personality
 (...)
-*UND*   0000000000000000 __gxx_personality_v0</pre><p><tt>__gxx_personality_v0</tt>  serves as an interface between the system unwind library and language-specific exception handling semantics.</p></div><div class="step step-level-1" step="50" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="80000" data-y="0" data-z="0"><h1 id="rtti-and-elf">RTTI and Elf</h1><pre class="highlight code c++"><span class="cm">/* rtti.cpp */</span>
+*UND*   0000000000000000 __gxx_personality_v0</pre><p><tt>__gxx_personality_v0</tt>  serves as an interface between the system unwind library and language-specific exception handling semantics.</p></div><div class="step step-level-1" step="57" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="91200" data-y="0" data-z="0"><h1 id="rtti-and-elf">RTTI and ELF</h1><pre class="highlight code c++"><span class="cm">/* rtti.cpp */</span>
 <span class="k">struct</span> <span class="n">Foo</span> <span class="p">{</span> <span class="k">virtual</span> <span class="o">~</span><span class="n">Foo</span><span class="p">(){}};</span>
 <span class="k">struct</span> <span class="nl">Bar</span> <span class="p">:</span> <span class="n">Foo</span> <span class="p">{};</span>
 
@@ -335,46 +387,42 @@ Contents of the .debug_info section:
     <span class="k">return</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">Bar</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
 <span class="p">}</span></pre><pre class="highlight code sh">&gt; g++ -c rtti.cpp
 &gt; objdump -Ct rtti.o <span class="p">|</span> grep typeinfo
-<span class="m">00000000</span>  w    O .data.rel.ro._ZTI3Bar  <span class="m">00000018</span> typeinfo <span class="k">for</span> Bar
-<span class="m">00000000</span>  w    O .data.rel.ro._ZTI3Foo  <span class="m">00000010</span> typeinfo <span class="k">for</span> Foo
-<span class="m">00000000</span>  w    O .rodata._ZTS3Bar       <span class="m">00000005</span> typeinfo name <span class="k">for</span> Bar
-<span class="m">00000000</span>  w    O .rodata._ZTS3Foo       <span class="m">00000005</span> typeinfo name <span class="k">for</span> Foo</pre></div><div class="step step-level-1" step="51" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="81600" data-y="0" data-z="0"><h1 id="relocations">Relocations</h1><pre class="highlight code sh">&gt; readelf -r hello
+<span class="m">0000</span>  w  O .data.rel.ro._ZTI3Bar  <span class="m">0018</span> typeinfo <span class="k">for</span> Bar
+<span class="m">0000</span>  w  O .data.rel.ro._ZTI3Foo  <span class="m">0010</span> typeinfo <span class="k">for</span> Foo
+<span class="m">0000</span>  w  O .rodata._ZTS3Bar       <span class="m">0005</span> typeinfo name <span class="k">for</span> Bar
+<span class="m">0000</span>  w  O .rodata._ZTS3Foo       <span class="m">0005</span> typeinfo name <span class="k">for</span> Foo</pre></div><div class="step step-level-1" step="58" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="92800" data-y="0" data-z="0"><h1 id="relocations">Relocations</h1><pre class="highlight code sh">&gt; readelf -r hello
 <span class="o">(</span>...<span class="o">)</span>
 Relocation section <span class="s1">'.rela.plt'</span> at offset 0x548 contains <span class="m">1</span> entry:
   Offset    Info         Type
   <span class="m">00004018</span>  <span class="m">000200000007</span> R_X86_64_JUMP_SLO
-  ... Sym. Value   Sym. Name + Addend
-  ... <span class="m">000000000000</span> puts@GLIBC_2.2.5 + <span class="m">0</span>
-&gt; objdump -S -j.plt hello
-<span class="m">0000000000001030</span> &lt;puts@plt&gt;:
-<span class="m">1030</span>:   ff <span class="m">25</span> e2 2f <span class="m">00</span> <span class="m">00</span>       jmpq   *0x2fe2<span class="o">(</span>%rip<span class="o">)</span>        <span class="c1"># 4018 &lt;puts@GLIBC_2.2.5&gt;
-</span><span class="m">1036</span>:   <span class="m">68</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>          pushq  <span class="nv">$0</span>x0
-103b:   e9 e0 ff ff ff          jmpq   <span class="m">1020</span> &lt;.plt&gt;</pre></div><div class="step step-level-1" step="52" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="83200" data-y="0" data-z="0"><h1 id="static-initialization-order-fiasco-revisited">Static Initialization order Fiasco, revisited</h1><pre class="highlight code c++"><span class="cm">/* fiasco.cpp */</span>
+
+  Sym. Value   Sym. Name + Addend
+  <span class="m">000000000000</span> puts@GLIBC_2.2.5 + <span class="m">0</span></pre></div><div class="step step-level-1" step="59" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="94400" data-y="0" data-z="0"><h1 id="understanding-initialization">Understanding Initialization</h1><pre class="highlight code c++"><span class="cm">/* fiasco.cpp */</span>
 <span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp">
 </span><span class="k">static</span> <span class="k">struct</span> <span class="n">foo</span> <span class="p">{</span> <span class="n">foo</span><span class="p">()</span> <span class="p">{</span> <span class="n">puts</span><span class="p">(</span><span class="s">"first"</span><span class="p">);</span> <span class="p">}</span> <span class="p">}</span> <span class="n">first</span><span class="p">;</span></pre><pre class="highlight code sh">&gt; g++  fiasco.cpp -o fiasco
 &gt; objdump -t fiasco
 <span class="o">(</span>...<span class="o">)</span>
 <span class="m">00001165</span> l     F .text  <span class="m">00000038</span>   <span class="se">\
-</span> __static_initialization_and_destruction_0<span class="o">(</span>int, int<span class="o">)</span></pre></div><div class="step step-level-1" step="53" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="84800" data-y="0" data-z="0"><h1 id="understanding-initialization">Understanding initialization</h1><pre class="highlight code asm"><span class="err">0000000000001165</span> <span class="err">&lt;</span><span class="nf">__static_initialization_and_destruction_0</span><span class="p">(</span><span class="no">int</span><span class="p">,</span> <span class="no">int</span><span class="p">)</span><span class="err">&gt;</span><span class="p">:</span>
-    <span class="err">1165:</span>   <span class="err">55</span>                      <span class="nf">push</span>   <span class="no">rbp</span>
-    <span class="err">1166:</span>   <span class="err">48</span> <span class="err">89</span> <span class="nf">e5</span>                <span class="no">mov</span>    <span class="no">rbp</span><span class="p">,</span><span class="no">rsp</span>
-    <span class="err">1169:</span>   <span class="err">48</span> <span class="err">83</span> <span class="nf">ec</span> <span class="mi">10</span>             <span class="no">sub</span>    <span class="no">rsp</span><span class="p">,</span><span class="mi">0x10</span>
-    <span class="err">116</span><span class="nl">d:</span>   <span class="err">89</span> <span class="err">7</span><span class="nf">d</span> <span class="no">fc</span>                <span class="no">mov</span>    <span class="no">DWORD</span> <span class="no">PTR</span> <span class="p">[</span><span class="no">rbp-0x4</span><span class="p">],</span><span class="no">edi</span>
-    <span class="err">1170:</span>   <span class="err">89</span> <span class="err">75</span> <span class="nf">f8</span>                <span class="no">mov</span>    <span class="no">DWORD</span> <span class="no">PTR</span> <span class="p">[</span><span class="no">rbp-0x8</span><span class="p">],</span><span class="no">esi</span>
-    <span class="err">1173:</span>   <span class="err">83</span> <span class="err">7</span><span class="nf">d</span> <span class="no">fc</span> <span class="mi">01</span>             <span class="no">cmp</span>    <span class="no">DWORD</span> <span class="no">PTR</span> <span class="p">[</span><span class="no">rbp-0x4</span><span class="p">],</span><span class="mi">0x1</span>
-<span class="err">&#x250C;&#x2500;&#x2500;&#x2500;1177:</span>   <span class="err">75</span> <span class="err">21</span>                   <span class="nf">jne</span>    <span class="mi">119</span><span class="no">a</span> <span class="err">&lt;</span><span class="no">__static_initialization_and_destruction_0</span><span class="p">(</span><span class="no">int</span><span class="p">,</span> <span class="no">int</span><span class="p">)</span><span class="err">+</span><span class="mi">0x35</span><span class="err">&gt;</span><span class="c">; jump if not equal
-</span><span class="err">&#x2502;</span>   <span class="mi">1179</span><span class="p">:</span>   <span class="mi">81</span> <span class="mi">7</span><span class="no">d</span> <span class="no">f8</span> <span class="no">ff</span> <span class="no">ff</span> <span class="mi">00</span> <span class="mi">00</span>    <span class="no">cmp</span>    <span class="no">DWORD</span> <span class="no">PTR</span> <span class="p">[</span><span class="no">rbp-0x8</span><span class="p">],</span><span class="mi">0xffff</span>
-<span class="err">&#x2502;&#x250C;&#x2500;&#x2500;1180:</span>   <span class="err">75</span> <span class="err">18</span>                   <span class="nf">jne</span>    <span class="mi">119</span><span class="no">a</span> <span class="err">&lt;</span><span class="no">__static_initialization_and_destruction_0</span><span class="p">(</span><span class="no">int</span><span class="p">,</span> <span class="no">int</span><span class="p">)</span><span class="err">+</span><span class="mi">0x35</span><span class="err">&gt;</span><span class="c">; jump if not equal
-</span><span class="err">&#x2502;&#x2502;</span>  <span class="mi">1182</span><span class="p">:</span>   <span class="mi">48</span> <span class="mi">8</span><span class="no">d</span> <span class="mi">3</span><span class="no">d</span> <span class="no">a8</span> <span class="mi">2</span><span class="no">e</span> <span class="mi">00</span> <span class="mi">00</span>    <span class="no">lea</span>    <span class="no">rdi</span><span class="p">,[</span><span class="no">rip</span><span class="err">+</span><span class="mi">0x2ea8</span><span class="p">]</span>        <span class="c"># 4031 &lt;first&gt;
-</span><span class="err">&#x2502;&#x2502;</span>  <span class="mi">1189</span><span class="p">:</span>   <span class="no">e8</span> <span class="mi">24</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span>          <span class="no">call</span>   <span class="mi">11</span><span class="no">b2</span> <span class="err">&lt;</span><span class="no">foo</span><span class="p">::</span><span class="no">foo</span><span class="p">()</span><span class="err">&gt;</span>
-<span class="err">&#x2502;&#x2502;</span>  <span class="err">118</span><span class="nl">e:</span>   <span class="err">48</span> <span class="err">8</span><span class="nf">d</span> <span class="mi">3</span><span class="no">d</span> <span class="mi">9</span><span class="no">d</span> <span class="mi">2</span><span class="no">e</span> <span class="mi">00</span> <span class="mi">00</span>    <span class="no">lea</span>    <span class="no">rdi</span><span class="p">,[</span><span class="no">rip</span><span class="err">+</span><span class="mi">0x2e9d</span><span class="p">]</span>        <span class="c"># 4032 &lt;second&gt;
-</span><span class="err">&#x2502;&#x2502;</span>  <span class="mi">1195</span><span class="p">:</span>   <span class="no">e8</span> <span class="mi">34</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span>          <span class="no">call</span>   <span class="mi">11</span><span class="no">ce</span> <span class="err">&lt;</span><span class="no">bar</span><span class="p">::</span><span class="no">bar</span><span class="p">()</span><span class="err">&gt;</span>
-<span class="err">&#x2514;&#x2514;&#x2500;&#x257C;119</span><span class="nl">a:</span>   <span class="err">90</span>                      <span class="nf">nop</span>
-    <span class="err">119</span><span class="nl">b:</span>   <span class="nf">c9</span>                      <span class="no">leave</span>
-    <span class="err">119</span><span class="nl">c:</span>   <span class="nf">c3</span>                      <span class="no">ret</span></pre></div><div class="step step-level-1" step="54" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="86400" data-y="0" data-z="0"><h1 id="stack-flags">Stack flags</h1><pre class="highlight code sh">&gt; readelf -h hello
+</span> __static_initialization_and_destruction_0<span class="o">(</span>int, int<span class="o">)</span></pre></div><div class="step step-level-1" step="60" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="96000" data-y="0" data-z="0"><h1 id="id11">Understanding Initialization</h1><pre class="highlight code asm"><span class="err">00001165</span> <span class="err">&lt;</span><span class="nf">__static_initialization_and_destruction_0</span><span class="p">(</span><span class="no">int</span><span class="p">,</span> <span class="no">int</span><span class="p">)</span><span class="err">&gt;</span><span class="p">:</span>
+    <span class="nf">push</span>   <span class="no">rbp</span>
+    <span class="nf">mov</span>    <span class="no">rbp</span><span class="p">,</span><span class="no">rsp</span>
+    <span class="nf">sub</span>    <span class="no">rsp</span><span class="p">,</span><span class="mi">0x10</span>
+    <span class="nf">mov</span>    <span class="no">DWORD</span> <span class="no">PTR</span> <span class="p">[</span><span class="no">rbp-0x4</span><span class="p">],</span><span class="no">edi</span>
+    <span class="nf">mov</span>    <span class="no">DWORD</span> <span class="no">PTR</span> <span class="p">[</span><span class="no">rbp-0x8</span><span class="p">],</span><span class="no">esi</span>
+    <span class="nf">cmp</span>    <span class="no">DWORD</span> <span class="no">PTR</span> <span class="p">[</span><span class="no">rbp-0x4</span><span class="p">],</span><span class="mi">0x1</span>
+    <span class="nf">jne</span>    <span class="mi">119</span><span class="no">a</span> <span class="err">&lt;</span><span class="no">__static_initialization_and_destruction_0</span><span class="p">(</span><span class="no">int</span><span class="p">,</span> <span class="no">int</span><span class="p">)</span><span class="err">+</span><span class="mi">0x35</span><span class="err">&gt;</span><span class="c">; jump if not equal
+</span>    <span class="no">cmp</span>    <span class="no">DWORD</span> <span class="no">PTR</span> <span class="p">[</span><span class="no">rbp-0x8</span><span class="p">],</span><span class="mi">0xffff</span>
+    <span class="nf">jne</span>    <span class="mi">119</span><span class="no">a</span> <span class="err">&lt;</span><span class="no">__static_initialization_and_destruction_0</span><span class="p">(</span><span class="no">int</span><span class="p">,</span> <span class="no">int</span><span class="p">)</span><span class="err">+</span><span class="mi">0x35</span><span class="err">&gt;</span><span class="c">; jump if not equal
+</span>    <span class="no">lea</span>    <span class="no">rdi</span><span class="p">,[</span><span class="no">rip</span><span class="err">+</span><span class="mi">0x2ea8</span><span class="p">]</span>        <span class="c"># 4031 &lt;first&gt;
+</span>    <span class="no">call</span>   <span class="mi">11</span><span class="no">b2</span> <span class="err">&lt;</span><span class="no">foo</span><span class="p">::</span><span class="no">foo</span><span class="p">()</span><span class="err">&gt;</span>
+    <span class="nf">lea</span>    <span class="no">rdi</span><span class="p">,[</span><span class="no">rip</span><span class="err">+</span><span class="mi">0x2e9d</span><span class="p">]</span>        <span class="c"># 4032 &lt;second&gt;
+</span>    <span class="no">call</span>   <span class="mi">11</span><span class="no">ce</span> <span class="err">&lt;</span><span class="no">bar</span><span class="p">::</span><span class="no">bar</span><span class="p">()</span><span class="err">&gt;</span>
+    <span class="nf">nop</span>
+    <span class="nf">leave</span>
+    <span class="nf">ret</span></pre></div><div class="step step-level-1" step="61" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="97600" data-y="0" data-z="0"><h1 id="stack-flags">Stack Flags</h1><pre class="highlight code sh">&gt; readelf -h hello
 <span class="o">(</span>...<span class="o">)</span>
 GNU_STACK      0x00000000 0x00000000  0x00000000
-               0x00000000 0x00000000  RW     0x10</pre><p>No stack execution :-)</p></div><div class="step step-level-1" step="55" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="88000" data-y="0" data-z="0"><h1 id="shrinking-binaries">Shrinking binaries</h1><pre class="highlight code sh">&gt; g++ -O2 guess.cpp -o guess <span class="o">&amp;&amp;</span> <span class="se">\
+               0x00000000 0x00000000  RW     0x10</pre><p>No stack execution :-)</p></div><div class="step step-level-1" step="62" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="99200" data-y="0" data-z="0"><h1 id="shrinking-binaries">Shrinking binaries</h1><pre class="highlight code sh">&gt; g++ -O2 guess.cpp -o guess <span class="o">&amp;&amp;</span> <span class="se">\
 </span>    stat --printf<span class="o">=</span><span class="s2">"%s\n"</span>  guess
 <span class="m">17504</span>
 &gt; g++ -O2 guess.cpp -o guess -Wl,-strip-all <span class="o">&amp;&amp;</span> <span class="se">\
@@ -390,7 +438,7 @@ GNU_STACK      0x00000000 0x00000000  0x00000000
 </span>    -R.note.ABI-tag -R.comment -R.gnu.hash<span class="se">\
 </span>    -R.eh_frame -R.eh_frame_hdr guess
 &gt; stat --printf<span class="o">=</span><span class="s2">"%s\n"</span>  guess
-<span class="m">13920</span></pre></div><div class="step step-level-1" step="56" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="89600" data-y="0" data-z="0"><h1 id="anar-kaluva-tielyanna">Anar kaluva tielyanna</h1><blockquote><p><em>the sun shall shine Upon your path</em></p></blockquote><ol><li>The binary abstraction is well respected, you <em>do not</em> need to speak elvish</li><li>When in doubt, have a look at the underlying layer</li><li><tt>man readelf</tt></li><li><tt>man objdump</tt></li></ol></div></div><div id="slide-number" class="slide-number">
+<span class="m">13920</span></pre></div><div class="step step-level-1" step="63" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="100800" data-y="0" data-z="0"><h1 id="anar-kaluva-tielyanna">Anar kaluva tielyanna</h1><blockquote><p><em>the sun shall shine upon your path</em></p></blockquote><ol><li>The binary abstraction is well respected, you <em>do not</em> need to speak elvish</li><li>When in doubt, have a look at the underlying layer</li><li><tt>man nm</tt></li><li><tt>man readelf</tt></li><li><tt>man objdump</tt></li><li><tt>man objcopy</tt></li></ol></div></div><div id="slide-number" class="slide-number">
         1
       </div><div id="hovercraft-help" class="hide"><table><tr><th>Space</th><td>Forward</td></tr><tr><th>Right, Down, Page Down</th><td>Next slide</td></tr><tr><th>Left, Up, Page Up</th><td>Previous slide</td></tr><tr><th>G</th><td>Go to slide number</td></tr><tr><th>P</th><td>Open presenter console</td></tr><tr><th>H</th><td>Toggle this help</td></tr></table></div><script type="text/javascript" src="js/impress.js"></script><script type="text/javascript" src="js/impressConsole.js"></script><script type="text/javascript" src="js/hovercraft.js"></script><script type="text/javascript">
         document.getElementById("impress").addEventListener("impress:stepenter", update_slide_number, false);

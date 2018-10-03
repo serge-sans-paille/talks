@@ -5,6 +5,27 @@
 :css: font.css
 
 
+Foreword
+========
+
+.. code::
+
+    To: serge.guelton@telecom-bretagne.eu
+    Cc: Speaker Liaison <speakers@cppcon.org>
+    Subject: Regarding your CppCon talk
+
+    Serge,
+
+    Hi! I really love the title of your talk,
+    but I'm a little worried
+    that this talk title might suggest that
+    it's about C++11 -
+
+    "Elvenland" is very close to "Elevenland".
+
+----
+
+
 C++ in ElvenLand
 ================
 
@@ -20,7 +41,7 @@ About me
 - R&D engineer on compilation for security @ QuarksLab
 - Associate Researcher at Telecom Bretagne
 - Happy developer of `Pythran <https://github.com/serge-sans-paille/pythran>`_
-- LLVM commiter
+- (modest) LLVM commiter
 
 ----
 
@@ -45,15 +66,15 @@ Concerning Elves
 
 ----
 
-The CS View
-================
+Concerning ELF
+==============
 
     « A Wyvern, a Gnu or an Orc give birth to an Elf sometimes teamed-up with a Dwarf. »
 
 
 ----
 
-The Elf Format
+The ELF Format
 ==============
 
 Used mostly in the (Li|U)nix world by:
@@ -65,7 +86,7 @@ Used mostly in the (Li|U)nix world by:
 
 ----
 
-A Top Down Approach to Elf
+A Top Down Approach to ELF
 ==========================
 
 .. code:: C
@@ -98,15 +119,6 @@ A Top Down Approach to Elf
            BuildID[sha1]=84a84138ec39086f2f7553316c6093e599f8ddd2, \
            not stripped
 
-----
-
-Header
-======
-
-``ELF 64-bit``
-**************
-
-    There exist two kind of elf blob: the 64bit version and the 32 bit version. This basically determines how addresses and offsets are encoded
 
 ----
 
@@ -116,14 +128,14 @@ Header
 ``ELF 64-bit``
 **************
 
-    There exist two kind of elf blob: the 64bit version and the 32 bit version. This basically determines how addresses and offsets are encoded
+There exist two kinds of ELF blob: the 64bit version and the 32 bit version.
 
-    (image d'un petit et d'un grand elf)
+This basically determines how addresses and offsets are encoded
 
 ``LSB``
 *******
 
-    Least-Significant Byte a.k.a. little endian
+Least-Significant Byte a.k.a. little endian
 
 
 ----
@@ -134,17 +146,19 @@ Header
 ``pie``
 *******
 
-    Position Independent Executable, this binary can be loaded at any adress. Plays nice with ASLR
+Position Independent Executable, this binary can be loaded at any adress.
+
+Plays nice with ASLR.
 
 ``x86-64``
 **********
 
-    The instruction set used by this binary
+The instruction set used by this binary
 
 ``version 1``
 *************
 
-    There is only one version of the ELF standard anyway
+There is only one version of the ELF standard anyway
 
 
 ----
@@ -155,17 +169,17 @@ Header
 ``SYSV``
 ********
 
-    *Sys*tem *V* Application Binary Interface, set of sepcs about object format, calling convention etc
+**Sys** tem **V** Application Binary Interface, set of sepcs about object format, calling convention etc
 
 ``dynamically linked``
 **********************
 
-    Not a stand-alone executable, uses shared library and thus needs a...
+Not a stand-alone executable, uses shared library and thus needs an...
 
 ``interpreter /lib64/ld-linux-x86-64.so.2``
 *******************************************
 
-    Dynamic loader
+Dynamic loader
 
 ----
 
@@ -175,7 +189,8 @@ Statically linked?
 .. code:: sh
 
     > ldd hello
-    linux-vdso.so.1 (0x00007ffed7dd9000) # see ``man 7 vdso``
+    # see ``man 7 vdso``
+    linux-vdso.so.1 (0x00007ffed7dd9000)
     libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (...)
     /lib64/ld-linux-x86-64.so.2 (0x00007f873c71f000)
 
@@ -196,17 +211,19 @@ Header
 ``for GNU/Linux 3.2.0``
 ***********************
 
-    The libc ABI we are using
+The libc ABI we are using
 
 ``BuildID[sha1]=84a8413...``
 **********************************************************
 
-    same BuildID ~= semantically identical binary, useful as a maintainer to quickly identify a build from a core
+Same BuildID ~= semantically identical binary.
+
+Useful as a maintainer to quickly identify a build from a core
 
 ``not stripped``
 ****************
 
-    still has symbol and debug information
+Still has symbol (+ debug?) information
 
 ----
 
@@ -261,23 +278,23 @@ What is a Symbol table anyway?
     > objdump -t hello
     Address |Tags   |section  |algn/sz  |name
     (...)
-    0000000       F *UND*     00000000   puts@@GLIBC_2.2.5
-    0004030 g       .data     00000000   _edata
-    00011f4 g     F .fini     00000000   _fini
-    0000000       F *UND*     00000000   __libc_start_main@@GLIBC_2.2.5
-    0004020 g       .data     00000000   __data_start
-    0000000  w      *UND*     00000000   __gmon_start__
-    0004028 g     O .data     00000000   .hidden __dso_handle
-    0002000 g     O .rodata   00000004   _IO_stdin_used
-    0001180 g     F .text     00000065   __libc_csu_init
-    0004038 g       .bss      00000000   _end
-    0001050 g     F .text     0000002b   _start
-    0004030 g       .bss      00000000   __bss_start
-    000115a g     F .text     00000017   main
-    0004030 g     O .data     00000000   .hidden __TMC_END__
-    0000000  w      *UND*     00000000   _ITM_registerTMCloneTable
-    0000000  w    F *UND*     00000000   __cxa_finalize@@GLIBC_2.2.5
-    0001000 g     F .init     00000000   _init
+    0000000       F *UND*     00000000  puts@@GLIBC_2.2.5
+    0004030 g       .data     00000000  _edata
+    00011f4 g     F .fini     00000000  _fini
+    0000000       F *UND*     00000000  __libc_start_main@@GLIBC_2.2.5
+    0004020 g       .data     00000000  __data_start
+    0000000  w      *UND*     00000000  __gmon_start__
+    0004028 g     O .data     00000000  .hidden __dso_handle
+    0002000 g     O .rodata   00000004  _IO_stdin_used
+    0001180 g     F .text     00000065  __libc_csu_init
+    0004038 g       .bss      00000000  _end
+    0001050 g     F .text     0000002b  _start
+    0004030 g       .bss      00000000  __bss_start
+    000115a g     F .text     00000017  main
+    0004030 g     O .data     00000000  .hidden __TMC_END__
+    0000000  w      *UND*     00000000  _ITM_registerTMCloneTable
+    0000000  w    F *UND*     00000000  __cxa_finalize@@GLIBC_2.2.5
+    0001000 g     F .init     00000000  _init
 
 ----
 
@@ -297,12 +314,23 @@ Why is ``puts`` in an ``*UND*`` section?
 
 ----
 
+Filling the holes
+=================
+
+.. code:: sh
+
+    > objdump -T /lib/x86_64-linux-gnu/libc.so.6 |\
+         grep ' puts$'
+    000705e0  w   DF .text	00000200  GLIBC_2.2.5 puts
+
+----
+
 What we have learnt so far
 ==========================
 
-- ELF is a binary format, made of a header
+- ELF is a binary format, with an informative header
 - It also contains plenty of sections
-- And even more symbols
+- And plenty symbols
 - There is nothing specific to C++ in there
 
 ----
@@ -326,19 +354,25 @@ Bonus
 
 ----
 
-Dissecting an Elf
+Dissecting an ELF
 =================
 
 .. image:: ./imgs/elf-simple.png
     :width: 400px
 
+
+*credits: WikipediA*
+
+
 ----
 
-Dissecting an Elf (2)
+Dissecting an ELF (2)
 =====================
 
 .. image:: ./imgs/dual.png
     :width: 400px
+
+*credits: Oracle*
 
 ----
 
@@ -365,7 +399,7 @@ Segments
 
 ----
 
-Function symbols
+Function Symbols
 ================
 
 .. code:: c++
@@ -384,7 +418,7 @@ Function symbols
 
 ----
 
-Symbol mangling
+Symbol Mangling
 ===============
 
 .. code:: sh
@@ -408,7 +442,7 @@ Symbol mangling
 
 ----
 
-Symbol demangling
+Symbol Demangling
 =================
 
 .. code:: sh
@@ -432,8 +466,8 @@ Symbol demangling
 
 ----
 
-Fun with Mangling
-=================
+Fun with Mangling (1)
+=====================
 
 .. code:: C++
 
@@ -456,8 +490,8 @@ Fun with Mangling
 ----
 
 
-Fun with Mangling 2
-===================
+Fun with Mangling (2)
+=====================
 
 .. code:: C
 
@@ -493,7 +527,7 @@ Constant Symbols
 
 ----
 
-Extern Constant symbols
+Extern Constant Symbols
 =======================
 
 .. code:: c++
@@ -513,7 +547,7 @@ Extern Constant symbols
 
 ----
 
-About Symbol conflict
+About Symbol Conflict
 =====================
 
 .. code:: c++
@@ -530,11 +564,13 @@ About Symbol conflict
     > g++ -c noinline0.cpp ; g++ -c noinline1.cpp
     > g++ noinline[01].o -shared
     /usr/bin/ld: noinline1.o: in function `foo()':
-    noinline1.cpp:(.text+0x0): multiple definition of `foo()'; noinline0.o:noinline0.cpp:(.text+0x0): first defined here
+    noinline1.cpp:(.text+0x0): multiple definition \
+        of `foo()'; \
+    noinline0.o:noinline0.cpp:(.text+0x0): first defined here
 
 ----
 
-About the ``inline`` keyword
+About the ``inline`` Keyword
 ============================
 
 .. code:: c++
@@ -559,7 +595,7 @@ About the ``inline`` keyword
 
 ----
 
-Other ``weak`` usage
+Other ``weak`` Usage
 ====================
 
 .. code:: c++
@@ -582,11 +618,11 @@ Other ``weak`` usage
 
 ----
 
-Another reading of ODR
+Another Reading of ODR
 ======================
 
 1. Pick any of the defined symbol
-2. normal linkage is stronger than weak linkage
+2. Normal linkage is stronger than weak linkage
 
 .. code:: sh
 
@@ -627,6 +663,58 @@ Bonus: A new random number generator
 
 ----
 
+Bonus: Library Detection
+========================
+
+.. code:: c
+
+    /* lib_detect.c */
+    #include <stdio.h>
+    char const * msg = "hello";
+    long pop() __attribute__ ((weak));
+
+    int main() {
+      if(pop) {
+        msg = "hello with pop";
+      }
+        puts(msg);
+        return 0;
+    }
+
+----
+
+Bonus: Library Detection
+========================
+
+.. code:: sh
+
+    > gcc lib_detect.c&& ./a.out
+    hello
+
+
+----
+
+Bonus: Library Detection
+========================
+
+.. code:: sh
+
+    > gcc lib_detect.c -L. -lpop -Wl,-rpath=. && ./a.out
+    hello with pop
+
+.. code:: sh
+
+    > readelf -d a.out
+    Dynamic section at offset 0x2dd0 contains 28 entries:
+    Tag        Type         Name/Value
+    0x0000001 (NEEDED)      Shared library: [libpop.so]
+    0x0000001 (NEEDED)      Shared library: [libc.so.6]
+    0x000001d (RUNPATH)     Library runpath: [.]
+
+
+
+----
+
 ``.text`` section
 =================
 
@@ -637,11 +725,11 @@ Bonus: A new random number generator
     0000115a g     F .text  00000017
     > readelf -W -t hello
      [Nr] Name
-       Type           Address  Off    Size   ES   Lk Inf Al
+       Type       Address  Off    Size   ES   Lk Inf Al
        Flags
     (...)
      [ 3] .text
-      PROGBITS        00000000 000058 000000 00   0   0  1
+      PROGBITS    00000000 000058 000000 00   0   0  1
       [00000006]: ALLOC, EXEC
 
 ----
@@ -739,8 +827,10 @@ Random sections: ``.comment``
 What we have learnt so far
 ==========================
 
-1. There a re plenty of sections in a sectionned ELF
+1. There are plenty of sections in a sectionned ELF
+
 2. Several c++ concepts clearly map to a given section
+
 3. Different section behave differently with respect to linkage and execution
 
 ----
@@ -755,7 +845,7 @@ Bonus: updating a section content
     > objdump -s -j.comment hello
     (...)
     Contents of section .comment:
-     0000 5c6f5c20 63707063 6f6e202f 6f2f      \o\ cppcon /o/
+     0000 5c6f5c20 63707063 6f6e202f 6f2f    \o\ cppcon /o/
 
 ----
 
@@ -816,6 +906,51 @@ Bonus: LTO and Clang
 
 ----
 
+Bonus: embed bitcode
+====================
+
+.. code:: sh
+
+    > clang++ -O2 -c -fembed-bitcode hello.cpp
+    > objdump -h embed_bitcode.o | grep llvm
+    5 .llvmbc   000011b0  00000000  00000000  000000a0  2**4
+    6 .llvmcmd  000002da  00000000  00000000  00001250  2**4
+
+----
+
+Bonus: embed bitcode
+====================
+
+.. code:: sh
+
+    > objcopy --dump-section .llvmcmd=/dev/stdout hello.o
+    -triplex86_64-pc-linux-gnu-emit-obj-fembed-bitcode=all\
+    -disable-llvm-passes-disable-free-disable-llvm-verifier\
+    -discard-value-names-main-file-namehello.cpp-mrelocation\
+    ...
+
+----
+
+Bonus: embed bitcode
+====================
+
+.. code:: sh
+
+    > objcopy --dump-section .llvmbc=hello.bc hello.o
+    > llvm-dis hello.bc -o -
+    ; ModuleID = 'hello.bc'
+    source_filename = "hello.cpp"
+    target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+    target triple = "x86_64-pc-linux-gnu"
+
+    %"class.std::ios_base::Init" = type { i8 }
+    %"class.std::basic_ostream" = type { i32 (...)**, %"class.std::basic_ios" }
+    %"class.std::basic_ios" = type { %"class.std::ios_base", %"class.std::basic_ostream"*, i8, i8, %"class.std::basic_streambuf"*, %"class.std::ctype"*, %"class.std::num_put"*, %"class.std::num_get"* }
+    %"class.std::ios_base" = type { i32 (...)**, i64, i64, i32, i32, i32, %"struct.std::ios_base::_Callback_list"*, %"struct.std::ios_base::_Words", [8 x %"struct.std::ios_base::_Words"], i32, %"struct.std::ios_base::_Words"*, %"class.std::locale" }
+    %"struct.std::ios_base::_Callback_list" = type { %"struct.std
+
+----
+
 Debug information
 =================
 
@@ -868,13 +1003,13 @@ Debug information
 Split or Strip
 ==============
 
-from ``man 3 strip``
+from ``man 1 strip``
 
 .. code:: sh
 
-    > cp foo foo.full
-    > strip --strip-debug foo
-    > objcopy --add-gnu-debuglink=foo.full foo
+    > objcopy --only-keep-debug foo foo.dbg
+    > objcopy --strip-debug foo
+    > objcopy --add-gnu-debuglink=foo.dbg foo
 
 ----
 
@@ -888,7 +1023,7 @@ Exceptions and ELF
       [18] .eh_frame
       [19] .rela.eh_frame
 
-``.eh_frame`` describes the call frames that much be unwound during the processing of an exception
+``.eh_frame`` describes the call frames to uniond during the processing of an exception
 
 .. code::
 
@@ -900,7 +1035,7 @@ Exceptions and ELF
 
 ----
 
-RTTI and Elf
+RTTI and ELF
 ============
 
 .. code:: c++
@@ -917,10 +1052,10 @@ RTTI and Elf
 
     > g++ -c rtti.cpp
     > objdump -Ct rtti.o | grep typeinfo
-    00000000  w    O .data.rel.ro._ZTI3Bar  00000018 typeinfo for Bar
-    00000000  w    O .data.rel.ro._ZTI3Foo  00000010 typeinfo for Foo
-    00000000  w    O .rodata._ZTS3Bar       00000005 typeinfo name for Bar
-    00000000  w    O .rodata._ZTS3Foo       00000005 typeinfo name for Foo
+    0000  w  O .data.rel.ro._ZTI3Bar  0018 typeinfo for Bar
+    0000  w  O .data.rel.ro._ZTI3Foo  0010 typeinfo for Foo
+    0000  w  O .rodata._ZTS3Bar       0005 typeinfo name for Bar
+    0000  w  O .rodata._ZTS3Foo       0005 typeinfo name for Foo
 
 ----
 
@@ -932,20 +1067,17 @@ Relocations
     > readelf -r hello
     (...)
     Relocation section '.rela.plt' at offset 0x548 contains 1 entry:
-      Offset    Info         Type             
+      Offset    Info         Type
       00004018  000200000007 R_X86_64_JUMP_SLO
-      ... Sym. Value   Sym. Name + Addend
-      ... 000000000000 puts@GLIBC_2.2.5 + 0
-    > objdump -S -j.plt hello
-    0000000000001030 <puts@plt>:
-    1030:   ff 25 e2 2f 00 00       jmpq   *0x2fe2(%rip)        # 4018 <puts@GLIBC_2.2.5>
-    1036:   68 00 00 00 00          pushq  $0x0
-    103b:   e9 e0 ff ff ff          jmpq   1020 <.plt>
+
+      Sym. Value   Sym. Name + Addend
+      000000000000 puts@GLIBC_2.2.5 + 0
+
 
 ----
 
-Static Initialization order Fiasco, revisited
-=============================================
+Understanding Initialization
+============================
 
 .. code:: c++
 
@@ -963,32 +1095,32 @@ Static Initialization order Fiasco, revisited
 
 ----
 
-Understanding initialization
+Understanding Initialization
 ============================
 
 .. code:: asm
 
-    0000000000001165 <__static_initialization_and_destruction_0(int, int)>:
-        1165:   55                      push   rbp
-        1166:   48 89 e5                mov    rbp,rsp
-        1169:   48 83 ec 10             sub    rsp,0x10
-        116d:   89 7d fc                mov    DWORD PTR [rbp-0x4],edi
-        1170:   89 75 f8                mov    DWORD PTR [rbp-0x8],esi
-        1173:   83 7d fc 01             cmp    DWORD PTR [rbp-0x4],0x1
-    ┌───1177:   75 21                   jne    119a <__static_initialization_and_destruction_0(int, int)+0x35>; jump if not equal
-    │   1179:   81 7d f8 ff ff 00 00    cmp    DWORD PTR [rbp-0x8],0xffff
-    │┌──1180:   75 18                   jne    119a <__static_initialization_and_destruction_0(int, int)+0x35>; jump if not equal
-    ││  1182:   48 8d 3d a8 2e 00 00    lea    rdi,[rip+0x2ea8]        # 4031 <first>
-    ││  1189:   e8 24 00 00 00          call   11b2 <foo::foo()>
-    ││  118e:   48 8d 3d 9d 2e 00 00    lea    rdi,[rip+0x2e9d]        # 4032 <second>
-    ││  1195:   e8 34 00 00 00          call   11ce <bar::bar()>
-    └└─╼119a:   90                      nop
-        119b:   c9                      leave
-        119c:   c3                      ret
+    00001165 <__static_initialization_and_destruction_0(int, int)>:
+        push   rbp
+        mov    rbp,rsp
+        sub    rsp,0x10
+        mov    DWORD PTR [rbp-0x4],edi
+        mov    DWORD PTR [rbp-0x8],esi
+        cmp    DWORD PTR [rbp-0x4],0x1
+        jne    119a <__static_initialization_and_destruction_0(int, int)+0x35>; jump if not equal
+        cmp    DWORD PTR [rbp-0x8],0xffff
+        jne    119a <__static_initialization_and_destruction_0(int, int)+0x35>; jump if not equal
+        lea    rdi,[rip+0x2ea8]        # 4031 <first>
+        call   11b2 <foo::foo()>
+        lea    rdi,[rip+0x2e9d]        # 4032 <second>
+        call   11ce <bar::bar()>
+        nop
+        leave
+        ret
 
 ----
 
-Stack flags
+Stack Flags
 ===========
 
 .. code:: sh
@@ -1031,11 +1163,13 @@ Shrinking binaries
 Anar kaluva tielyanna
 =====================
 
-    *the sun shall shine Upon your path*
+    *the sun shall shine upon your path*
 
 1. The binary abstraction is well respected, you *do not* need to speak elvish
 2. When in doubt, have a look at the underlying layer
-3. ``man readelf``
-4. ``man objdump``
+3. ``man nm``
+4. ``man readelf``
+5. ``man objdump``
+6. ``man objcopy``
 
 
