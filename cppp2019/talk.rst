@@ -85,6 +85,7 @@ Ze Bench, Marc !
 
 .. code-block:: sh
 
+    $ seq 1000000 > numbers
     $ clang++ sum.cpp -o sum
     $ time ./count < numbers
     0.61s user 0.01s system 94% cpu 0.659 total
@@ -307,11 +308,12 @@ Faire les con (promis)
 - ``-ffp-contract=fast|on|off`` : floating-point expression contraction
 - ``-ffast-math`` : associativité + pas de NaN
 - ``-freciprocal-math`` : optimise la division par un littéral
-- ``-Ofast`` : :math:`text{-O3} + \text{-ffast-math} = \text{-Ofast}`
+- ``-Ofast`` : :math:`\text{-O3} + \text{-ffast-math} = \text{-Ofast}`
 
 .. code:: sh
 
-    $ clang -xc - -o- -S -emit-llvm -O2 -freciprocal-math << EOF
+    $ clang -xc - -o- -S -emit-llvm -O2 \
+         -freciprocal-math << EOF
     double rm(double x) {
       return x / 10.;
     }
@@ -515,7 +517,8 @@ Optimisation Top Tier (2/2)
 
 .. code-block:: sh
 
-    $ echo 'foo() { return 0;}' | clang -flto -O2 -xc - -c -o foo.o
+    $ echo 'foo() { return 0;}' | \
+      clang -flto -O2 -xc - -c -ofoo.o
     $ file foo.o
     foo.o: LLVM bitcode
 
@@ -559,7 +562,7 @@ Pour bien optimiser ses boucles :
 
 .. code-block:: c++
 
-    #pragma clang loop unroll(enable/full/disable)
+    #pragma clang loop unroll(enable|full)
     #pragma clang loop unroll_count(8)
     #pragma clang loop distribute(enable)
     #pragma clang loop vectorize_width(4)
