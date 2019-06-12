@@ -55,7 +55,6 @@ C++, ce language si rapide
 .. code-block:: C++
 
     #include <iostream>
-    #include <set>
     int main(int argc, char** argv) {
       long s = 0;
       while (std::cin) {
@@ -141,7 +140,7 @@ Performance
 
 - ``-O0`` : pas d'optimisation
 - ``-O1`` : :math:`\text{O1} = \frac{\text{O0} + \text{O2}}{2}`
-- ``-O2`` : optimisation qui ne devraient jamais dégarder les perfs
+- ``-O2`` : optimisation qui ne devraient jamais dégrader les perfs
 - ``-O3`` : optimisation avec risque d'impact négatif sur les perfs
 - ``-O4`` : :math:`\text{O3} = \text{O4}`
 
@@ -153,7 +152,7 @@ Debug
 
 « Je veux que le code généré soit facile à déverminer »
 
-- ``-g`` : inclut lesinfos de debug
+- ``-g`` : inclut les infos de debug
 - ``-Og`` : ``== -O1 -g``
 
 .. code-block:: sh
@@ -224,7 +223,6 @@ Taille
 
 - ``-Wall`` : (presque) tous les avertissements
 - ``-Werror`` : pour des soirées compil de folie
-- ``-w`` : le contraire de ``-W``
 - ``-W`` : le contraire de ``-w``
 - ``-Xclang -code-completion-at`` : *Intellisense*
 
@@ -234,7 +232,8 @@ Taille
     #include <iostream>
     int main(int argc, char**argv) {
       std::co
-    $ clang++ -Xclang -code-completion-at=hello.cpp:3:10 \
+    $ clang++ -Xclang \
+      -code-completion-at=hello.cpp:3:10 \
       -fsyntax-only hello.cpp
     COMPLETION: codecvt : codecvt<<#typename _InternT#>, <#typename _ExternT#>, <#typename _StateT#>>
     COMPLETION: codecvt_base : codecvt_base
@@ -256,7 +255,7 @@ Faire les con (promis)
 - ``-g3``
 - alternative: ``objcopy --only-keep-debug``
 - alternative: ``objcopy --compress-debug-sections``
-- ``fdebug-macro`` : attention à l'explostion en taille!
+- ``fdebug-macro`` : attention à l'explosion en taille!
 
 ----
 
@@ -295,7 +294,7 @@ Impact du niveau d'optimisation sur temps de compilation
     -O2: 22.68 s
     -O3: 22.36 s
 
-*exércice* : proposez une explication
+*exercice* : proposez une explication
 
 
 ----
@@ -383,6 +382,7 @@ Faire des compromis
 - ``-fsanitize=address`` : instrumente les accès mémoires 
 - ``-fsanitize=memory`` : trace les accès à des valeurs non initialisées
 - ``-fsanitize=undefined`` : trace les comportements indéfinis
+- ``-fsanitize=thread`` : détecte les *data race*
 
 .. code-block:: c++
 
@@ -529,7 +529,7 @@ Quelques leviers d'optimisation supplémentaires
 
 - ``-mllvm -inline-threshold=n`` : contrôle l'expansion de procédure
 - ``-mllvm -unroll-threshold=500`` : contrôle le déroulement de boucle
-- ``-O3 -mllvm -polly`` : active les optimisations polyhédriques
+- ``-O3 -mllvm -polly`` : active les optimisations polyédriques
 - ``-fwhole-program-vtables`` : essaye de simplifier les tables virtuelles
 
 
@@ -609,7 +609,7 @@ Medley
 Aide au développement
 =====================
 
-- ``--analyze`` : effecture une analyse poussée du code
+- ``--analyze`` : effectue une analyse poussée du code
   Augmente les *temps de compilation*, *faux positifs* possibles !
 
 - ``scan-build make`` automatise l'étape du dessus pour un projet
@@ -663,6 +663,46 @@ Aide au développement
 
 ----
 
+Pour comprendre...
+==================
+
+Un compilateur un peu lent :
+
+- ``-ftime-report`` : rapport détaillé par passe de compil
+
+Une optimisation qui aurait mal tournée
+
+- ``-Rpass=inline``
+- ``-Rpass=unroll``
+- ``-Rpass=loop-vectorize``
+
+
+----
+
+...
+===
+
+.. code-block:: sh
+
+    $ { clang -xc++ - -c \
+      -O2 -Rpass=inline << EOF
+    #include <numeric>
+    #include <vector>
+    using namespace std;
+    double acc(vector<double> const& some)
+    {
+      return accumulate(
+               some.begin(),
+               some.end(),
+               0.);
+    }
+    EOF
+    } 2>&1 | c++filt
+    ...
+    ... remark: __gnu_cxx::__normal_iterator<double const*, std::vector<double, std::allocator<double> > >::__normal_iterator(double const* const&) \
+    ... inlined into std::vector<double, std::allocator<double> >::begin() const with cost=-40 (threshold=337) [-Rpass=inline]
+
+----
 
 Une exploration sans fin
 ========================
