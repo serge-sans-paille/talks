@@ -87,10 +87,10 @@ Ze Bench, Marc !
 
     $ seq 1000000 > numbers
     $ clang++ sum.cpp -o sum
-    $ time ./count < numbers
+    $ time ./sum < numbers
     0.61s user 0.01s system 94% cpu 0.659 total
 
-    $ python sum.py < numbers
+    $ time python sum.py < numbers
     0.77s user 0.04s system 99% cpu 0.818 total
 
 **L'utilisateur n'a pas précisé son intention**
@@ -288,7 +288,7 @@ Impact du niveau d'optimisation sur temps de compilation
 
     $ for O in 0 1 2 3
       do
-      /usr/bin/time -f "-O$O: %e s" clang sqlite3.c -c -O$g
+      /usr/bin/time -f "-O$O: %e s" clang sqlite3.c -c -O$O
       done
     -O0: 22.15 s
     -O1: 24.02 s
