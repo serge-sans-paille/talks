@@ -36,7 +36,7 @@ div#slide-number
     position: absolute;
     left: 6.5em;
     text-align: left;
-    background-image: url('https://s3.amazonaws.com/media-p.slid.es/logos/32/Logo-RedHat-A-Reverse-RGB-2.png');
+    background-image: url('./Logo-RedHat-A-Reverse-RGB-2.png');
     background-repeat: no-repeat;
     background-position: top right;
     background-size: 24vh;

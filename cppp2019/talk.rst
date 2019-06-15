@@ -74,7 +74,8 @@ Python, ce language si lent
 .. code-block:: Python
 
     import sys
-    print(sum(int(x) for x in sys.stdin.readlines()))
+    print(sum(int(x)
+              for x in sys.stdin.readlines()))
 
 
 ----
@@ -111,8 +112,8 @@ Spécifier son intention
 ----
 
 
-Optimisation mutlicritère
-=========================
+Optimisation multi-critère
+==========================
 
 
 ::
@@ -158,17 +159,17 @@ Debug
 
 .. code-block:: sh
 
-    $ curl $sq | clang -x c -c -g - -o sq.o
+    $ curl $sq | clang -xc -c -g - -o sq.o
     $ objdump -h sq.o | grep debug
-      #  name            size           address
-       9 .debug_str      00012b2d  ...  000d0198
-      10 .debug_abbrev   0000038d  ...  000e2cc5
-      11 .debug_info     0005056c  ...  000e3052
-      12 .debug_ranges   00000240  ...  001335be
-      13 .debug_macinfo  00000001  ...  001337fe
-      14 .debug_pubnames 0000c73a  ...  001337ff
-      15 .debug_pubtypes 00001068  ...  0013ff39
-      19 .debug_line     00073402  ...  0014f7c8
+      #  name            size      ...
+       9 .debug_str      00012b2d  ...
+      10 .debug_abbrev   0000038d  ...
+      11 .debug_info     0005056c  ...
+      12 .debug_ranges   00000240  ...
+      13 .debug_macinfo  00000001  ...
+      14 .debug_pubnames 0000c73a  ...
+      15 .debug_pubtypes 00001068  ...
+      19 .debug_line     00073402  ...
 
 
 
@@ -184,7 +185,7 @@ Sécurité
 
 .. code:: sh
 
-    $ clang -x c -c -O2 - -S -emit-llvm -o \
+    $ clang -xc -c -O2 - -S -emit-llvm -o \
         - -D_FORTIFY_SOURCE=2 << EOF
     #include <stdio.h>
     void foo(char *s) {
@@ -223,8 +224,8 @@ Taille
 =======
 
 - ``-Wall`` : (presque) tous les avertissements
-- ``-Werror`` : pour des soirées compil de folie
-- ``-W`` : le contraire de ``-w``
+- ``-Werror[=...]`` : pour des soirées compil de folie
+- ``-w`` : les vrais savent
 - ``-Xclang -code-completion-at`` : *Intellisense*
 
 .. code:: sh
@@ -254,9 +255,9 @@ Faire les con (promis)
 - ``-g1``
 - ``-g2``
 - ``-g3``
-- alternative: ``objcopy --only-keep-debug``
-- alternative: ``objcopy --compress-debug-sections``
-- ``fdebug-macro`` : attention à l'explosion en taille!
+- alt. : ``objcopy --only-keep-debug``
+- alt. : ``objcopy --compress-debug-sections``
+- ``-fdebug-macro`` : attention à l'explosion en taille!
 
 ----
 
@@ -288,7 +289,8 @@ Impact du niveau d'optimisation sur temps de compilation
 
     $ for O in 0 1 2 3
       do
-      /usr/bin/time -f "-O$O: %e s" clang sqlite3.c -c -O$O
+      /usr/bin/time -f "-O$O: %e s" \
+        clang sqlite3.c -c -O$O
       done
     -O0: 22.15 s
     -O1: 24.02 s
@@ -359,7 +361,7 @@ Faire des compromis
 *Portabilité vs Performance*
 
 - ``-march=native`` : spécialise pour la machine hôte
-- ``-mavx`` : spécialise pour ce jeu d'instruction
+- ``-mavx`` : autorise ce jeu d'instruction
 
 .. code:: sh
 
@@ -403,7 +405,7 @@ Faire des compromis
 
 .. code-block:: sh
 
-    $ clang++ -fsanitize=address mem.cpp -S -emit-llvm -o - -O2
+    $ clang++ -fsanitize=address mem.cpp -S -emit-llvm -o- -O2
 
 .. code-block:: llvm
 
@@ -583,7 +585,10 @@ Pour l'éditeur de lien :
 
 .. code::
 
-    #pragma clang section bss="myBSS" data="myData" rodata="myRodata" text="myText"
+    #pragma clang section bss="myBSS" \
+                  data="myData" \
+                  rodata="myRodata" \
+                  text="myText"
 
 ----
 
@@ -601,7 +606,8 @@ Medley
 
     __clang__
 
-    typedef float float4 __attribute__((ext_vector_type(4)));
+    typedef float float4 \
+     __attribute__((ext_vector_type(4)));
 
      __fp16
 
@@ -613,9 +619,10 @@ Aide au développement
 =====================
 
 - ``--analyze`` : effectue une analyse poussée du code
-  Augmente les *temps de compilation*, *faux positifs* possibles !
+    - Augmente les *temps de compilation*
+    - *faux positifs* possibles !
 
-- ``scan-build make`` automatise l'étape du dessus pour un projet
+- ``scan-build make`` : automatise l'étape du dessus pour un projet
 
 
 ----
