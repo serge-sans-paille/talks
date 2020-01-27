@@ -115,15 +115,13 @@ Let's rollback Pythran history ``:-)``
 
 .. code::
 
+
     commit 6434e25b53aa307288e5cd8c52ffdc1280315a90
-    Author: Jens-Uwe Mager
-    Date: Feb 24, 2003
+    Author: Jens-Uwe Mager <jum@codespeak.net>
+    Date:   Mon Feb 24 15:59:25 2003 +0000
 
-
-         Move the XXXXXX trunk into its own top level directory so the path names
-
-         stay constant.
-
+        Move the pypy trunk into its own top level directory so the path names
+        stay constant.
 
 
 ----
@@ -256,6 +254,17 @@ Finally some *online* validation
 
 ----
 
+2015
+====
+
+Start of the OpenDreamKit project
+
+> OpenDreamKit also supports open source research codes directly by investing
+> into structural improvements and new features to not only connect all of these
+> tools but also enrich them, and make them more sustainable.
+
+----
+
 2016
 ====
 
@@ -377,6 +386,27 @@ Pain always strikes twice
     - reduce has moved from __builtin__ to functools
 
     This is a huge change! But also a welcome one, -1000 lines of code :-)
+
+----
+
+2020
+====
+
+Acknowledgments
+
+.. code:: Python
+
+    people = (
+        'Liyun He', 'Jean Laroche',
+        'Pierrick Brunet', 'Logilab',
+        'Mehdi Amini', 'Sylvain Corlay',
+        'Stefan Behnel', 'OpenDreamKit',
+        'Nicolas M. Thiéry', 'Yann Diorcet',
+        'Pierre Augier', 'Joël Falcou',
+        'HPC Project', 'Adrien Guinet',
+        'Lucie G.', 'Laëtitia G.') + others
+    random.shuffle(people)
+    print(people)
 
 ----
 
