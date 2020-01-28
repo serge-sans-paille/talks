@@ -6,19 +6,20 @@
       });
     </script></head><body class="impress-not-supported"><div id="impress" data-transition-duration="150"><div class="step step-level-1" step="0" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="0" data-y="0" data-z="0"><h1 id="intro">Intro</h1><p><strong>Python</strong> and <strong>Science</strong>: the great mystery</p><p>Python isn't known for its baffling <em>performance</em></p><p>Scientific computing <tt>&lt;3</tt> <em>performance</em> (think Fortran)</p><p>Yet they love each other, which paves the way for <strong>accelerating solutions</strong></p></div><div class="step step-level-1" step="1" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="1600" data-y="0" data-z="0"><h1 id="the-pythran-compiler-7-years-later">The Pythran compiler, 7 years later</h1><p><strong>Serge &#xAB; sans paille &#xBB; Guelton</strong></p><p>Compiler Engineer / Wood Craft Lover / RedHat employee</p><p><strong>FOSDEM'20 &#x2014; 1st february 2020</strong></p></div><div class="step step-level-1" step="2" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="3200" data-y="0" data-z="0"><h1 id="in-a-nutshell">In a nutshell</h1><p>A <em>non-intrusive</em> compiler for scientific kernels written in <em>Python</em></p><pre class="highlight code Python"><span class="kn">import</span> <span class="nn">numpy</span>
 
-<span class="c1">#pythran export log_likelihood(float64[], float64, float64)</span>
+<span class="c1">#pythran export log_likelihood(float64[], float64,</span>
+<span class="c1">#                              float64)</span>
 <span class="k">def</span> <span class="nf">log_likelihood</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
-    <span class="n">pdfs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="n">s</span><span class="p">)</span>
-    <span class="n">pdfs</span> <span class="o">/=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span>
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">pdfs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></pre><pre class="highlight code shell"><span class="c1"># native parallel vectorized module
+  <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+  <span class="n">pdfs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="n">s</span><span class="p">)</span>
+  <span class="n">pdfs</span> <span class="o">/=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span>
+  <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">pdfs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></pre><pre class="highlight code shell"><span class="c1"># native parallel vectorized module
 </span>pythran log_likelihood.py -fopenmp <span class="se">\
 </span>        -march<span class="o">=</span>native -DUSE_XSIMD</pre></div><div class="step step-level-1" step="3" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="4800" data-y="0" data-z="0"><h1 id="what-about-cython">What about... Cython?</h1><ul><li>Cython introduces an (optional) new <em>dialect</em></li><li>Cython allows <em>mixed mode</em> execution</li></ul><p><strong>Upside</strong>:</p><ul><li>Huge <em>user base</em> (numpy, scipy, scikit-<tt>*</tt>)</li><li><em>Graduate</em> conversion</li><li>Nice <em>error reporting</em></li><li>Nice <em>profiling</em> support through (<tt>cython -a</tt>)</li><li>Low 3rd party requirements (<tt>cc</tt>)</li></ul></div><div class="step step-level-1" step="4" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="6400" data-y="0" data-z="0"><h1 id="what-about-pypy">What about... PyPy?</h1><ul><li>PyPy is a full (jitting) <em>interpreter</em></li><li>PyPy ha[sd] limited Numpy acceleration</li><li>Strong <em>theoretical</em> and <em>engineering</em> foundations</li></ul><p>Upside:</p><ul><li><em>Full</em> language support</li></ul></div><div class="step step-level-1" step="5" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="8000" data-y="0" data-z="0"><h1 id="what-about-numba">What about... Numba?</h1><ul><li>Numba favors explicit <em>JIT</em> compilation</li><li>Numba favors an explicit, <em>low-level</em> style</li><li>Based on the <em>LLVM</em> compiler infrastructure</li></ul><p>Upside:</p><ul><li>Powered by the <tt>conda</tt> <em>package manager</em></li><li>Good <em>adoption</em> in the community</li><li>Easy <em>integration</em> (<tt>@numba.jit</tt>)</li></ul></div><div class="step step-level-1" step="6" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="9600" data-y="0" data-z="0"><h1 id="compilers-4-stories">4 compilers, 4 stories</h1><p>Enough speak about others,</p><p>Let's rollback Pythran history <tt>:-)</tt></p><p><strong>extra game</strong>: <em>guess-the-compiler-initial-commit</em></p></div><div class="step step-level-1" step="7" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="11200" data-y="0" data-z="0"><h1 id="id1">2003</h1><pre class="highlight code">commit 6434e25b53aa307288e5cd8c52ffdc1280315a90
 Author: Jens-Uwe Mager &lt;jum@codespeak.net&gt;
 Date:   Mon Feb 24 15:59:25 2003 +0000
 
-    Move the pypy trunk into its own top level directory so the path names
-    stay constant.</pre></div><div class="step step-level-1" step="8" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="12800" data-y="0" data-z="0"><h1 id="id2">2006</h1><pre class="highlight code">commit 54ab11e7765f92682f033ea61d6916d2eed0256e
+  Move the pypy trunk into its own top level directory
+  so the path names stay constant.</pre></div><div class="step step-level-1" step="8" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="12800" data-y="0" data-z="0"><h1 id="id2">2006</h1><pre class="highlight code">commit 54ab11e7765f92682f033ea61d6916d2eed0256e
 Author: William Stein &lt;wstein@gmail.com&gt;
 Date:   Thu Oct 19 21:28:18 2006 -0700
 
@@ -39,64 +40,71 @@ Author: Kevin Modzelewski &lt;kevmod@gmail.com&gt;
 Date:   Wed Apr 2 19:26:58 2014 -0700
 
     Initial commit</pre></div><div class="step step-level-1" step="14" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="22400" data-y="0" data-z="0"><h1 id="id8">2014</h1><p>Finally some <em>online</em> validation</p><pre class="highlight code">commit ebb9aecd396ebf1cf01d6809b78e8e78b8ee7357
-Author: serge-sans-paille &lt;serge.guelton@telecom-bretagne.eu&gt;
+Author: serge-sans-paille &lt;serge.guelton@tb&gt;
 Date:   Sun Sep 7 15:55:39 2014 +0200
 
 Setup Travis CI
 
-In addition to the various test scenarios stored in .travis.yml:
+In addition to the various test scenarios stored in
+.travis.yml:
 
-- make CLI documentation compiler dependent, using pythran-config
---compiler new flag
+- make CLI documentation compiler dependent, using
+  pythran-config --compiler new flag
 - fix a typo in the DEVGUIDE
-- split test_numpy in three parts otherwise travis times out. It was too big anyway
+- split test_numpy in three parts otherwise travis
+  times out. It was too big anyway
 - fix libs flags
 - remove test_simd as travis does the job for us</pre></div><div class="step step-level-1" step="15" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="24000" data-y="0" data-z="0"><h1 id="id9">2014</h1><pre class="highlight code">commit 0da9c09ace57efcbdf237f347a909f991125e0f7
 Author: Joel Akeret &lt;jakeret@phys.ethz.ch&gt;
 Date:   Thu Oct 16 11:13:46 2014 +0200
 
-    first commit</pre></div><div class="step step-level-1" step="16" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="25600" data-y="0" data-z="0"><h1 id="id10">2015</h1><p>Start of the OpenDreamKit project</p><p>&gt; OpenDreamKit also supports open source research codes directly by investing
-&gt; into structural improvements and new features to not only connect all of these
-&gt; tools but also enrich them, and make them more sustainable.</p></div><div class="step step-level-1" step="17" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="27200" data-y="0" data-z="0"><h1 id="id11">2016</h1><p><em>GAST</em>: Python 2 and Python 3 compatibility layer</p><p>Started as a pun using the breton language,</p><p>Ended up as a package downloaded 3M times a month</p><pre class="highlight code">commit 5deeef28077ca620f81b5c2c156b6e6afed597d0
-Author: serge-sans-paille &lt;serge.guelton@telecom-bretagne.eu&gt;
+    first commit</pre></div><div class="step step-level-1" step="16" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="25600" data-y="0" data-z="0"><h1 id="id10">2015</h1><p>Start of the OpenDreamKit project</p><blockquote><p>OpenDreamKit also supports open source research codes directly by investing
+into structural improvements and new features to not only connect all of these
+tools but also enrich them, and make them more sustainable.</p></blockquote></div><div class="step step-level-1" step="17" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="27200" data-y="0" data-z="0"><h1 id="id11">2016</h1><p><em>GAST</em>: Python 2 and Python 3 compatibility layer</p><p>Started as a pun using the breton language,</p><p>Ended up as a package downloaded 3M times a month</p><pre class="highlight code">commit 5deeef28077ca620f81b5c2c156b6e6afed597d0
+Author: serge-sans-paille &lt;serge.guelton@tb&gt;
 Date:   Wed Jun 22 15:42:47 2016 +0200
 
 Gaea's touch</pre></div><div class="step step-level-1" step="18" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="28800" data-y="0" data-z="0"><h1 id="id12">2016</h1><p>Last commit in Hope's master branch</p></div><div class="step step-level-1" step="19" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="30400" data-y="0" data-z="0"><h1 id="id13">2017</h1><p>First use of tags in Pythran</p><pre class="highlight code">&gt; git show `git tag | head -n1`
 commit 295ea3154d8891b9fc55b252cc6002003c48eda5
-Author: serge-sans-paille &lt;serge.guelton@telecom-bretagne.eu&gt;
+Author: serge-sans-paille &lt;serge.guelton@tb&gt;
 Date:   Tue Jul 4 21:10:32 2017 +0200
 
     0.8.1 - GDR Calcul</pre></div><div class="step step-level-1" step="20" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="32000" data-y="0" data-z="0"><h1 id="id14">2017</h1><p><strong>Last commit</strong> in the Pyston's master branch</p></div><div class="step step-level-1" step="21" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="33600" data-y="0" data-z="0"><h1 id="id15">2018</h1><p>Published <strong>Pythran: Crossing the Python Frontier</strong></p><p>Article&#x2002;in&#x2002;<em>Computing in Science and Engineering</em>,  March 2018</p><p>Good for visibility of the project!</p></div><div class="step step-level-1" step="22" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="35200" data-y="0" data-z="0"><h1 id="id16">2018</h1><p>Managing external dependencies, always a pleasure :-)</p><pre class="highlight code">commit d07f5f91c1eaf5d4d52f197b08bc3a21b6cb9948
-Author: serge-sans-paille &lt;serge.guelton@telecom-bretagne.eu&gt;
+Author: serge-sans-paille &lt;serge.guelton@tb&gt;
 Date:   Fri Aug 10 17:02:55 2018 +0200
 
 Moving to xsimd
 
-Use xsimd instead of boost::simd for vector instructions. This relies on
-a patch to xsimd to provide the scalar version of each mathematical
+Use xsimd instead of boost::simd for vector
+instructions. This relies on a patch to xsimd
+to provide the scalar version of each mathematical
 function.</pre></div><div class="step step-level-1" step="23" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="36800" data-y="0" data-z="0"><h1 id="id17">2019</h1><p>So far, so good for diversity</p><pre class="highlight code">commit 3ebb085d486e0b6d6520927879e14772597cfaac
-Author: serge-sans-paille &lt;serge.guelton@telecom-bretagne.eu&gt;
+Author: serge-sans-paille &lt;serge.guelton@tb&gt;
 Date:   Mon Oct 14 15:20:17 2019 +0200
 
 Support clang-cl.exe as a windows compiler
 
-- Test on AppVeyor with that compiler, but don't use it as default
+- Test on AppVeyor with that compiler, but don't use
+  it as default
 - Fix interaction with numpy.int type on Win32</pre></div><div class="step step-level-1" step="24" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="38400" data-y="0" data-z="0"><h1 id="id18">2020</h1><p>Pain always strikes twice</p><pre class="highlight code">commit 97ea22f7126742f824a4bf7b347c820829b9fa12
-Author: serge-sans-paille &lt;serge.guelton@telecom-bretagne.eu&gt;
+Author: serge-sans-paille &lt;serge.guelton@tb&gt;
 Date:   Thu Jan 2 18:23:06 2020 +0100
 
-Remove all reference to py2 code and behavior from pythran
+Remove all reference to py2 code and behavior from
+pythran
 
 Basically:
 
 - __builtin__ -&gt; builtins
 - take into account behavior change of map/zip/range
-- also take into account the now invalid map(None, ...) pattern
+- also take into account the now invalid map(None, ...)
+  pattern
 - modified division behavior
 - StandardError is no longer available, so is cmp etc
 - reduce has moved from __builtin__ to functools
 
-This is a huge change! But also a welcome one, -1000 lines of code :-)</pre></div><div class="step step-level-1" step="25" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="40000" data-y="0" data-z="0"><h1 id="id19">2020</h1><p>Acknowledgments</p><pre class="highlight code Python"><span class="n">people</span> <span class="o">=</span> <span class="p">(</span>
+This is a huge change! But also a welcome one, -1000
+lines of code :-)</pre></div><div class="step step-level-1" step="25" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="40000" data-y="0" data-z="0"><h1 id="id19">2020</h1><p>Acknowledgments</p><pre class="highlight code Python"><span class="n">people</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s1">'Liyun He'</span><span class="p">,</span> <span class="s1">'Jean Laroche'</span><span class="p">,</span>
     <span class="s1">'Pierrick Brunet'</span><span class="p">,</span> <span class="s1">'Logilab'</span><span class="p">,</span>
     <span class="s1">'Mehdi Amini'</span><span class="p">,</span> <span class="s1">'Sylvain Corlay'</span><span class="p">,</span>

@@ -1,12 +1,18 @@
 
 html { font-size:32px; font-family: 'overpass', sans-serif;}
 .step {width:2048;}
-pre { font-family: 'overpass-mono', monospace; width:1024; overflow-x:hidden;}
+pre { font-size: 24px; font-family: 'overpass-mono', monospace; overflow-x:hidden;}
 .code { border-left: 4px solid black; padding-left: 1em;}
 
 h1, h2, h3, h4, .slide-number { color:#CC0000;}
 
 h1 { font-variant: small-caps;}
+
+blockquote {
+    border-left: 1px dashed #888888;
+    padding-left: 1em;
+    color: #888888;
+}
 
 .step:before {
     position: absolute;

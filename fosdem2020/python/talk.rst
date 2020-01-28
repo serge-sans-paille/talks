@@ -40,12 +40,13 @@ A *non-intrusive* compiler for scientific kernels written in *Python*
 
     import numpy
 
-    #pythran export log_likelihood(float64[], float64, float64)
+    #pythran export log_likelihood(float64[], float64,
+    #                              float64)
     def log_likelihood(data, mean, sigma):
-        s = (data - mean) ** 2 / (2 * (sigma ** 2))
-        pdfs = numpy.exp(- s)
-        pdfs /= numpy.sqrt(2 * numpy.pi) * sigma
-        return numpy.log(pdfs).sum()
+      s = (data - mean) ** 2 / (2 * (sigma ** 2))
+      pdfs = numpy.exp(- s)
+      pdfs /= numpy.sqrt(2 * numpy.pi) * sigma
+      return numpy.log(pdfs).sum()
 
 .. code-block:: shell
 
@@ -120,8 +121,8 @@ Let's rollback Pythran history ``:-)``
     Author: Jens-Uwe Mager <jum@codespeak.net>
     Date:   Mon Feb 24 15:59:25 2003 +0000
 
-        Move the pypy trunk into its own top level directory so the path names
-        stay constant.
+      Move the pypy trunk into its own top level directory
+      so the path names stay constant.
 
 
 ----
@@ -225,17 +226,19 @@ Finally some *online* validation
 .. code::
 
     commit ebb9aecd396ebf1cf01d6809b78e8e78b8ee7357
-    Author: serge-sans-paille <serge.guelton@telecom-bretagne.eu>
+    Author: serge-sans-paille <serge.guelton@tb>
     Date:   Sun Sep 7 15:55:39 2014 +0200
 
     Setup Travis CI
 
-    In addition to the various test scenarios stored in .travis.yml:
+    In addition to the various test scenarios stored in
+    .travis.yml:
 
-    - make CLI documentation compiler dependent, using pythran-config
-    --compiler new flag
+    - make CLI documentation compiler dependent, using
+      pythran-config --compiler new flag
     - fix a typo in the DEVGUIDE
-    - split test_numpy in three parts otherwise travis times out. It was too big anyway
+    - split test_numpy in three parts otherwise travis
+      times out. It was too big anyway
     - fix libs flags
     - remove test_simd as travis does the job for us
 
@@ -277,7 +280,7 @@ Ended up as a package downloaded 3M times a month
 .. code::
 
     commit 5deeef28077ca620f81b5c2c156b6e6afed597d0
-    Author: serge-sans-paille <serge.guelton@telecom-bretagne.eu>
+    Author: serge-sans-paille <serge.guelton@tb>
     Date:   Wed Jun 22 15:42:47 2016 +0200
 
     Gaea's touch
@@ -300,7 +303,7 @@ First use of tags in Pythran
 
     > git show `git tag | head -n1`
     commit 295ea3154d8891b9fc55b252cc6002003c48eda5
-    Author: serge-sans-paille <serge.guelton@telecom-bretagne.eu>
+    Author: serge-sans-paille <serge.guelton@tb>
     Date:   Tue Jul 4 21:10:32 2017 +0200
 
         0.8.1 - GDR Calcul
@@ -333,13 +336,14 @@ Managing external dependencies, always a pleasure :-)
 .. code::
 
     commit d07f5f91c1eaf5d4d52f197b08bc3a21b6cb9948
-    Author: serge-sans-paille <serge.guelton@telecom-bretagne.eu>
+    Author: serge-sans-paille <serge.guelton@tb>
     Date:   Fri Aug 10 17:02:55 2018 +0200
 
     Moving to xsimd
 
-    Use xsimd instead of boost::simd for vector instructions. This relies on
-    a patch to xsimd to provide the scalar version of each mathematical
+    Use xsimd instead of boost::simd for vector
+    instructions. This relies on a patch to xsimd
+    to provide the scalar version of each mathematical
     function.
 
 
@@ -353,12 +357,13 @@ So far, so good for diversity
 .. code::
 
     commit 3ebb085d486e0b6d6520927879e14772597cfaac
-    Author: serge-sans-paille <serge.guelton@telecom-bretagne.eu>
+    Author: serge-sans-paille <serge.guelton@tb>
     Date:   Mon Oct 14 15:20:17 2019 +0200
 
     Support clang-cl.exe as a windows compiler
 
-    - Test on AppVeyor with that compiler, but don't use it as default
+    - Test on AppVeyor with that compiler, but don't use
+      it as default
     - Fix interaction with numpy.int type on Win32
 
 ----
@@ -371,21 +376,24 @@ Pain always strikes twice
 .. code::
 
     commit 97ea22f7126742f824a4bf7b347c820829b9fa12
-    Author: serge-sans-paille <serge.guelton@telecom-bretagne.eu>
+    Author: serge-sans-paille <serge.guelton@tb>
     Date:   Thu Jan 2 18:23:06 2020 +0100
 
-    Remove all reference to py2 code and behavior from pythran
+    Remove all reference to py2 code and behavior from
+    pythran
 
     Basically:
 
     - __builtin__ -> builtins
     - take into account behavior change of map/zip/range
-    - also take into account the now invalid map(None, ...) pattern
+    - also take into account the now invalid map(None, ...)
+      pattern
     - modified division behavior
     - StandardError is no longer available, so is cmp etc
     - reduce has moved from __builtin__ to functools
 
-    This is a huge change! But also a welcome one, -1000 lines of code :-)
+    This is a huge change! But also a welcome one, -1000
+    lines of code :-)
 
 ----
 
