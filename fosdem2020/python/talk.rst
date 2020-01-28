@@ -403,6 +403,7 @@ Acknowledgments
         'Stefan Behnel', 'OpenDreamKit',
         'Nicolas M. Thiéry', 'Yann Diorcet',
         'Pierre Augier', 'Joël Falcou',
+        'Miro Hrončok',
         'HPC Project', 'Adrien Guinet',
         'Lucie G.', 'Laëtitia G.') + others
     random.shuffle(people)
