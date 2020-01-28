@@ -259,9 +259,9 @@ Finally some *online* validation
 
 Start of the OpenDreamKit project
 
-> OpenDreamKit also supports open source research codes directly by investing
-> into structural improvements and new features to not only connect all of these
-> tools but also enrich them, and make them more sustainable.
+    OpenDreamKit also supports open source research codes directly by investing
+    into structural improvements and new features to not only connect all of these
+    tools but also enrich them, and make them more sustainable.
 
 ----
 
