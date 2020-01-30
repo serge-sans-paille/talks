@@ -166,7 +166,7 @@ What about taking a step ahead and **recompile world**?
 Acknowledgment
 ==============
 
-*the following relies a lot on Tom Stellar's work on the subject*
+*the following relies a lot on Tom Stellard's work on the subject*
 
 ----
 
@@ -219,8 +219,8 @@ On Rawhide:
 
 ----
 
-Unsupported Flags
-=================
+Unsupported Flags [#287]
+========================
 
     unknown argument: '-fstack-clash-protection'
 
@@ -237,15 +237,15 @@ Unsupported Flags
 
 ----
 
-Hooking failed
-==============
+Hooking failed [#473]
+=====================
 
     XXXX was not built with clang
 
 ----
 
-``-Werror`` hell
-================
+``-Werror`` hell [#33]
+======================
 
     'printf' macro redefined [-Werror,-Wmacro-redefined]
 
@@ -255,16 +255,16 @@ Hooking failed
 
 ----
 
-``-ffinite-math-only``
-======================
+``-ffinite-math-only`` [#37]
+============================
 
 
     undefined reference to ``__.*_finite``
 
 ----
 
-Configure errors
-================
+Configure errors [#28]
+======================
 
     ERROR: Compiler cc can not compile programs
 
@@ -277,8 +277,8 @@ Configure errors
 
 ----
 
-Packaging issues
-================
+Packaging issues [#8]
+=====================
 
     libclang_rt.asan-x86_64.a: No such file or directory
 
@@ -288,8 +288,8 @@ Packaging issues
 
 ----
 
-Disagreement on the standard
-============================
+Disagreement on the standard [#89]
+==================================
 
 
     error: use of undeclared identifier
@@ -298,15 +298,15 @@ Disagreement on the standard
 
 ----
 
-Language extensions
-===================
+Language extensions [#10]
+=========================
 
     error: function definition is not allowed here
 
 ----
 
-OpenMP
-======
+OpenMP [#9]
+===========
 
     OpenMP: error ... not supported by compiler
 
