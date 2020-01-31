@@ -78,10 +78,12 @@ Since then... (1)
 .. code-block:: C++
 
     __fortify_function void *
-    __NTH (memcpy (void *__restrict __dest, const void *__restrict __src,
-             size_t __len))
+    __NTH (memcpy (void *__restrict __dest,
+                   const void *__restrict __src,
+                   size_t __len))
     {
-      return __builtin___memcpy_chk (__dest, __src, __len, __bos0 (__dest));
+      return __builtin___memcpy_chk (
+          __dest, __src, __len, __bos0 (__dest));
     }
 
 ----
@@ -112,7 +114,7 @@ Since then... (2)
 Since then... (3)
 =================
 
-`D72829 <https://reviews.llvm.org/D72829>`_: Implement ``-fsemantic-interposition`` [*accepted*]
+`D72829 <https://reviews.llvm.org/D72829>`_: Implement ``-fsemantic-interposition`` [*landed*]
 
 .. code-block:: c
 
@@ -129,7 +131,7 @@ Since then... (3)
 Since then... (4)
 =================
 
-`D68720 <https://reviews.llvm.org/D68720>`_: Support ``-fstack-clash-protection`` for x86 *needs review*
+`D68720 <https://reviews.llvm.org/D68720>`_: Support ``-fstack-clash-protection`` for x86 [*under review*]
 
 .. code-block:: c
 
@@ -205,7 +207,7 @@ How to change the underlying compiler?
 How to detect which compiler has been used?
 
 - ``grep`` logs?
-- elf inspection?
+- *elf inspection*?
 - logging through a script?
 
 ----
@@ -215,7 +217,11 @@ Results Summary
 
 On Rawhide:
 
-    TOTAL: 4303 PASS: 3016 FAIL: 1141 WARN: 0 SKIP: 146
+    TOTAL: 4303
+    PASS:  3016
+    FAIL:  1141
+    WARN:     0
+    SKIP:   146
 
 ----
 
@@ -296,12 +302,27 @@ Disagreement on the standard [#89]
 
     error: ordered comparison between pointer and zero
 
+.. code-block:: c
+
+    int foo(int* ptr) {
+        return ptr > 0;
+    }
+
 ----
 
 Language extensions [#10]
 =========================
 
     error: function definition is not allowed here
+
+.. code-block:: c
+
+    double
+    foo (double a, double b)
+    {
+      double square (double z) { return z * z; }
+      return square (a) + square (b);
+    }
 
 ----
 
