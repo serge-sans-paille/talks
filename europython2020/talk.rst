@@ -10,7 +10,7 @@ Intro
 
 **Python** and **Static Analysis**…
 
-Should be Python **or** Static Analysis!
+*/spoiler/:* Should be Python **or** Static Analysis!
 
 
 ----
@@ -22,7 +22,7 @@ Tooling for Static Analysis of Python Programs
 
 Compiler Engineer / Wood Craft Lover / RedHat employee
 
-**EuroPython'20 — 24th of february 2020**
+**EuroPython'20 — 24th of July 2020**
 
 
 ----
@@ -71,8 +71,8 @@ A Simple Expression Across the Ages
 
 ----
 
-In Python2
-==========
+In Python2.7
+============
 
 .. code-block::
 
@@ -372,3 +372,6 @@ Postlude
 - We can still get some tooling —with known limits
 - We can share the tooling
 - Perfect for embded DSLs
+
+``o/`` Thanks Sylvain Corlay for the memestra idea, Mariana Meierles for the code reviews and
+Lancelot Six for the proof reading ``\o``
