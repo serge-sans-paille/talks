@@ -43,6 +43,8 @@ I've been building a bunch of tools in the process:
 ``gast``
 ========
 
+https://github.com/serge-sans-paille/gast
+
     ``['gast]`` *f* - good time girl
 
 
@@ -55,6 +57,7 @@ Core component of AST manipulation:
 > Downloads last day: 155,526
 
 *(don't trust numbers)*
+
 
 ----
 
@@ -144,6 +147,8 @@ Tradeoffs
 ``beniget``
 ===========
 
+https://github.com/serge-sans-paille/beniget
+
     ``['beniget]`` *adj.* - blessed
 
 Compute use-def chains for Python
@@ -152,7 +157,7 @@ Foundation of several ``Pythran`` analyses
 
 ----
 
-About Use-Def chains
+About Use-Def Chains
 ====================
 
 From https://en.wikipedia.org/wiki/Use-define_chain
@@ -163,7 +168,7 @@ From https://en.wikipedia.org/wiki/Use-define_chain
 
 ----
 
-Typical usage
+Typical Usage
 =============
 
 A def *without* a use means a useless def:
@@ -176,7 +181,7 @@ A def *without* a use means a useless def:
 
 ----
 
-Being pedantic
+Being Pedantic
 ==============
 
 In Python, one does **not** assign a value to a variable,
@@ -255,8 +260,8 @@ Application: a simple linter
 
 ----
 
-Limitations: did you say static?
-================================
+Limitations: Did You Say *Static*?
+==================================
 
 .. code-block:: python
 
@@ -270,6 +275,9 @@ And as an extension, any method call…
 ``memestra``
 ============
 
+https://github.com/QuantStack/memestra
+
+
     ``['memestra]`` *adv.* - Oh, please!
 
 ``Memestra`` checks code for places where deprecated functions are called.
@@ -278,7 +286,7 @@ How would you do that after that talk?
 
 ----
 
-Finding deprecated usage
+Finding Deprecated Usage
 ========================
 
 Simple!
@@ -341,8 +349,8 @@ Advertising Deprecated Usage
 
 ----
 
-Limitations: Did You Say Typing?
-================================
+Limitations: Did You Say *Typing*?
+==================================
 
 .. code-block:: python
 
