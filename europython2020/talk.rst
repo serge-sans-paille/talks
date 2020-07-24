@@ -66,7 +66,8 @@ A Simple Expression Across the Ages
 
 .. code-block:: console
 
-    > python -c "import ast; print(ast.dump(ast.parse('a[1, ...]')))"
+    > python -c "import ast; \
+                 print(ast.dump(ast.parse('a[1, ...]')))"
     ...
 
 ----
