@@ -266,7 +266,7 @@ Limitations: Did You Say *Static*?
 
 .. code-block:: python
 
-    eval("expr")
+    eval(expr)
     globals()[name] = 1
 
 And as an extension, any method call…
