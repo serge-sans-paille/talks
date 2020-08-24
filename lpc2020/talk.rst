@@ -11,7 +11,7 @@ Security countermeasure strikes at several level:
 
 - hardware (buy a new machine)
 - microcode (update your kernel)
-- *compiler* (pick compiler flags)
+- **compiler** (pick compiler flags)
 - codebase (update your code)
 
 ----
@@ -37,16 +37,56 @@ Compiler Engineer / Wood Craft Lover / RedHat employee
 
 ----
 
+Default Fedora Flags
+=====================
+
+.. code::
+
+    -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2
+    -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong
+    -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1
+    -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -mtune=generic
+    -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection
+    -Wl,-z,relro -Wl,--as-needed  -Wl,-z,now
+    -specs=/usr/lib/rpm/redhat/redhat-hardened-ld
+
+----
+
+Default Debian Flags
+=====================
+
+.. code::
+
+    -g -O2
+    -fdebug-prefix-map=/home/sylvestre/dev/debian/pkg-llvm/llvm-toolchain/branches=.
+    -fstack-protector-strong -Wformat -Werror=format-security
+
+
+----
+
 Common Library Overflows
 ========================
 
 *Attack*: Exploit standard C/C++ functions misuse
 
-*Countermeasure*: Provide foritified version of these functions
+*Countermeasure*: Provide fortified version of these functions
 
-*Flag*: ``-D_FORITFY_SOURCE`` (gcc, clang for builtin supports), ``-D_GLIBCXX_ASSERTIONS``
+*Flag*: ``-D_FORTIFY_SOURCE`` (gcc, clang for builtin supports), ``-D_GLIBCXX_ASSERTIONS``
 
 *Overhead*: low (fortify) to high (asserts)
+
+----
+
+Common Formating Attacks
+========================
+
+*Attack*: Exploit user-controlled formating arguments
+
+*Countermeasure*: Warn about dubious patterns
+
+*Flag*: ``-Werror=format-security`` (gcc, clang)
+
+*Overhead*: nop (compile time)
 
 
 ----
@@ -64,21 +104,8 @@ Common Code Overflows
 
 ----
 
-Common Formating Attacks
-========================
-
-*Attack*: Exploit user-controlled formating arguments
-
-*Countermeasure*: Warn about dubious patterns
-
-*Flag*: ``-Werror=format-security`` (gcc, clang)
-
-*Overhead*: nop (compile time)
-
-----
-
-Common Uninitialized Variables
-==============================
+Uninitialized Stack Variables
+=============================
 
 *Attack*: Use unitialized variable to leak previous state
 
@@ -95,9 +122,9 @@ GOT / PLT Overwrite
 
 *Attack*: Overwrite the GOT/PLT to overwrite executable sections
 
-*Countermeasure*: Mark GOT/PLT read-only
+*Countermeasure*: Load everything then mark GOT/PLT read-only
 
-*Flag*: ``-Wl,-z,norelro`` (ld.bfd, lld), ``-Wl,-z,lazy`` (ld.bfd, lld)
+*Flag*: ``-Wl,-z,norelro`` (ld.bfd, lld), ``-Wl,-z,now`` (ld.bfd, lld)
 
 *Overhead*: increased startup time
 
@@ -157,6 +184,13 @@ Stack Smash
 
 ----
 
+And now for something different
+===============================
+
+All these slides were pretty classic, right?
+
+----
+
 Spectre V1
 ==========
 
@@ -188,7 +222,7 @@ Return Oriented Programing
 
 *Attack*: Execute arbitrary code through a chain of gadget
 
-*Countermeasure*: Check control flow integrity / Intel CET
+*Countermeasure*: Check Control Flow Integrity / Intel CET
 
 *Flag*: ``-fsanitize=cfi`` (clang) ``-mcet`` (clang, gcc) ``-fcf-protection`` (clang,
 gcc)
@@ -213,3 +247,18 @@ Follow-ups
 
   - Discussing implementation across mlist (or on a common medium?)
   - Sharing compiler-agnostic test beds?
+
+----
+
+Example: Stack Clash Protection
+===============================
+
+- LLVM using the GCC implementation as reference
+- Test beds different (based on compiler report for GCC, and assembly reference
+  for LLVM)
+- Paths to explore:
+
+    - ``valgrind`` -based verification of distance invariant?
+    - Static verification?
+
+
