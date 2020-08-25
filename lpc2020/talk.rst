@@ -20,9 +20,11 @@ Security countermeasure strikes at several level:
 Always Two They Are
 ===================
 
-GCC Toolchain (mostly gcc + ld.bfd)
+Focusing on C/C++:
 
-LLVM Toolchain (mostly clang + lld)
+- GCC Toolchain (mostly gcc + ld.bfd)
+
+- LLVM Toolchain (mostly clang + lld)
 
 ----
 
@@ -42,12 +44,15 @@ Default Fedora Flags (X86_64)
 
 .. code::
 
-    -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2
-    -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong
-    -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1
-    -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -mtune=generic
-    -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection
-    -Wl,-z,relro -Wl,--as-needed  -Wl,-z,now
+    -O2 -g -pipe -Wall -Werror=format-security \
+    -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS \
+    -fexceptions -fstack-protector-strong \
+    -grecord-gcc-switches \
+    -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 \
+    -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 \
+    -mtune=generic -fasynchronous-unwind-tables \
+    -fstack-clash-protection -fcf-protection \
+    -Wl,-z,relro -Wl,--as-needed  -Wl,-z,now \
     -specs=/usr/lib/rpm/redhat/redhat-hardened-ld
 
 ----
@@ -57,10 +62,12 @@ Default Debian Flags (X86_64)
 
 .. code::
 
-    -g -O2
-    -fdebug-prefix-map=/home/sylvestre/dev/debian/pkg-llvm/llvm-toolchain/branches=.
-    -fstack-protector-strong -Wformat -Werror=format-security
-    -Wl,-z,relro
+    -g -O2 \
+    -fdebug-prefix-map=/home/sylvestre/dev/debian/pkg-llvm\
+    /llvm-toolchain/branches=. -fstack-protector-strong \
+    -Wformat -Werror=format-security -Wl,-z,relro
+
++ ``https://sources.debian.org/src/gcc-10/10.1.0-1/debian/rules.patch``
 
 
 ----
@@ -127,7 +134,7 @@ GOT / PLT Overwrite
 
 *Countermeasure*: Load everything then mark GOT/PLT read-only
 
-*Flag*: ``-Wl,-z,norelro`` (ld.bfd, lld), ``-Wl,-z,now`` (ld.bfd, lld)
+*Flag*: ``-Wl,-z,relro`` (ld.bfd, lld), ``-Wl,-z,now`` (ld.bfd, lld)
 
 *Overhead*: increased startup time
 
@@ -146,7 +153,7 @@ Executable Stack
 
 *Overhead*: nop (?)
 
-*Artifact*: ``readelf -e a.out | grep -E 'GNU_STACK.*RWE'``
+*Artifact*: ``readelf -e a.out | { ! grep -E 'GNU_STACK.*RWE' ; }``
 
 ----
 
@@ -185,9 +192,9 @@ Stack Smash
 
 *Attack*: Modify the stack thanks to an overflow
 
-*Countermeasure*: Stack Canary
+*Countermeasure*: Stack Canary, Split Stack
 
-*Flag*: ``-fstack-protector`` (gcc, clang), ``-fsanitize=safe-stack`` (clang)
+*Flag*: ``-fstack-protector-strong`` (gcc, clang), ``-fsanitize=safe-stack`` (clang)
 
 *Overhead*: one check per function, user-controlled granularity
 
@@ -235,7 +242,7 @@ Return Oriented Programing
 
 *Countermeasure*: Check Control Flow Integrity / Intel CET
 
-*Flag*: ``-fsanitize=cfi`` (clang) ``-mcet`` (clang, gcc) ``-fcf-protection`` (clang,
+*Flag*: ``-fsanitize=cfi`` (clang) ``-fcf-protection`` (clang,
 gcc)
 
 ----
@@ -283,4 +290,4 @@ Follow-ups
   - Discussing implementation across mlist (or on a common medium?)
   - Sharing compiler-agnostic test beds?
 
-- Thanks to Adrien Guinet, Juan Manuel Martinez and Florian Weimer!
+- Thanks to Adrien Guinet, Juan Manuel Martinez Sylvestre Ledru and Florian Weimer!
