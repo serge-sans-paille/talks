@@ -33,7 +33,7 @@ Security Related Flags: a Common GCC/LLVM View
 
 **Serge « sans paille » Guelton**
 
-Compiler Engineer / Wood Craft Lover / RedHat employee
+Compiler Engineer / Wood Craft Lover / Red Hat employee
 
 **LPC'20 — 26th of August 2020**
 
