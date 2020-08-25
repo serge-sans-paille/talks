@@ -117,7 +117,7 @@ Common Code Overflows
 Uninitialized Stack Variables
 =============================
 
-*Attack*: Use unitialized variable to leak previous state
+*Attack*: Use uninitialized variable to leak previous state
 
 *Coutermeasure*: Always initialize stack variable
 
@@ -134,7 +134,7 @@ GOT / PLT Overwrite
 
 *Countermeasure*: Load everything then mark GOT/PLT read-only
 
-*Flag*: ``-Wl,-z,relro`` (ld.bfd, lld), ``-Wl,-z,now`` (ld.bfd, lld)
+*Flag*: ``-Wl,-z,relro``, ``-Wl,-z,now`` (ld.bfd, lld)
 
 *Overhead*: increased startup time
 
@@ -218,7 +218,7 @@ Spectre V1
 
 *Flag*: ``-mspeculative-load-hardening`` (clang)
 
-*Overhead*: non-neglectible (todo: add ref)
+*Overhead*: non-neglectible
 
 ----
 
@@ -231,7 +231,7 @@ Spectre V2
 
 *Flag*: ``-mretpoline`` (clang) ``-mindirect-branch, -mfunction-return`` (gcc)
 
-*Overhead*: non-neglectible (todo: add ref)
+*Overhead*: non-neglectible
 
 ----
 
@@ -240,7 +240,7 @@ Return Oriented Programing
 
 *Attack*: Execute arbitrary code through a chain of gadget
 
-*Countermeasure*: Check Control Flow Integrity / Intel CET
+*Countermeasure*: Check Control Flow Integrity / Intel CET, ARM BTI
 
 *Flag*: ``-fsanitize=cfi`` (clang) ``-fcf-protection`` (clang,
 gcc)
