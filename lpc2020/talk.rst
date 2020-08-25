@@ -37,8 +37,8 @@ Compiler Engineer / Wood Craft Lover / RedHat employee
 
 ----
 
-Default Fedora Flags
-=====================
+Default Fedora Flags (X86_64)
+=============================
 
 .. code::
 
@@ -52,20 +52,21 @@ Default Fedora Flags
 
 ----
 
-Default Debian Flags
-=====================
+Default Debian Flags (X86_64)
+=============================
 
 .. code::
 
     -g -O2
     -fdebug-prefix-map=/home/sylvestre/dev/debian/pkg-llvm/llvm-toolchain/branches=.
     -fstack-protector-strong -Wformat -Werror=format-security
+    -Wl,-z,relro
 
 
 ----
 
-Common Library Overflows
-========================
+Common Library Exploitation
+===========================
 
 *Attack*: Exploit standard C/C++ functions misuse
 
@@ -74,6 +75,8 @@ Common Library Overflows
 *Flag*: ``-D_FORTIFY_SOURCE`` (gcc, clang for builtin supports), ``-D_GLIBCXX_ASSERTIONS``
 
 *Overhead*: low (fortify) to high (asserts)
+
+*Artifact*: ``nm a.out | grep __strcpy_chk``
 
 ----
 
@@ -128,6 +131,8 @@ GOT / PLT Overwrite
 
 *Overhead*: increased startup time
 
+*Artifact*: ``readelf -a now | grep BIND_NOW``
+
 ----
 
 Executable Stack
@@ -141,18 +146,22 @@ Executable Stack
 
 *Overhead*: nop (?)
 
+*Artifact*: ``readelf -e a.out | grep -E 'GNU_STACK.*RWE'``
+
 ----
 
 Security through Diversity
 ==========================
 
-*Attack*: Write reusable shellcodes / attacks
+*Attack*: Use hardcoded adress in shellcodes/others
 
 *Countermeasure*: Randomize process adresses (ASLR)
 
-*Flag*: ``-pie -fPIE`` or ``-fPIC`` (gcc/ld.bfd, clang/lld)
+*Flag*: ``-pie -fPIE`` or ``-fPIC`` (gcc/ld.bfd, clang/lld) + ``/proc/sys/kernel/randomize_va_space``
 
-*Overhead*: increased startup time (?)
+*Overhead*: relative jump computation
+
+*Artefact*: ``readelf -e a.out | grep 'DYN (Shared object file)'``
 
 ----
 
@@ -167,6 +176,7 @@ Stack Clash
 
 *Overhead*: only for functions with large / dynamic stack alloc
 
+*Artefact*: ``objdump -S a.out | grep 'subq 4096, %rsp'``
 
 ----
 
@@ -177,10 +187,11 @@ Stack Smash
 
 *Countermeasure*: Stack Canary
 
-*Flag*: ``-fstack-protector`` (gcc, clang)
+*Flag*: ``-fstack-protector`` (gcc, clang), ``-fsanitize=safe-stack`` (clang)
 
 *Overhead*: one check per function, user-controlled granularity
 
+*Artefact*: ``nm a.out | grep __stack_chk_fail``
 
 ----
 
@@ -235,7 +246,31 @@ Certification
 Want to double-check the flags used in the build process?
 
 - ``-fplugin=annobin`` (gcc, clang)
-- ``-grecord-gcc-switches`` (gcc)
+- ``-[fg]record-gcc-switches`` (gcc)
+
+*Artefact*: ``readelf a.out -p .GCC.command.line | grep record-gcc-switches``
+
+----
+
+Post-Compilation Check
+======================
+
+For each compiler flag, test for harderning artefacts, *à la*
+``hardening-check``.
+
+https://github.com/serge-sans-paille/hardening-artefacts
+
+----
+
+Example: Stack Clash Protection
+===============================
+
+- LLVM implem using the GCC implem as reference
+- Different Test beds (GCC: compiler report, LLVM: assembly reference)
+- Paths to explore
+
+    - instrumentation-based verification of distance invariant?
+    - Static verification?
 
 ----
 
@@ -248,17 +283,4 @@ Follow-ups
   - Discussing implementation across mlist (or on a common medium?)
   - Sharing compiler-agnostic test beds?
 
-----
-
-Example: Stack Clash Protection
-===============================
-
-- LLVM using the GCC implementation as reference
-- Test beds different (based on compiler report for GCC, and assembly reference
-  for LLVM)
-- Paths to explore:
-
-    - ``valgrind`` -based verification of distance invariant?
-    - Static verification?
-
-
+- Thanks to Adrien Guinet, Juan Manuel Martinez and Florian Weimer!

@@ -19,16 +19,25 @@
     width: 800px;
 }
 
+.substep {
+    opacity: 0;
+}
+
+.substep.substep-visible {
+    opacity: 1;
+    transition: opacity 1s;
+}
+
 
 /* Help popup */
 
-#hovercraft-help {
+#impress-help {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7);
     color: #EEEEEE;
-    font-size: 70%;
+    font-size: 60%;
     left: 2em;
     bottom: 2em;
-    width: 28em;
+    width: 30em;
     border-radius: 1em;
     padding: 1em;
     position: fixed;
@@ -39,12 +48,15 @@
     font-family: Verdana, Arial, Sans;
 }
 
-.impress-enabled #hovercraft-help.hide {
-    display: none;
+#impress-help strong {
+    font-family: inherit;
+    font-size: 98%;
 }
 
-#hovercraft-help.disabled {
-    display: none;
+/* Small hack to prevent the help from showing in previews */
+.impress-console #impress-help {
+    opacity: 0;
+    background-color: green;
 }
 
 /* Slide numbers */
