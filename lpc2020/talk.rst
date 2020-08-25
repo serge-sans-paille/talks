@@ -17,8 +17,8 @@ Security countermeasure strikes at several level:
 ----
 
 
-Always Two They Are
-===================
+Always Two There Are
+====================
 
 Focusing on C/C++:
 
