@@ -1,0 +1,94 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Building compiler extension for LLVM 10.0.1</title><meta charset="UTF-8"></meta><meta name="generator" content="Hovercraft! 1.0 http://regebro.github.com/hovercraft"></meta><link rel="stylesheet" href="css/hovercraft.css" media="all"></link><link rel="stylesheet" href="css/highlight.css" media="all"></link><link rel="stylesheet" href="font.css" media="screen,projection"></link><script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        showProcessingMessages: false,
+        messageStyle: "none",
+        TeX : { extensions : ['color.js'] }
+      });
+    </script></head><body class="impress-not-supported"><div id="impress" data-transition-duration="150"><div class="step step-level-1" step="0" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="0" data-y="0" data-z="0"><h1 id="intro">Intro</h1><p>How do you write a plugin for LLVM?</p><p>&#x2192; RTFM <a href="https://llvm.org/docs/WritingAnLLVMPass.html">https://llvm.org/docs/WritingAnLLVMPass.html</a></p></div><div class="step step-level-1" step="1" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="1600" data-y="0" data-z="0"><h1 id="after-a-dozen-of-minutes">After a dozen of minutes</h1><pre class="highlight code c++"><span class="p">[...]</span>
+<span class="k">struct</span> <span class="nl">Hello</span> <span class="p">:</span> <span class="k">public</span> <span class="n">FunctionPass</span> <span class="p">{</span>
+    <span class="p">[...]</span>
+  <span class="kt">bool</span> <span class="n">runOnFunction</span><span class="p">(</span><span class="n">Function</span> <span class="o">&amp;</span><span class="n">F</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="p">[...]</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="n">RegisterPass</span><span class="o">&lt;</span><span class="n">Hello</span><span class="o">&gt;</span> <span class="n">X</span><span class="p">(</span>
+    <span class="s">"hello"</span><span class="p">,</span>
+    <span class="s">"Hello World Pass"</span><span class="p">,</span>
+    <span class="nb">false</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span></pre><pre class="highlight code console"><span class="gp">$</span> opt -load lib/LLVMHello.so <span class="se">\
+</span>      -hello &lt; hello.bc &gt; /dev/null</pre></div><div class="step step-level-1" step="2" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="3200" data-y="0" data-z="0"><h1 id="building-compiler-extension-for-llvm-10-0-1">Building compiler extension for LLVM 10.0.1</h1><p><strong>Serge &#xAB; sans paille &#xBB; Guelton</strong></p><p>Compiler Engineer / Wood Craft Lover / Red Hat employee</p><p><strong>LLVM Developers Meeting &#x2014; 8th of October 2020</strong></p></div><div class="step step-level-1" step="3" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="4800" data-y="0" data-z="0"><h1 id="what-about-using-the-pass-from-clang">What about Using the pass from Clang?</h1><pre class="highlight code c++"><span class="k">static</span> <span class="n">RegisterStandardPasses</span> <span class="nf">Y</span><span class="p">(</span>
+    <span class="n">PassManagerBuilder</span><span class="o">::</span><span class="n">EP_EarlyAsPossible</span><span class="p">,</span>
+    <span class="p">[](</span><span class="k">const</span> <span class="n">PassManagerBuilder</span> <span class="o">&amp;</span><span class="n">Builder</span><span class="p">,</span>
+       <span class="n">legacy</span><span class="o">::</span><span class="n">PassManagerBase</span> <span class="o">&amp;</span><span class="n">PM</span><span class="p">)</span> <span class="p">{</span>
+         <span class="n">PM</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="k">new</span> <span class="n">Hello</span><span class="p">());</span>
+       <span class="p">});</span></pre><pre class="highlight code console"><span class="gp">$</span> clang -Xclang -load -Xclang lib/LLVMHello.so <span class="se">\
+</span>        -O1 hello.c -o /dev/null</pre></div><div class="step step-level-1" step="4" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="6400" data-y="0" data-z="0"><h1 id="what-about-using-the-pass-from-new-pm">What about Using the pass from new PM?</h1><p>credits: <a href="https://github.com/banach-space/llvm-tutor/">https://github.com/banach-space/llvm-tutor/</a></p><pre class="highlight code c++"><span class="kt">void</span> <span class="nf">run</span><span class="p">(</span><span class="n">Function</span> <span class="o">&amp;</span><span class="n">F</span><span class="p">)</span> <span class="p">{</span> <span class="p">[...]</span> <span class="p">}</span>
+
+<span class="c1">// New PM implementation
+</span><span class="k">struct</span> <span class="nl">HelloWorld</span> <span class="p">:</span> <span class="n">PassInfoMixin</span><span class="o">&lt;</span><span class="n">HelloWorld</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="n">PreservedAnalyses</span> <span class="n">run</span><span class="p">(</span><span class="n">Function</span> <span class="o">&amp;</span><span class="n">F</span><span class="p">,</span>
+                        <span class="n">FunctionAnalysisManager</span> <span class="o">&amp;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">F</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">PreservedAnalyses</span><span class="o">::</span><span class="n">all</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">llvm</span><span class="o">::</span><span class="n">PassPluginLibraryInfo</span> <span class="n">getHelloWorldPluginInfo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span><span class="n">LLVM_PLUGIN_API_VERSION</span><span class="p">,</span> <span class="s">"HelloWorld"</span><span class="p">,</span>
+          <span class="n">LLVM_VERSION_STRING</span><span class="p">,</span>
+          <span class="p">[](</span><span class="n">PassBuilder</span> <span class="o">&amp;</span><span class="n">PB</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">PB</span><span class="p">.</span><span class="n">registerPipelineParsingCallback</span><span class="p">([...]);</span>
+          <span class="p">}};</span>
+<span class="p">}</span>
+
+<span class="k">extern</span> <span class="s">"C"</span>
+<span class="n">LLVM_ATTRIBUTE_WEAK</span> <span class="o">::</span><span class="n">llvm</span><span class="o">::</span><span class="n">PassPluginLibraryInfo</span>
+<span class="n">llvmGetPassPluginInfo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">getHelloWorldPluginInfo</span><span class="p">();</span>
+<span class="p">}</span></pre></div><div class="step step-level-1" step="5" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="8000" data-y="0" data-z="0"><h1 id="mixing-the-two">Mixing the two</h1><pre class="highlight code c++"><span class="c1">// Legacy PM implementation
+</span><span class="k">struct</span> <span class="nl">LegacyHelloWorld</span> <span class="p">:</span> <span class="k">public</span> <span class="n">FunctionPass</span> <span class="p">{</span>
+  <span class="k">static</span> <span class="kt">char</span> <span class="n">ID</span><span class="p">;</span>
+  <span class="n">LegacyHelloWorld</span><span class="p">()</span> <span class="o">:</span> <span class="n">FunctionPass</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="kt">bool</span> <span class="n">runOnFunction</span><span class="p">(</span><span class="n">Function</span> <span class="o">&amp;</span><span class="n">F</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="cm">/* &gt;&gt;&gt;&gt; */</span> <span class="n">run</span><span class="p">(</span><span class="n">F</span><span class="p">);</span> <span class="cm">/* &lt;&lt;&lt;&lt; */</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span></pre></div><div class="step step-level-1" step="6" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="9600" data-y="0" data-z="0"><h1 id="how-do-i-ship-my-passes">How do I ship my passes?</h1><ol><li>Compatibility issues: a pass built for LLVM X is not compatible with LLVM Y</li><li>Usability issues: <tt>-Xclang -load -Xclang MyPass0.so</tt> is not super
+user-friendly</li><li>Forking llvm, building an in-tree pass:<ul><li>heavier repo</li><li>less code locality</li><li>tied to a given LLVM version</li></ul></li></ol></div><div class="step step-level-1" step="7" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="11200" data-y="0" data-z="0"><h1 id="the-polly-case">The Polly case</h1><p><em>a.k.a</em> a set of passes available both as in and out of tree passes</p><pre class="highlight code console"><span class="gp">$</span> % git grep -i  polly origin/release/9.x <span class="p">|</span> grep -E -v <span class="s1">'(www)|(test)|(doc)|(:polly)'</span> -c
+<span class="go">58</span></pre><p>Intrusive in both <tt>cmake</tt>, <tt>llvm</tt> and <tt>clang</tt> codebase :-/</p><p>What about generalizing the approach?</p></div><div class="step step-level-1" step="8" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="12800" data-y="0" data-z="0"><h1 id="turning-out-of-tree-passes-in-tree">Turning out-of-tree passes in tree</h1><p>A combination of CMake and C++ glue to provide:</p><ul><li>Built on top of plugin infrastructure</li><li>Compatible with out-of-tree layout</li><li>Configurable in/out of tree builds</li><li>Compatible with componenets, <tt>llvm-config</tt> and <tt>libLLVM</tt></li></ul><p>See <tt>llvm-project/llvm/examples/Bye/</tt></p></div><div class="step step-level-1" step="9" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="14400" data-y="0" data-z="0"><h1 id="change-to-existing-extension">Change to existing extension</h1><pre class="highlight code diff"><span class="gi">+ #ifndef LLVM_BYE_LINK_INTO_TOOLS
+</span>  extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+  llvmGetPassPluginInfo() {
+    return getByePluginInfo();
+  }
+<span class="gi">+ #endif</span></pre></div><div class="step step-level-1" step="10" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="16000" data-y="0" data-z="0"><h1 id="cmake-configuration">CMake configuration</h1><pre class="highlight code cmake"><span class="nb">add_llvm_pass_plugin</span><span class="p">(</span><span class="s">Bye</span>
+  <span class="s">Bye.cpp</span>
+  <span class="s">DEPENDS</span>
+  <span class="s">intrinsics_gen</span>
+ <span class="p">)</span></pre><pre class="highlight code console"><span class="gp">$</span> cmake -DLLVM_BYE_LINK_INTO_TOOLS<span class="o">=</span><span class="k">$((</span><span class="nv">$RANDOM</span> <span class="o">%</span><span class="m">2</span><span class="k">))</span></pre></div><div class="step step-level-1" step="11" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="17600" data-y="0" data-z="0"><h1 id="introducing-a-new-component-extension">Introducing a new Component: Extension</h1><p>Without Polly</p><pre class="highlight code console"><span class="gp">$</span> llvm-config --components
+<span class="go">(...) extensions (...]
+
+</span><span class="gp">$</span> llvm-config --libs extensions
+<span class="go">-lLLVMExtensions -lLLVMSupport -lLLVMDemangle</span></pre></div><div class="step step-level-1" step="12" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="19200" data-y="0" data-z="0"><h1 id="id1">Introducing a new Component: Extension</h1><p>With Polly and <tt>-DLLVM_BYE_LINK_INTO_TOOLS=OFF</tt></p><pre class="highlight code console"><span class="gp">$</span> llvm-config --libs extensions
+<span class="go">-lLLVMExtensions -lLLVMSupport -lLLVMDemangle</span></pre><p>With Polly and <tt>-DLLVM_BYE_LINK_INTO_TOOLS=ON</tt></p><pre class="highlight code console"><span class="gp">$</span> llvm-config --libs extensions
+<span class="go">-lLLVMExtensions -lPolly -lPollyISL (...) -lLLVMDemangle</span></pre></div><div class="step step-level-1" step="13" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="20800" data-y="0" data-z="0"><h1 id="interactions-with-libllvm">Interactions with libLLVM</h1><p><tt>libLLVM10</tt> aggregates all components, so:</p><ul><li>When a project is linked in: it's part of <tt>libLLVM10</tt></li><li>When a project is <em>not</em> linked in: it's <em>not</em> part of <tt>libLLVM10</tt></li></ul></div><div class="step step-level-1" step="14" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="22400" data-y="0" data-z="0"><h1 id="back-from-the-sixties-x-macro">Back from the sixties: X Macro</h1><p>from <tt>clang/lib/CodeGen/BackendUtil.cpp</tt></p><pre class="highlight code c++"> <span class="cp">#define HANDLE_EXTENSION(Ext) \
+   llvm::PassPluginLibraryInfo get##Ext##PluginInfo();
+</span> <span class="cp">#include</span> <span class="cpf">"llvm/Support/Extension.def"</span><span class="cp">
+</span>
+<span class="p">[...]</span>
+
+<span class="kt">void</span> <span class="n">EmitAssemblyHelper</span><span class="o">::</span>
+<span class="n">EmitAssemblyWithNewPassManager</span><span class="p">(...)</span> <span class="p">{</span>
+
+<span class="p">[...]</span>
+
+<span class="cp">#define HANDLE_EXTENSION(Ext) \
+  get##Ext##PluginInfo().RegisterPassBuilderCallbacks(PB);
+</span>  <span class="cp">#include</span> <span class="cpf">"llvm/Support/Extension.def"</span><span class="cp">
+</span>
+<span class="p">[...]</span>
+
+<span class="p">}</span></pre></div><div class="step step-level-1" step="15" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="24000" data-y="0" data-z="0"><h1 id="concluding-words">Concluding Words</h1><p>Thanks to that work:</p><ul><li>Polly is no longer an exception, it is now an exemple</li><li>It is <em>easier</em> to move <em>from out-of-tree to in-tree</em> passes</li><li>Buildbot has been red on several occasion :-/</li></ul></div></div><div id="slide-number" class="slide-number">
+         1
+      </div><script type="text/javascript" src="js/impress.js"></script><script type="text/javascript" src="js/gotoSlide.js"></script><script type="text/javascript" src="js/hovercraft.js"></script><script type="text/javascript">
+      document.getElementById("impress").addEventListener("impress:stepenter", update_slide_number, false);
+    </script></body></html>
