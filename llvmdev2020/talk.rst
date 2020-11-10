@@ -143,7 +143,8 @@ The Polly case
 
 .. code-block:: console
 
-    $ % git grep -i  polly origin/release/9.x | grep -E -v '(www)|(test)|(doc)|(:polly)' -c
+    $ % git grep -i  polly origin/release/9.x \
+    | grep -E -v '(www)|(test)|(doc)|(:polly)' -c
     58
 
 Intrusive in both ``cmake``, ``llvm`` and ``clang`` codebase :-/
@@ -160,7 +161,7 @@ A combination of CMake and C++ glue to provide:
 - Built on top of plugin infrastructure
 - Compatible with out-of-tree layout
 - Configurable in/out of tree builds
-- Compatible with componenets, ``llvm-config`` and ``libLLVM``
+- Compatible with components, ``llvm-config`` and ``libLLVM``
 
 See ``llvm-project/llvm/examples/Bye/``
 
@@ -216,14 +217,14 @@ Without Polly
 Introducing a new Component: Extension
 ======================================
 
-With Polly and ``-DLLVM_BYE_LINK_INTO_TOOLS=OFF``
+With Polly and ``-DLLVM_POLLY_LINK_INTO_TOOLS=OFF``
 
 .. code-block:: console
 
     $ llvm-config --libs extensions
     -lLLVMExtensions -lLLVMSupport -lLLVMDemangle
 
-With Polly and ``-DLLVM_BYE_LINK_INTO_TOOLS=ON``
+With Polly and ``-DLLVM_POLLY_LINK_INTO_TOOLS=ON``
 
 .. code-block:: console
 
