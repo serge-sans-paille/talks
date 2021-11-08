@@ -150,7 +150,7 @@ Building with...
 
 2. Clang
 
-   - ``(-)`` Policy only recenlty evolved to allow it
+   - ``(-)`` Policy only recently evolved to allow it
    - ``(+)`` ``-flto=thin``
    - ``(-)`` LTO build fails
 
