@@ -1,0 +1,59 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Packaging LLVM</title><meta charset="UTF-8"></meta><meta name="generator" content="Hovercraft! 1.0 http://regebro.github.com/hovercraft"></meta><link rel="stylesheet" href="css/hovercraft.css" media="all"></link><link rel="stylesheet" href="css/highlight.css" media="all"></link><link rel="stylesheet" href="font.css" media="screen,projection"></link><script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        showProcessingMessages: false,
+        messageStyle: "none",
+        TeX : { extensions : ['color.js'] }
+      });
+    </script></head><body class="impress-not-supported"><div id="impress" data-transition-duration="150"><div class="step step-level-1" step="0" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="0" data-y="0" data-z="0"><h1 id="packaging-llvm">Packaging LLVM</h1><p><strong>Serge &#xAB; sans paille &#xBB; Guelton</strong></p><p>Compiler Engineer / Wood Craft Lover / RedHat employee</p><p><em>PackaginCon &#x2014; 9 November 2021</em></p><img src="goblin_tinkerer.jpg" width="400"></img></div><div class="step step-level-1" step="1" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="1600" data-y="0" data-z="0"><h1 id="fedora-in-one-slide">Fedora in one slide</h1><pre class="highlight code">.~= Fedora =~.           Close to upstream philosophy
+
+
+Several Releases             /:-------------:\\
+. rawhide ~ Debian sid    :-------------------::
+. f33, f34, f35         :-----------/shhOHbmp---:\\
+                      /-----------omMMMNNNMMD  ---:
+Architectures        :-----------sMMMMNMNMP.    ---:
+. X86_64            :-----------:MMMdP-------    ---\\
+. arm              ,------------:MMMd--------    ---:
+. aarch64          :------------:MMMd-------    .---:
+. ppc64le          :----    oNMMMMMMMMMNho     .----:
+                   :--     .+shhhMMMmhhy++   .------/
+. riscV            :-    -------:MMMd--------------:
+. mips             :-   --------/MMMd-------------;
+                   :-    ------/hMMMy------------:
+Package            :-- :dMNdhhdNMMNo------------;
+. RPM              :---:sdNMMMMNds:------------:
+                   :------:://:-------------::
+                   :---------------------://</pre></div><div class="step step-level-1" step="2" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="3200" data-y="0" data-z="0"><h1 id="llvm-in-one-slide">LLVM in one slide</h1><p>A compiler Infrastructure</p><pre class="highlight code">+---------------------+ +---------------+
+| - Inlining          | | - ADT         |
+| - Unrolling         | | - System      |
+| - ...               | | - STLExtra    |
+|       ______________| | - ...         |
+|      / Optimizations| |           ____|
++---------------------+ |          /Core|
+                        +---------------+
++---------------------+
+| X86, ARM, RiscV...  +
+|             ________|
+|            /Backends|
++---------------------+</pre></div><div class="step step-level-1" step="3" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="4800" data-y="0" data-z="0"><h1 id="llvm-project-dependency-tree">LLVM Project dependency tree</h1><pre class="highlight code">            +------------&gt; mlir &gt; ---------+
+           /                                \
+          +-----&gt; lld                        \
+         /                                    +--&gt; flang
+LLVM &gt;--+--&gt; compiler-rt &gt;--+                /
+         \                   \              /
+          +--&gt; polly          +--&gt; clang &gt;-+
+           \                                \
+            +-------------- +----------------+--&gt; lldb
+                           /
+libomp &gt;------------------+
+
+libcxx &gt;
+
+libunwind &gt;</pre></div><div class="step step-level-1" step="4" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="6400" data-y="0" data-z="0"><h1 id="llvm-upstream">LLVM Upstream</h1><ul><li>Monorepo: <a href="https://github.com/llvm/llvm-project">https://github.com/llvm/llvm-project</a></li><li><dl><dt>Release cycle:</dt><dd><ul><li>One major release every 6 months</li><li>Minor release in between</li><li>Release candidate for major and minor releases</li></ul></dd></dl></li><li>CMake-based build system</li><li>Mostly C++14</li></ul></div><div class="step step-level-1" step="5" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="8000" data-y="0" data-z="0"><h1 id="llvm-packaging-in-fedora">LLVM Packaging In Fedora</h1><ol><li>Build the world (git based)<ul><li><tt>(+)</tt> Supported upstream: easy packaging</li><li><tt>(-)</tt> Small patch rebuilds the world</li></ul></li><li>Build package independently (tarball based)<ul><li><tt>(+)</tt> Faster recompilation</li><li><tt>(-)</tt> More downstream maintenance</li></ul></li></ol><p>Pick your poison! We chose <tt>2.</tt></p></div><div class="step step-level-1" step="6" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="9600" data-y="0" data-z="0"><h1 id="abi-compatibility">ABI Compatibility</h1><p>LLVM Ships two kinds of libraries</p><ol><li>C++ libraries, no ABI stability, major version bump each release</li><li>C interface, stable ABI across releases</li></ol><p>Minor releases should not break the ABI</p></div><div class="step step-level-1" step="7" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="11200" data-y="0" data-z="0"><h1 id="compiling-the-compiler">Compiling the compiler</h1><p>Building with...</p><ol><li>GCC:<ul><li><tt>(+)</tt> Fedora default compiler</li><li><tt>(-)</tt> LTO build fails</li></ul></li><li>Clang<ul><li><tt>(-)</tt> Policy only recenlty evolved to allow it</li><li><tt>(+)</tt> <tt>-flto=thin</tt></li><li><tt>(-)</tt> LTO build fails</li></ul></li></ol></div><div class="step step-level-1" step="8" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="12800" data-y="0" data-z="0"><h1 id="library-or-archive">Library or Archive</h1><ol><li>Shared Libs:<ul><li><tt>(+)</tt> follow Fedora Policy</li><li><tt>(+)</tt> much better disk usage</li><li><tt>(-)</tt> less configuration tested upstream</li></ul></li><li>Archive:<ul><li><tt>(+)</tt> upstream default</li><li><tt>(-)</tt> huge disk usage</li></ul></li></ol><p>We chose <tt>1.</tt></p></div><div class="step step-level-1" step="9" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="14400" data-y="0" data-z="0"><h1 id="slow-linking">Slow linking</h1><p>Linking <tt>libLLVM.so</tt> is super-slow</p><ul><li><tt>[x]</tt> Decrease debug quality: <tt>-g1</tt></li><li><dl><dt><tt>[x]</tt> Break parallelism:</dt><dd><ul><li><tt>[x]</tt> Split build: <tt>cmake --build --target LLVM</tt></li><li><tt>[x]</tt> Sequential link: <tt>-DLLVM_PARALLEL_LINK_JOBS=1</tt></li></ul></dd></dl></li><li><tt>[ ]</tt> Use <tt>lld</tt> linker</li></ul></div><div class="step step-level-1" step="10" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="16000" data-y="0" data-z="0"><h1 id="multi-versionning">Multi-versionning</h1><p>We don't support multiple LLVM version at the same time, but...</p><ul><li>Use update-alternatives to easean transition between major releases</li><li>Provide versionned compatibility packages for packages that don't live on the
+bleeding edge</li></ul></div><div class="step step-level-1" step="11" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="17600" data-y="0" data-z="0"><h1 id="testing">Testing</h1><p>Yeah! Tests! Breakage! Pain!</p><ul><li><tt>[x]</tt> unit tests in each package, from upstream</li><li><dl><dt><tt>[x]</tt> Fedora CI</dt><dd><ul><li><tt>[x]</tt> integration test <a href="https://github.com/opencollab/llvm-toolchain-integration-test-suite">LLVM Toolchain Integration Test Suite</a></li></ul></dd></dl></li></ul></div><div class="step step-level-1" step="12" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="19200" data-y="0" data-z="0"><img src="https://llvm.org/img/LLVMWyvernSmall.png" width="500"></img><p>--</p><blockquote><p>The LLVM logo is a stylized wyvern (a kind of dragon). Dragons have connotations
+of power, speed and intelligence, and can also be sleek, elegant, and modular
+(err, maybe not).</p></blockquote></div></div><div id="slide-number" class="slide-number">
+         1
+      </div><script type="text/javascript" src="js/impress.js"></script><script type="text/javascript" src="js/gotoSlide.js"></script><script type="text/javascript" src="js/hovercraft.js"></script><script type="text/javascript">
+      document.getElementById("impress").addEventListener("impress:stepenter", update_slide_number, false);
+    </script></body></html>
