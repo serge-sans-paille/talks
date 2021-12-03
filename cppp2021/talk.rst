@@ -117,12 +117,12 @@ Removing the standard library runtime
  ``s/g++/gcc`` as linker. Say goodbye to…
 
 1. non-header only types / functions
-2. some template functions that are explicitly instanciated
+2. some template functions that are explicitly instantiated
 3. language features that require library support
     - default ``new`` / ``delete``
     - in-function static constructors
 
-Placement new are still ok :-)
+Placement new is still ok :-)
 
 ----
 
