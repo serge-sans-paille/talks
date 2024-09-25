@@ -306,7 +306,7 @@ Powers some rendering routines
 Noyau de calcul pour la tranduction dans Firefox: **gemmology**
 
 - Multiplication de matrice de nombres flottants rapide avec perte (wtf AI…)
-- Quantisation, transposition et multiplicationd e matrice sont vectoriées
+- Quantisation, transposition et multiplication de matrice sont vectoriées
 - Tecniquement:
 
     - Support de SSE2 à AVX(512)VNNI
