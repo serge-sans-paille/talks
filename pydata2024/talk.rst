@@ -1,4 +1,4 @@
-:title: Discover Pythran through 10 code samples
+:title: xsimd: from xtensor to firefox
 :data-transition-duration: 150
 :skip-help: true
 :slide-numbers: true
